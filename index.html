@@ -129,7 +129,7 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .captcha-box{display:flex; justify-content:center; min-height:65px; margin:4px 0}
 
 /* ================= Home ================= */
-#home,#admin{overflow-y:auto; background:radial-gradient(1100px 520px at 50% -12%, var(--accent-soft), transparent 70%), var(--bg)}
+#home,#admin,#rules{overflow-y:auto; background:radial-gradient(1100px 520px at 50% -12%, var(--accent-soft), transparent 70%), var(--bg)}
 .nav{
   position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px;
   padding:calc(12px + env(safe-area-inset-top,0px)) 24px 12px;
@@ -195,6 +195,15 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .foot{margin-top:40px; text-align:center; font-size:13px; font-weight:700; color:var(--muted); line-height:1.6}
 .foot a{color:var(--muted)}
 
+/* ================= Rules page ================= */
+.prose{max-width:760px; margin:40px auto 0}
+.prose h1{margin:0 0 8px; font-size:clamp(32px, 5vw, 46px); font-weight:900; letter-spacing:-1px}
+.prose .lead{margin:0 0 10px; font-size:17px; font-weight:600; color:var(--muted)}
+.prose h2{margin:30px 0 8px; font-size:20px; font-weight:900}
+.prose p,.prose li{font-size:15px; line-height:1.6; font-weight:600; color:color-mix(in srgb, var(--text) 85%, var(--muted))}
+.prose li{margin-bottom:6px}
+.prose a{color:var(--accent)}
+
 /* ================= Mod board ================= */
 .admin-login .sheet{margin:60px auto}
 .admin-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:32px 0 18px}
@@ -212,12 +221,13 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .mod-title{display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-weight:800; font-size:14px}
 .mod-title a{color:var(--accent)}
 .mod-meta{font-size:12.5px; font-weight:700; color:var(--muted)}
+.reason-csam{color:var(--danger); font-weight:900}
 .mod-actions{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
 
 /* ================= Modals ================= */
 .modal{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(5,7,12,.6); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px)}
 .sheet{width:min(640px, 100%); max-height:calc(100% - 24px); overflow:auto; padding:24px; border-radius:18px; background:var(--surface); border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,.5)}
-.sheet.small{width:min(390px, 100%)}
+.sheet.small{width:min(420px, 100%)}
 .sheet h2{margin:0 0 18px; font-size:22px; font-weight:900; display:flex; align-items:center; gap:10px}
 .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px 18px}
 .full{grid-column:1 / -1}
@@ -225,6 +235,7 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .sheet.small .field{margin-bottom:12px}
 .flabel{font-weight:800; font-size:13px}
 .hint{font-size:12px; font-weight:600; color:var(--muted)}
+.acct-p{margin:-6px 0 16px; line-height:1.5; font-weight:600}
 .seg-opts{display:flex; flex-wrap:wrap; gap:6px}
 .opt{position:relative}
 .opt input{position:absolute; opacity:0; pointer-events:none}
@@ -233,6 +244,10 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .opt input:checked + span{background:var(--accent-soft); border-color:var(--accent); color:var(--text)}
 .opt input:disabled + span{opacity:.45; cursor:not-allowed}
 .opt input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+.report-opts{display:flex; flex-direction:column; gap:6px; margin-bottom:10px}
+.ropt{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2); cursor:pointer; font-weight:700; font-size:14px}
+.ropt:has(input:checked){border-color:var(--accent); background:var(--accent-soft)}
+.ropt input{accent-color:var(--accent)}
 .style-opts{display:grid; grid-template-columns:repeat(5, 1fr); gap:8px}
 .style-opt{position:relative; display:flex; flex-direction:column; gap:6px; cursor:pointer}
 .style-opt input{position:absolute; opacity:0; pointer-events:none}
@@ -243,7 +258,7 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .style-opt input:checked ~ .sw-name{color:var(--text)}
 .style-opt input:focus-visible ~ .sw{outline:2px solid var(--accent); outline-offset:2px}
 .error{color:var(--danger); font-size:13px; font-weight:700; min-height:1em; margin:0}
-.actions{display:flex; justify-content:flex-end; gap:8px}
+.actions{display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px}
 .row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
 
 /* ================= Context menu ================= */
@@ -409,6 +424,7 @@ html[data-style="whiteboard"] .pin{
   <header class="nav">
     <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
     <a class="btn ghost" id="modBtn" href="#/admin" hidden><i data-ic="shield"></i><span class="hide-sm">Mod board</span></a>
+    <button class="btn ghost" id="accountBtn" title="Your account"><i data-ic="user"></i><span class="hide-sm" id="accountLabel">Save account</span></button>
     <button class="btn ghost" id="styleBtn" title="Change style">
       <span class="sw-dot" id="styleDot"></span><span id="styleLabel" class="hide-sm"></span><i data-ic="chevron" data-s="14"></i>
     </button>
@@ -439,9 +455,42 @@ html[data-style="whiteboard"] .pin{
     </div>
     <footer class="foot">
       Be kind. No illegal content. Anything reported by 3 people is hidden until reviewed.<br>
-      Uploaded photos are resized and have location data stripped automatically.<br>
-      <a href="#/admin">Moderator sign-in</a>
+      <a href="#/rules">Rules &amp; contact</a> · <a href="#/admin">Moderator sign-in</a>
     </footer>
+  </main>
+</div>
+
+<!-- ================= RULES ================= -->
+<div id="rules" class="page" hidden>
+  <header class="nav">
+    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <a class="btn" href="#/"><i data-ic="back"></i><span class="hide-sm">Back to site</span></a>
+  </header>
+  <main class="wrap">
+    <article class="prose">
+      <h1>Rules &amp; contact</h1>
+      <p class="lead">Picboard is a shared wall. Keep it fun for everyone.</p>
+
+      <h2>The rules</h2>
+      <ol>
+        <li><b>Nothing illegal.</b> If it's against the law to share, it doesn't go here.</li>
+        <li><b>Zero tolerance for anything sexualizing minors.</b> It's removed, the poster is banned, and it's reported to the authorities.</li>
+        <li><b>No porn, gore, or shock content.</b></li>
+        <li><b>No harassment, hate, or threats</b> toward anyone, on the board or off it.</li>
+        <li><b>No personal info.</b> Don't post anyone's address, phone number, or private details, including your own.</li>
+        <li><b>No spam or scams.</b></li>
+        <li><b>Only post what you have the right to share.</b></li>
+      </ol>
+
+      <h2>How moderation works</h2>
+      <p>Anyone can report a pin, note, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
+
+      <h2>Privacy</h2>
+      <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor and the name you choose. If you save an account, your email is only used to send you sign-in links.</p>
+
+      <h2>Contact &amp; takedowns</h2>
+      <p>Email <a class="contact-link"></a> for anything else, including copyright takedown requests. For copyright, include a link to the room, which item it is, and how you own it.</p>
+    </article>
   </main>
 </div>
 
@@ -579,8 +628,9 @@ html[data-style="whiteboard"] .pin{
         <span class="flabel">Who can post</span>
         <div class="seg-opts">
           <label class="opt"><input type="radio" name="posting" value="anyone" checked><span>Anyone</span></label>
-          <label class="opt"><input type="radio" name="posting" value="accounts" disabled><span>Accounts only (soon)</span></label>
+          <label class="opt"><input type="radio" name="posting" value="accounts"><span>Saved accounts</span></label>
         </div>
+        <span class="hint" id="postingHint"></span>
       </div>
       <div class="field full">
         <span class="flabel">Pin cap</span>
@@ -612,6 +662,29 @@ html[data-style="whiteboard"] .pin{
   </form>
 </div>
 
+<!-- ================= REPORT ================= -->
+<div class="modal" id="reportModal" hidden>
+  <form class="sheet small" id="reportForm">
+    <h2><i data-ic="flag" data-s="20"></i> Report this</h2>
+    <p class="muted acct-p">What's wrong with it?</p>
+    <div class="report-opts" id="reportOpts"></div>
+    <p class="hint" id="reportHint" style="margin:0 0 10px"></p>
+    <p class="error" id="reportError" style="margin:0 0 12px"></p>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary" id="reportSubmit">Report</button>
+    </div>
+  </form>
+</div>
+
+<!-- ================= ACCOUNT ================= -->
+<div class="modal" id="accountModal" hidden>
+  <form class="sheet small" id="accountForm" novalidate>
+    <h2><i data-ic="user" data-s="22"></i> Your account</h2>
+    <div id="accountBody"></div>
+  </form>
+</div>
+
 <div id="gate" hidden>
   <div class="empty-card">
     <h2>Quick check</h2>
@@ -628,14 +701,16 @@ html[data-style="whiteboard"] .pin{
 const $ = s => document.querySelector(s);
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-/* ================= Supabase & captcha ================= */
+/* ================= Site settings ================= */
 const SUPABASE_URL = 'https://nutnmlgbsjfldemcrvzu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Uxr5Bj9VVxdQC0vhxCFe4A_gAMOhE_Z';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAFRWMD1oZbFuF57F';
+const MEDIA_BASE = 'https://media.picboard.org';   // the Cloudflare Worker; set to '' to load straight from Supabase
+const CONTACT_EMAIL = 'contact@picboard.org';
 const CAPTCHA_ON = !!TURNSTILE_SITE_KEY && !TURNSTILE_SITE_KEY.startsWith('PASTE');
 const BUCKET = 'media';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const publicUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth:{ flowType:'pkce' } });
+const publicUrl = path => MEDIA_BASE ? `${MEDIA_BASE}/${path}` : sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 
 /* ================= Config ================= */
 const STYLES = {
@@ -653,6 +728,16 @@ const PIN_COLORS = ['#e5483b','#f2b632','#3a8ee6','#41b06e','#9b5de5','#ff7aa8']
 const PEN_COLORS = ['#ffffff','#1d1f27','#ff5d5d','#ffa94d','#ffd84d','#4cd18a','#4ea6ff','#a78bfa','#ff7ac6'];
 const NOTE_COLORS = ['#ffe58a','#ffb8c9','#a8d8ff','#bdf0b4','#d9c6ff','#ffffff'];
 const CURSOR_COLORS = ['#ff5d5d','#ff9f43','#f7c948','#2ecc71','#1abc9c','#3b9cff','#7c6cff','#e056fd','#ff6fa8'];
+const REPORT_REASONS = [
+  ['child_safety', 'Child safety or exploitation', 'Child safety'],
+  ['sexual', 'Nudity or sexual content', 'Sexual'],
+  ['violence', 'Violence or gore', 'Violence/gore'],
+  ['hate', 'Harassment or hate', 'Harassment/hate'],
+  ['spam', 'Spam or scam', 'Spam'],
+  ['copyright', 'Copyright (it\'s my work)', 'Copyright'],
+  ['other', 'Something else', 'Other']
+];
+const REASON_SHORT = Object.fromEntries(REPORT_REASONS.map(([k, , s]) => [k, s]));
 const MAX_UPLOAD_MB = 10;
 const MAX_IMAGE_SIDE = 2048;
 const REPORT_HIDE = 3;
@@ -676,6 +761,7 @@ const ICONS = {
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>',
   shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
   logout:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   ban:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   maximize:'<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/>',
@@ -736,16 +822,17 @@ function ago(ts){
 function sizeLabel(r){ return r.size === 'custom' ? `${r.w.toLocaleString()}×${r.h.toLocaleString()}` : SIZE_NAMES[r.size]; }
 const niceError = e => (e && (e.message || e.error_description)) || 'Something went wrong';
 const shortId = id => (id || 'unknown').slice(0, 8);
+const validEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 const Z_EPOCH = 1767225600000;
 let zCounter = 0;
 function zNow(){ zCounter = Math.max(zCounter + 1, Math.floor((Date.now() - Z_EPOCH) / 100)); return zCounter; }
 let toastTimer;
-function toast(msg){
+function toast(msg, ms = 3000){
   const t = $('#toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), ms);
 }
 
 /* ================= Local prefs ================= */
@@ -754,7 +841,7 @@ let globalStyle = loadJSON(localStorage, STYLE_KEY, 'midnight');
 if (!STYLES[globalStyle]) globalStyle = 'midnight';
 const reportedByMe = new Set(loadJSON(localStorage, REPORTED_KEY, []));
 const me = {
-  id: null, isAnon: true, isAdmin: false,
+  id: null, isAnon: true, isAdmin: false, email: null, pendingEmail: null,
   name: loadJSON(localStorage, NAME_KEY, null),
   color: loadJSON(localStorage, COLOR_KEY, null) || pick(CURSOR_COLORS)
 };
@@ -770,12 +857,25 @@ function turnstileReady(){
     }, 60);
   });
 }
+async function renderCaptcha(container, onToken){
+  if (!CAPTCHA_ON){ container.hidden = true; return null; }
+  await turnstileReady();
+  container.hidden = false;
+  container.innerHTML = '';
+  return turnstile.render(container, {
+    sitekey: TURNSTILE_SITE_KEY, theme: 'auto',
+    callback: t => onToken(t),
+    'expired-callback': () => onToken(null)
+  });
+}
+function removeCaptcha(id){ if (id !== null && id !== undefined && window.turnstile){ try { turnstile.remove(id); } catch {} } }
+
 let gateWidget = null;
 async function gateCaptcha(){
   $('#gate').hidden = false;
   await turnstileReady();
   return new Promise(resolve => {
-    if (gateWidget !== null){ try { turnstile.remove(gateWidget); } catch {} gateWidget = null; }
+    removeCaptcha(gateWidget); gateWidget = null;
     gateWidget = turnstile.render('#gateWidget', {
       sitekey: TURNSTILE_SITE_KEY, theme: 'auto',
       callback: token => { $('#gate').hidden = true; resolve(token); },
@@ -784,11 +884,15 @@ async function gateCaptcha(){
   });
 }
 async function loadIdentity(session){
-  me.id = session.user.id;
-  me.isAnon = !!session.user.is_anonymous;
+  const u = session.user;
+  me.id = u.id;
+  me.isAnon = !!u.is_anonymous;
+  me.email = u.email || null;
+  me.pendingEmail = u.new_email || null;
   const { data } = await sb.rpc('is_admin');
   me.isAdmin = data === true;
   $('#modBtn').hidden = !me.isAdmin;
+  updateAccountUI();
 }
 async function ensureSession(){
   let { data:{ session } } = await sb.auth.getSession();
@@ -800,6 +904,143 @@ async function ensureSession(){
   }
   await loadIdentity(session);
 }
+async function signOutToAnon(){
+  await sb.auth.signOut();
+  Object.assign(me, { id:null, isAnon:true, isAdmin:false, email:null, pendingEmail:null });
+  $('#modBtn').hidden = true;
+  closeModal('accountModal');
+  try { await ensureSession(); } catch (err){ showFatal(err); return; }
+  if (location.hash !== '#/') location.hash = '#/'; else route();
+}
+
+/* ================= Accounts ================= */
+let accountMode = 'save', accountWidget = null, accountToken = null;
+function updateAccountUI(){
+  $('#accountLabel').textContent = !me.isAnon ? 'Account' : me.pendingEmail ? 'Check your email' : 'Save account';
+}
+function openAccount(mode = 'save'){
+  accountMode = mode;
+  $('#accountModal').hidden = false;
+  renderAccount();
+}
+async function renderAccount(){
+  const box = $('#accountBody');
+  removeCaptcha(accountWidget); accountWidget = null; accountToken = null;
+
+  if (!me.isAnon){
+    box.innerHTML = `
+      <p class="acct-p">Signed in as <b>${esc(me.email || 'your account')}</b>${me.isAdmin ? ' · moderator' : ''}.
+      Your rooms and pins stay tied to this account on any device. To sign in somewhere else, use "I already have an account" there.</p>
+      <div class="actions">
+        <button type="button" class="btn" data-acct="close">Close</button>
+        <button type="button" class="btn danger" data-acct="signout">${ic('logout', 16)} Sign out</button>
+      </div>`;
+    return;
+  }
+  if (me.pendingEmail && accountMode === 'save'){
+    box.innerHTML = `
+      <p class="acct-p">We sent a confirmation link to <b>${esc(me.pendingEmail)}</b>. Open it in this browser, then come back to this tab.</p>
+      <p class="error" id="acctMsg" style="margin:0 0 12px"></p>
+      <div class="actions">
+        <button type="button" class="btn ghost" data-acct="different">Use a different email</button>
+        <button type="button" class="btn primary" data-acct="resend">${ic('mail', 16)} Resend link</button>
+      </div>`;
+    return;
+  }
+  if (accountMode === 'save' || accountMode === 'different'){
+    box.innerHTML = `
+      <p class="muted acct-p">You're browsing anonymously. Add an email to keep your rooms and pins if you clear your browser or switch devices, and to post in rooms for saved accounts. No password: we'll email you a link whenever you sign in.</p>
+      <div class="field">
+        <span class="flabel">Email</span>
+        <input class="inp" type="email" id="acctEmail" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <p class="error" id="acctMsg" style="margin:0 0 12px"></p>
+      <div class="actions">
+        <button type="button" class="btn ghost" data-acct="to-signin">I already have an account</button>
+        <button type="submit" class="btn primary" id="acctSubmit">${ic('mail', 16)} Send confirmation link</button>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <p class="muted acct-p">We'll email you a sign-in link. Anything you posted anonymously in this browser stays up, but won't move to your account.</p>
+      <div class="field">
+        <span class="flabel">Email</span>
+        <input class="inp" type="email" id="acctEmail" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="captcha-box" id="acctCaptcha"></div>
+      <p class="error" id="acctMsg" style="margin:0 0 12px"></p>
+      <div class="actions">
+        <button type="button" class="btn ghost" data-acct="to-save">Back</button>
+        <button type="submit" class="btn primary" id="acctSubmit">${ic('mail', 16)} Email me a link</button>
+      </div>`;
+    try { accountWidget = await renderCaptcha($('#acctCaptcha'), t => { accountToken = t; }); }
+    catch (err){ $('#acctMsg').textContent = err.message; }
+  }
+  setTimeout(() => { const el = $('#acctEmail'); if (el) el.focus(); }, 30);
+}
+$('#accountBtn').onclick = () => openAccount('save');
+$('#accountBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-acct]');
+  if (!b) return;
+  const act = b.dataset.acct;
+  if (act === 'close') closeModal('accountModal');
+  else if (act === 'signout') signOutToAnon();
+  else if (act === 'to-signin'){ accountMode = 'signin'; renderAccount(); }
+  else if (act === 'to-save'){ accountMode = 'save'; renderAccount(); }
+  else if (act === 'different'){ accountMode = 'different'; renderAccount(); }
+  else if (act === 'resend'){
+    b.disabled = true;
+    const { error } = await sb.auth.updateUser({ email: me.pendingEmail }, { emailRedirectTo: location.origin + location.pathname });
+    b.disabled = false;
+    $('#acctMsg').textContent = error ? niceError(error) : 'Sent again. Check your spam folder too.';
+  }
+});
+$('#accountForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const input = $('#acctEmail');
+  if (!input) return;
+  const email = input.value.trim();
+  const msg = $('#acctMsg');
+  if (!validEmail(email)){ msg.textContent = 'Enter a valid email address.'; return; }
+  const btn = $('#acctSubmit');
+  const redirect = location.origin + location.pathname;
+  btn.disabled = true;
+  if (accountMode === 'signin'){
+    if (CAPTCHA_ON && !accountToken){ msg.textContent = 'Please finish the captcha first.'; btn.disabled = false; return; }
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser:false, emailRedirectTo: redirect, ...(CAPTCHA_ON ? { captchaToken: accountToken } : {}) }
+    });
+    btn.disabled = false;
+    if (error){
+      msg.textContent = /signups? not allowed|not found/i.test(error.message) ? "There's no account with that email yet." : niceError(error);
+      if (accountWidget !== null && window.turnstile){ accountToken = null; turnstile.reset(accountWidget); }
+      return;
+    }
+    removeCaptcha(accountWidget); accountWidget = null;
+    $('#accountBody').innerHTML = `
+      <p class="acct-p">Check <b>${esc(email)}</b> for a sign-in link, and open it in this browser.</p>
+      <div class="actions"><button type="button" class="btn" data-acct="close">Close</button></div>`;
+  } else {
+    const { error } = await sb.auth.updateUser({ email }, { emailRedirectTo: redirect });
+    btn.disabled = false;
+    if (error){ msg.textContent = niceError(error); return; }
+    me.pendingEmail = email;
+    accountMode = 'save';
+    updateAccountUI();
+    renderAccount();
+  }
+});
+addEventListener('focus', async () => {
+  if (!me.pendingEmail || !me.isAnon) return;
+  const { data } = await sb.auth.refreshSession();
+  if (data && data.session){
+    await loadIdentity(data.session);
+    if (!me.isAnon){
+      toast('Account saved! Your rooms and pins are now tied to your email.');
+      if (!$('#accountModal').hidden) renderAccount();
+    }
+  }
+});
 
 /* ================= Styles ================= */
 let penColor = '#ffffff', penTouched = false, penSize = 6, noteColor = NOTE_COLORS[0];
@@ -871,15 +1112,25 @@ addEventListener('wheel', () => closeMenu(), { passive:true });
 /* ================= Router ================= */
 let currentRoom = null;
 function showPage(name){
-  ['home', 'room', 'admin'].forEach(p => { $('#' + p).hidden = p !== name; });
+  ['home', 'room', 'admin', 'rules'].forEach(p => { $('#' + p).hidden = p !== name; });
 }
 function route(){
   const h = location.hash;
   if (h === '#/admin'){ showAdmin(); return; }
+  if (h === '#/rules'){ showRules(); return; }
   const m = h.match(/^#\/room\/([0-9a-f-]{36})/i);
   if (m) openRoom(m[1]); else showHome();
 }
 addEventListener('hashchange', route);
+function showRules(){
+  if (currentRoom) leaveRoom();
+  closeMenu();
+  showPage('rules');
+  document.title = 'Rules & contact · Picboard';
+  applyStyle(globalStyle);
+  $('#rules').scrollTop = 0;
+}
+document.querySelectorAll('.contact-link').forEach(a => { a.href = 'mailto:' + CONTACT_EMAIL; a.textContent = CONTACT_EMAIL; });
 
 /* ================= Home ================= */
 const homeState = { q:'', cat:'All', sort:'active', showPrivate:false };
@@ -982,6 +1233,7 @@ function cardHTML(r){
     : (r.count ? minisHTML(r) : `<div class="thumb-ov soft"><span>Empty board, be the first</span></div>`);
   const badges = [];
   if (priv) badges.push(`<span class="badge accent">${ic('lock', 11)} Private</span>`);
+  if (r.posting === 'accounts') badges.push(`<span class="badge">${ic('user', 11)} Saved accounts</span>`);
   if (r.owner === me.id) badges.push(`<span class="badge accent">${ic('user', 11)} Yours</span>`);
   badges.push(`<span class="badge">${esc(STYLES[r.theme].name)}</span>`);
   const canDelete = r.owner === me.id || me.isAdmin;
@@ -1048,14 +1300,10 @@ async function showAdmin(){
 async function mountAdminCaptcha(){
   const box = $('#adminCaptcha');
   if (!CAPTCHA_ON){ box.hidden = true; return; }
-  try { await turnstileReady(); } catch (err){ $('#adminError').textContent = err.message; return; }
   adminCaptchaToken = null;
-  if (adminWidget !== null){ turnstile.reset(adminWidget); return; }
-  adminWidget = turnstile.render(box, {
-    sitekey: TURNSTILE_SITE_KEY, theme: 'auto',
-    callback: t => { adminCaptchaToken = t; },
-    'expired-callback': () => { adminCaptchaToken = null; }
-  });
+  if (adminWidget !== null && window.turnstile){ turnstile.reset(adminWidget); return; }
+  try { adminWidget = await renderCaptcha(box, t => { adminCaptchaToken = t; }); }
+  catch (err){ $('#adminError').textContent = err.message; }
 }
 $('#adminForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -1074,14 +1322,7 @@ $('#adminForm').addEventListener('submit', async e => {
   await loadIdentity(data.session);
   showAdmin();
 });
-$('#adminSignOut').onclick = async () => {
-  await sb.auth.signOut();
-  me.id = null; me.isAdmin = false; me.isAnon = true;
-  $('#modBtn').hidden = true;
-  location.hash = '#/';
-  try { await ensureSession(); } catch (err){ showFatal(err); return; }
-  route();
-};
+$('#adminSignOut').onclick = signOutToAnon;
 function renderAdminTabs(){
   const wrap = $('#adminTabs');
   wrap.innerHTML = Object.entries(ADMIN_TABS)
@@ -1103,12 +1344,17 @@ function modItemHTML(row){
   const room = row.rooms || {};
   const kind = { image:'Image', video:'Video', note:'Note', stroke:'Drawing' }[row.type] || 'Item';
   const reports = row.report_count > 0
-    ? `<span class="badge warn">${ic('flag', 11)} ${row.report_count} report${row.report_count > 1 ? 's' : ''}${row.report_count >= REPORT_HIDE ? ' · hidden' : ''}</span>` : '';
+    ? `<span class="badge warn">${ic('flag', 11)} ${row.report_count} report point${row.report_count > 1 ? 's' : ''}${row.report_count >= REPORT_HIDE ? ' · hidden' : ''}</span>` : '';
+  const reasons = row._reasons && Object.keys(row._reasons).length
+    ? `<div class="mod-meta">${Object.entries(row._reasons)
+        .map(([k, n]) => `<span class="${k === 'child_safety' ? 'reason-csam' : ''}">${esc(REASON_SHORT[k] || k)} ×${n}</span>`).join(' · ')}</div>`
+    : '';
   return `
     <div class="mod-card">
       <div class="mod-thumb">${modThumb(row)}</div>
       <div class="mod-body">
         <div class="mod-title">${kind} in <a href="#/room/${row.room_id}">${esc(room.name || 'a room')}</a> ${reports}</div>
+        ${reasons}
         <div class="mod-meta">Posted ${ago(Date.parse(row.created_at))} · poster ${esc(shortId(row.author))}</div>
         <div class="mod-actions">
           ${row.report_count > 0 ? `<button class="btn sm" data-act="restore" data-id="${row.id}">${ic('check', 14)} Restore</button>` : ''}
@@ -1156,6 +1402,17 @@ async function loadAdminTab(){
       : q.neq('type', 'stroke').order('created_at', { ascending:false });
     const { data, error } = await q.limit(80);
     if (error){ list.innerHTML = `<div class="loading">${esc(error.message)}</div>`; return; }
+    if (adminTab === 'reported' && data.length){
+      const { data: reps } = await sb.from('reports').select('item_id, reason').in('item_id', data.map(r => r.id));
+      const byItem = new Map();
+      (reps || []).forEach(r => {
+        const m = byItem.get(r.item_id) || {};
+        m[r.reason] = (m[r.reason] || 0) + 1;
+        byItem.set(r.item_id, m);
+      });
+      data.forEach(r => { r._reasons = byItem.get(r.id) || {}; });
+      data.sort((a, b) => (b._reasons.child_safety ? 1 : 0) - (a._reasons.child_safety ? 1 : 0));
+    }
     html = data.map(modItemHTML).join('');
     empty = adminTab === 'reported' ? 'Nothing reported right now. Nice.' : 'No posts yet.';
   } else if (adminTab === 'rooms'){
@@ -1225,6 +1482,8 @@ function updateCreateForm(){
   const [w, h] = readSize(fd);
   $('#sizeHint').textContent = `${w.toLocaleString()} × ${h.toLocaleString()} px board`;
   $('#pwField').hidden = fd.get('visibility') !== 'private';
+  $('#postingHint').textContent = fd.get('posting') === 'accounts'
+    ? 'Anyone can look, but only people who saved an account (an email) can post.' : '';
 }
 form.addEventListener('change', updateCreateForm);
 form.addEventListener('input', updateCreateForm);
@@ -1247,25 +1506,28 @@ form.addEventListener('submit', async e => {
   const visibility = fd.get('visibility');
   const pw = fd.get('password') || '';
   if (visibility === 'private' && pw.length < 3){ $('#createError').textContent = 'Private rooms need a password of at least 3 characters.'; return; }
+  const posting = fd.get('posting');
   const btn = $('#createSubmit');
   btn.disabled = true; btn.textContent = 'Creating…';
   const { data, error } = await sb.rpc('create_room', {
     p_name: name, p_category: fd.get('category'), p_description: (fd.get('desc') || '').trim(),
     p_size: fd.get('size'), p_w: w, p_h: h, p_theme: fd.get('theme') || 'midnight',
-    p_visibility: visibility, p_posting: 'anyone', p_cap: clamp(+fd.get('cap') || 60, 5, 500),
+    p_visibility: visibility, p_posting: posting, p_cap: clamp(+fd.get('cap') || 60, 5, 500),
     p_password: visibility === 'private' ? pw : null
   });
   btn.disabled = false; btn.textContent = 'Create room';
   if (error || !data){ $('#createError').textContent = niceError(error); return; }
   closeModal('createModal');
+  if (posting === 'accounts' && me.isAnon) toast("Only saved accounts can post here, including you. Add an email from Save account.", 5000);
   location.hash = '#/room/' + data.id;
 });
 
-/* ================= Password modal ================= */
+/* ================= Modals ================= */
 let pwResolve = null, pwRoom = null;
 function closeModal(id, result){
   $('#' + id).hidden = true;
   if (id === 'pwModal' && pwResolve){ const r = pwResolve; pwResolve = null; r(!!result); }
+  if (id === 'accountModal'){ removeCaptcha(accountWidget); accountWidget = null; }
 }
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('mousedown', e => { if (e.target === m) closeModal(m.id, false); });
@@ -1294,6 +1556,43 @@ $('#pwForm').addEventListener('submit', async e => {
 });
 const modalOpen = () => !!document.querySelector('.modal:not([hidden])');
 
+/* Report */
+let reportTarget = null;
+const reportForm = $('#reportForm');
+$('#reportOpts').innerHTML = REPORT_REASONS
+  .map(([v, label]) => `<label class="ropt"><input type="radio" name="reason" value="${v}"><span>${esc(label)}</span></label>`).join('');
+reportForm.addEventListener('change', () => {
+  const r = new FormData(reportForm).get('reason');
+  $('#reportHint').textContent =
+    r === 'copyright' ? `For a formal takedown, also email ${CONTACT_EMAIL}.` :
+    r === 'child_safety' ? 'This hides it for everyone right away while a moderator reviews it.' : '';
+});
+function report(it){
+  if (reportedByMe.has(it.id)) return;
+  reportTarget = it;
+  reportForm.reset();
+  $('#reportHint').textContent = '';
+  $('#reportError').textContent = '';
+  $('#reportModal').hidden = false;
+}
+reportForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const reason = new FormData(reportForm).get('reason');
+  if (!reason){ $('#reportError').textContent = 'Pick a reason.'; return; }
+  const it = reportTarget;
+  if (!it) return;
+  const btn = $('#reportSubmit');
+  btn.disabled = true;
+  const { error } = await sb.from('reports').insert({ item_id: it.id, reason });
+  btn.disabled = false;
+  if (error && error.code !== '23505'){ $('#reportError').textContent = niceError(error); return; }
+  closeModal('reportModal');
+  reportedByMe.add(it.id);
+  saveJSON(localStorage, REPORTED_KEY, [...reportedByMe].slice(-500));
+  if (items.includes(it)) updateReportedClass(it);
+  toast('Thanks. It\'s hidden for you, and moderators will take a look.');
+});
+
 /* ================= Room state ================= */
 const vp = $('#viewport'), world = $('#world'), board = $('#board');
 let BW = 8000, BH = 5000, cap = 60;
@@ -1316,6 +1615,9 @@ world.appendChild(drawLayer);
 const isRoomOwner = () => !!(currentRoom && (currentRoom.owner === me.id || me.isAdmin));
 const canEdit = it => !!it && (it.pending || it.author === me.id || isRoomOwner());
 const findItem = id => items.find(i => i.id === id);
+const viewOnlyMsg = () => currentRoom && currentRoom.posting === 'accounts'
+  ? 'This room is for saved accounts. Add an email from Save account on the home page to post.'
+  : 'This room is view-only for now';
 
 async function openRoom(id){
   if (currentRoom && currentRoom.id === id) return;
@@ -1354,7 +1656,7 @@ async function enterRoom(r){
   computeMinZ();
   fitBoard();
   updateCount();
-  if (!canPost) toast('This room is view-only for now');
+  if (!canPost) toast(viewOnlyMsg(), 5000);
 
   const token = ++roomToken;
   subscribeRoom(r);
@@ -1833,15 +2135,6 @@ async function duplicate(list){
   setSelection(made);
   for (const it of made) await insertItem(it);
 }
-async function report(it){
-  if (reportedByMe.has(it.id)) return;
-  const { error } = await sb.from('reports').insert({ item_id: it.id });
-  if (error && error.code !== '23505'){ toast(niceError(error)); return; }
-  reportedByMe.add(it.id);
-  saveJSON(localStorage, REPORTED_KEY, [...reportedByMe].slice(-500));
-  updateReportedClass(it);
-  toast('Reported. It\'s hidden for you, and gets hidden for everyone after 3 reports.');
-}
 function toggleMute(it){
   it.media.muted = !it.media.muted;
   if (!it.media.muted) it.media.play().catch(() => {});
@@ -2039,7 +2332,7 @@ world.addEventListener('dblclick', e => {
 
 /* ================= Tools ================= */
 function setTool(t){
-  if (t !== 'move' && !canPost){ toast('This room is view-only for now'); t = 'move'; }
+  if (t !== 'move' && !canPost){ toast(viewOnlyMsg(), 5000); t = 'move'; }
   tool = t;
   if (editing) stopEditing();
   vp.classList.remove('tool-move', 'tool-pen', 'tool-eraser', 'tool-note');
@@ -2375,7 +2668,7 @@ async function uploadFiles(files, w){
 
 async function handleTransfer(dt, w){
   if (!dt || !currentRoom) return;
-  if (!canPost){ toast('This room is view-only for now'); return; }
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
   const files = [...(dt.files || [])];
   if (files.length){ uploadFiles(files, w); return; }
   const url = ((dt.getData && (dt.getData('text/uri-list') || dt.getData('text/plain'))) || '')
@@ -2418,7 +2711,7 @@ addEventListener('paste', e => {
 });
 
 $('#addBtn').onclick = () => {
-  if (!canPost){ toast('This room is view-only for now'); return; }
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
   pendingDrop = null; $('#fileInput').click();
 };
 $('#fileInput').onchange = e => {
@@ -2482,13 +2775,24 @@ function showFatal(err){
     `${niceError(err)}. If you run this site, check that anonymous sign-ins and the captcha keys are set up in Supabase.`;
   $('#fatal').hidden = false;
 }
+function handleAuthRedirect(){
+  const qs = new URLSearchParams(location.search);
+  const err = qs.get('error_description') || qs.get('error');
+  if (err) toast(err.replace(/\+/g, ' '), 6000);
+  if (qs.has('error') || qs.has('error_description') || qs.has('code')){
+    history.replaceState(null, '', location.pathname + location.hash);
+  }
+}
 async function start(){
   hydrateIcons();
   renderChips();
   applyStyle(globalStyle);
   updateMeDot();
+  const cameFromLink = new URLSearchParams(location.search).has('code');
   try { await ensureSession(); }
   catch (err){ showFatal(err); return; }
+  handleAuthRedirect();
+  if (cameFromLink && !me.isAnon) toast(`You're signed in as ${me.email}.`, 4000);
   route();
 }
 start();
