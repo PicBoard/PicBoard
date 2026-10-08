@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style>
 /* ================= Style themes (site chrome) ================= */
 :root{
@@ -102,6 +103,8 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent; border-color:transparent}
 .btn.ghost:hover{background:var(--surface-2)}
+.btn.danger{color:var(--danger)}
+.btn.danger:hover{background:var(--danger); color:#fff; border-color:transparent}
 .btn.icon{width:40px; padding:0}
 .btn.sm{height:34px; padding:0 11px; font-size:13px; border-radius:9px}
 .btn.sm.icon{width:34px; padding:0}
@@ -123,9 +126,10 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .sw-dot{display:inline-block; width:18px; height:18px; border-radius:6px; border:1px solid var(--line); flex:none}
 .swatch{width:26px; height:26px; border-radius:50%; border:2px solid rgba(0,0,0,.25); background:var(--c); cursor:pointer; padding:0; flex:none}
 .swatch.on{outline:2px solid var(--accent); outline-offset:2px}
+.captcha-box{display:flex; justify-content:center; min-height:65px; margin:4px 0}
 
 /* ================= Home ================= */
-#home{overflow-y:auto; background:radial-gradient(1100px 520px at 50% -12%, var(--accent-soft), transparent 70%), var(--bg)}
+#home,#admin{overflow-y:auto; background:radial-gradient(1100px 520px at 50% -12%, var(--accent-soft), transparent 70%), var(--bg)}
 .nav{
   position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px;
   padding:calc(12px + env(safe-area-inset-top,0px)) 24px 12px;
@@ -178,6 +182,7 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .badges{display:flex; flex-wrap:wrap; gap:6px}
 .badge{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; background:var(--surface-2); color:var(--muted)}
 .badge.accent{background:var(--accent-soft); color:var(--accent)}
+.badge.warn{background:color-mix(in srgb, var(--danger) 18%, transparent); color:var(--danger)}
 .rc-del{
   position:absolute; top:8px; right:8px; z-index:2; width:30px; height:30px; border-radius:9px; border:0;
   display:grid; place-items:center; cursor:pointer; background:rgba(0,0,0,.55); color:#fff; opacity:0; transition:opacity .15s, background .15s;
@@ -188,6 +193,26 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .home-empty{text-align:center; padding:40px 0}
 .home-empty p{color:var(--muted); font-weight:700; margin:0 0 12px}
 .foot{margin-top:40px; text-align:center; font-size:13px; font-weight:700; color:var(--muted); line-height:1.6}
+.foot a{color:var(--muted)}
+
+/* ================= Mod board ================= */
+.admin-login .sheet{margin:60px auto}
+.admin-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:32px 0 18px}
+.admin-head h1{margin:0 auto 0 0; font-size:30px; font-weight:900}
+.admin-tabs{display:flex; flex-wrap:wrap; gap:8px}
+.mod-list{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px}
+.mod-card{display:flex; flex-direction:column; overflow:hidden; border-radius:14px; background:var(--surface); border:1px solid var(--line)}
+.mod-thumb{height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#c9ccd3}
+.mod-thumb img,.mod-thumb video{display:block; max-width:100%; max-height:200px}
+.mod-thumb > svg{width:80%; height:170px}
+.mod-thumb .hit{display:none}
+.mod-thumb .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.mod-note{max-width:85%; max-height:170px; overflow:hidden; padding:12px 16px; border-radius:16px; background:var(--nc); color:#2a2420; font-family:var(--hand); font-size:22px; white-space:pre-wrap}
+.mod-body{display:flex; flex-direction:column; gap:6px; padding:12px 14px 14px}
+.mod-title{display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-weight:800; font-size:14px}
+.mod-title a{color:var(--accent)}
+.mod-meta{font-size:12.5px; font-weight:700; color:var(--muted)}
+.mod-actions{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
 
 /* ================= Modals ================= */
 .modal{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(5,7,12,.6); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px)}
@@ -197,6 +222,7 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px 18px}
 .full{grid-column:1 / -1}
 .field{display:flex; flex-direction:column; gap:7px; min-width:0}
+.sheet.small .field{margin-bottom:12px}
 .flabel{font-weight:800; font-size:13px}
 .hint{font-size:12px; font-weight:600; color:var(--muted)}
 .seg-opts{display:flex; flex-wrap:wrap; gap:6px}
@@ -251,7 +277,6 @@ html[data-style="blackboard"] #board{border-radius:3px; box-shadow:0 0 0 30px #7
 html[data-style="whiteboard"] #board{border-radius:6px; box-shadow:0 0 0 16px #d7dbe2, 0 0 0 20px #aeb4be, 0 30px 80px rgba(30,40,70,.25)}
 #drawLayer{position:absolute; left:0; top:0; width:1px; height:1px; overflow:visible; pointer-events:none; z-index:2147483600}
 
-/* items */
 .item{
   position:absolute; touch-action:none; cursor:move;
   transform:rotate(calc(var(--r, 0deg) * var(--tilt)));
@@ -272,7 +297,6 @@ html[data-style="whiteboard"] .item.media .card{background:#fff; padding:6px; bo
 .item.reported .card img,.item.reported .card video,.item.reported .note-body{filter:blur(8px) grayscale(.6)}
 .item.reported .card::after{content:"⚑ Reported"; position:absolute; left:14px; top:14px; background:var(--danger); color:#fff; font:800 12px var(--font); padding:3px 8px; border-radius:5px}
 
-/* pins, tape and magnets */
 .pin{display:none; position:absolute; z-index:2; pointer-events:none}
 html[data-style="cozy"] .pin,html[data-style="cork"] .pin{
   display:block; left:50%; top:-8px; width:18px; height:18px; margin-left:-9px; border-radius:50%;
@@ -289,7 +313,6 @@ html[data-style="whiteboard"] .pin{
   box-shadow:0 2px 3px rgba(0,0,0,.3), inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.35);
 }
 
-/* note bubbles */
 .item.note{filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
 .note-body{
   position:relative; min-height:56px; padding:14px 18px 16px; border-radius:20px; background:var(--nc); color:#2a2420;
@@ -303,14 +326,12 @@ html[data-style="whiteboard"] .pin{
 .item.note.editing{cursor:text}
 .item.note.editing .note-body{box-shadow:inset 0 0 0 3px rgba(0,0,0,.15); cursor:text; user-select:text}
 
-/* drawings */
 .item.stroke{pointer-events:none; transition:none}
 .item.stroke > svg{display:block; width:100%; height:auto; overflow:visible}
 .item.stroke .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
 .item.stroke .hit{fill:none; stroke:transparent; stroke-linecap:round; stroke-linejoin:round; pointer-events:stroke}
 .item.stroke.selected{outline-style:dashed}
 
-/* per-item controls */
 .badge-lock,.more-btn,.resize{position:absolute; z-index:5; transform:scale(calc(1 / var(--z)))}
 .badge-lock{top:-11px; left:-11px; width:24px; height:24px; border-radius:50%; display:none; place-items:center; background:var(--surface); color:var(--text); border:1px solid var(--line); box-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none}
 .item.locked .badge-lock{display:grid}
@@ -320,12 +341,10 @@ html[data-style="whiteboard"] .pin{
 .item.selected.solo:not(.locked) .resize{display:block}
 #viewport:not(.tool-move) .resize,#viewport:not(.tool-move) .more-btn{display:none !important}
 
-/* other people's cursors */
 .rcursor{position:absolute; left:0; top:0; z-index:2147483500; pointer-events:none; transform:scale(calc(1 / var(--z))); transform-origin:0 0; transition:left .1s linear, top .1s linear}
 .rcursor svg{display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 .rcursor span{position:absolute; left:16px; top:18px; white-space:nowrap; padding:2px 8px; border-radius:7px; background:var(--cc); color:#fff; font:800 11px var(--font); text-shadow:0 1px 1px rgba(0,0,0,.35); box-shadow:0 2px 6px rgba(0,0,0,.3)}
 
-/* room chrome */
 .float{
   position:fixed; z-index:10; background:color-mix(in srgb, var(--surface) 94%, transparent);
   border:1px solid var(--line); box-shadow:var(--shadow);
@@ -366,8 +385,9 @@ html[data-style="whiteboard"] .pin{
   font-size:14px; font-weight:800; box-shadow:var(--shadow);
 }
 #toast.show{opacity:1; transform:translate(-50%,0)}
-#fatal{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--bg)}
-#fatal .empty-card{max-width:440px}
+#fatal,#gate{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--bg)}
+#fatal .empty-card,#gate .empty-card{max-width:440px}
+#gate .empty-card p{margin-bottom:14px}
 
 @media (max-width:720px){
   .nav{padding-left:16px; padding-right:16px}
@@ -388,6 +408,7 @@ html[data-style="whiteboard"] .pin{
 <div id="home" class="page" hidden>
   <header class="nav">
     <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <a class="btn ghost" id="modBtn" href="#/admin" hidden><i data-ic="shield"></i><span class="hide-sm">Mod board</span></a>
     <button class="btn ghost" id="styleBtn" title="Change style">
       <span class="sw-dot" id="styleDot"></span><span id="styleLabel" class="hide-sm"></span><i data-ic="chevron" data-s="14"></i>
     </button>
@@ -418,8 +439,44 @@ html[data-style="whiteboard"] .pin{
     </div>
     <footer class="foot">
       Be kind. No illegal content. Anything reported by 3 people is hidden until reviewed.<br>
-      Uploaded photos are resized and have location data stripped automatically.
+      Uploaded photos are resized and have location data stripped automatically.<br>
+      <a href="#/admin">Moderator sign-in</a>
     </footer>
+  </main>
+</div>
+
+<!-- ================= MOD BOARD ================= -->
+<div id="admin" class="page" hidden>
+  <header class="nav">
+    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <button class="btn ghost" id="adminSignOut" hidden><i data-ic="logout"></i><span class="hide-sm">Sign out</span></button>
+    <a class="btn" href="#/"><i data-ic="back"></i><span class="hide-sm">Back to site</span></a>
+  </header>
+  <main class="wrap">
+    <section class="admin-login" id="adminLogin" hidden>
+      <form class="sheet small" id="adminForm">
+        <h2><i data-ic="shield" data-s="22"></i> Moderator sign-in</h2>
+        <div class="field">
+          <span class="flabel">Email</span>
+          <input class="inp" type="email" id="adminEmail" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <span class="flabel">Password</span>
+          <input class="inp" type="password" id="adminPass" autocomplete="current-password" required>
+        </div>
+        <div class="captcha-box" id="adminCaptcha"></div>
+        <p class="error" id="adminError" style="margin:6px 0 12px"></p>
+        <div class="actions"><button type="submit" class="btn primary" id="adminSubmit">Sign in</button></div>
+      </form>
+    </section>
+    <section id="adminPanel" hidden>
+      <div class="admin-head">
+        <h1>Mod board</h1>
+        <div class="admin-tabs" id="adminTabs"></div>
+        <button class="btn icon" id="adminRefresh" title="Refresh"><i data-ic="refresh"></i></button>
+      </div>
+      <div class="mod-list" id="adminList"></div>
+    </section>
   </main>
 </div>
 
@@ -555,6 +612,13 @@ html[data-style="whiteboard"] .pin{
   </form>
 </div>
 
+<div id="gate" hidden>
+  <div class="empty-card">
+    <h2>Quick check</h2>
+    <p id="gateMsg">Making sure you're a person before you start pinning.</p>
+    <div class="captcha-box" id="gateWidget"></div>
+  </div>
+</div>
 <div id="fatal" hidden><div class="empty-card"><h2>Couldn't connect</h2><p id="fatalText"></p></div></div>
 <div id="ctx" hidden></div>
 <div id="toast"></div>
@@ -564,9 +628,11 @@ html[data-style="whiteboard"] .pin{
 const $ = s => document.querySelector(s);
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-/* ================= Supabase ================= */
+/* ================= Supabase & captcha ================= */
 const SUPABASE_URL = 'https://nutnmlgbsjfldemcrvzu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Uxr5Bj9VVxdQC0vhxCFe4A_gAMOhE_Z';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAFRWMD1oZbFuF57F';
+const CAPTCHA_ON = !!TURNSTILE_SITE_KEY && !TURNSTILE_SITE_KEY.startsWith('PASTE');
 const BUCKET = 'media';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const publicUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
@@ -608,6 +674,9 @@ const ICONS = {
   unlock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
   user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  logout:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
+  ban:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   maximize:'<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/>',
   trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
@@ -666,6 +735,7 @@ function ago(ts){
 }
 function sizeLabel(r){ return r.size === 'custom' ? `${r.w.toLocaleString()}×${r.h.toLocaleString()}` : SIZE_NAMES[r.size]; }
 const niceError = e => (e && (e.message || e.error_description)) || 'Something went wrong';
+const shortId = id => (id || 'unknown').slice(0, 8);
 const Z_EPOCH = 1767225600000;
 let zCounter = 0;
 function zNow(){ zCounter = Math.max(zCounter + 1, Math.floor((Date.now() - Z_EPOCH) / 100)); return zCounter; }
@@ -684,10 +754,52 @@ let globalStyle = loadJSON(localStorage, STYLE_KEY, 'midnight');
 if (!STYLES[globalStyle]) globalStyle = 'midnight';
 const reportedByMe = new Set(loadJSON(localStorage, REPORTED_KEY, []));
 const me = {
-  id: null, isAnon: true,
+  id: null, isAnon: true, isAdmin: false,
   name: loadJSON(localStorage, NAME_KEY, null),
   color: loadJSON(localStorage, COLOR_KEY, null) || pick(CURSOR_COLORS)
 };
+
+/* ================= Captcha & identity ================= */
+function turnstileReady(){
+  return new Promise((resolve, reject) => {
+    if (window.turnstile) return resolve();
+    const started = Date.now();
+    const t = setInterval(() => {
+      if (window.turnstile){ clearInterval(t); resolve(); }
+      else if (Date.now() - started > 15000){ clearInterval(t); reject(new Error('The captcha couldn\'t load (an ad blocker may be blocking it)')); }
+    }, 60);
+  });
+}
+let gateWidget = null;
+async function gateCaptcha(){
+  $('#gate').hidden = false;
+  await turnstileReady();
+  return new Promise(resolve => {
+    if (gateWidget !== null){ try { turnstile.remove(gateWidget); } catch {} gateWidget = null; }
+    gateWidget = turnstile.render('#gateWidget', {
+      sitekey: TURNSTILE_SITE_KEY, theme: 'auto',
+      callback: token => { $('#gate').hidden = true; resolve(token); },
+      'error-callback': () => { $('#gateMsg').textContent = "The check didn't load. Try refreshing the page."; }
+    });
+  });
+}
+async function loadIdentity(session){
+  me.id = session.user.id;
+  me.isAnon = !!session.user.is_anonymous;
+  const { data } = await sb.rpc('is_admin');
+  me.isAdmin = data === true;
+  $('#modBtn').hidden = !me.isAdmin;
+}
+async function ensureSession(){
+  let { data:{ session } } = await sb.auth.getSession();
+  if (!session){
+    const opts = CAPTCHA_ON ? { options:{ captchaToken: await gateCaptcha() } } : undefined;
+    const { data, error } = await sb.auth.signInAnonymously(opts);
+    if (error) throw error;
+    session = data.session;
+  }
+  await loadIdentity(session);
+}
 
 /* ================= Styles ================= */
 let penColor = '#ffffff', penTouched = false, penSize = 6, noteColor = NOTE_COLORS[0];
@@ -759,11 +871,12 @@ addEventListener('wheel', () => closeMenu(), { passive:true });
 /* ================= Router ================= */
 let currentRoom = null;
 function showPage(name){
-  $('#home').hidden = name !== 'home';
-  $('#room').hidden = name !== 'room';
+  ['home', 'room', 'admin'].forEach(p => { $('#' + p).hidden = p !== name; });
 }
 function route(){
-  const m = location.hash.match(/^#\/room\/([0-9a-f-]{36})/i);
+  const h = location.hash;
+  if (h === '#/admin'){ showAdmin(); return; }
+  const m = h.match(/^#\/room\/([0-9a-f-]{36})/i);
   if (m) openRoom(m[1]); else showHome();
 }
 addEventListener('hashchange', route);
@@ -871,6 +984,7 @@ function cardHTML(r){
   if (priv) badges.push(`<span class="badge accent">${ic('lock', 11)} Private</span>`);
   if (r.owner === me.id) badges.push(`<span class="badge accent">${ic('user', 11)} Yours</span>`);
   badges.push(`<span class="badge">${esc(STYLES[r.theme].name)}</span>`);
+  const canDelete = r.owner === me.id || me.isAdmin;
   return `
     <div class="thumb surf-${r.theme}">${ov}</div>
     <div class="rc-body">
@@ -883,7 +997,7 @@ function cardHTML(r){
       </div>
       <div class="badges">${badges.join('')}</div>
     </div>
-    ${r.owner === me.id ? `<button class="rc-del" title="Delete your room">${ic('trash', 15)}</button>` : ''}`;
+    ${canDelete ? `<button class="rc-del" title="Delete room">${ic('trash', 15)}</button>` : ''}`;
 }
 async function deleteRoom(r){
   if (!confirm(`Delete "${r.name}" and everything on it? This can't be undone.`)) return;
@@ -906,6 +1020,188 @@ $('#privToggle').onchange = e => { homeState.showPrivate = e.target.checked; ren
 $('#refreshBtn').onclick = refreshHome;
 $('#styleBtn').onclick = () => openStyleMenu($('#styleBtn'), globalStyle, id => {
   globalStyle = id; saveJSON(localStorage, STYLE_KEY, id); applyStyle(id);
+});
+
+/* ================= Mod board ================= */
+const ADMIN_TABS = { reported:'Reported', recent:'Recent posts', rooms:'Rooms', bans:'Bans' };
+let adminTab = 'reported', adminWidget = null, adminCaptchaToken = null;
+
+async function showAdmin(){
+  if (currentRoom) leaveRoom();
+  closeMenu();
+  showPage('admin');
+  document.title = 'Mod board · Picboard';
+  applyStyle(globalStyle);
+  $('#adminSignOut').hidden = me.isAnon;
+  if (me.isAdmin){
+    $('#adminLogin').hidden = true;
+    $('#adminPanel').hidden = false;
+    renderAdminTabs();
+    loadAdminTab();
+  } else {
+    $('#adminPanel').hidden = true;
+    $('#adminLogin').hidden = false;
+    $('#adminError').textContent = me.isAnon ? '' : "You're signed in, but this account isn't a moderator.";
+    mountAdminCaptcha();
+  }
+}
+async function mountAdminCaptcha(){
+  const box = $('#adminCaptcha');
+  if (!CAPTCHA_ON){ box.hidden = true; return; }
+  try { await turnstileReady(); } catch (err){ $('#adminError').textContent = err.message; return; }
+  adminCaptchaToken = null;
+  if (adminWidget !== null){ turnstile.reset(adminWidget); return; }
+  adminWidget = turnstile.render(box, {
+    sitekey: TURNSTILE_SITE_KEY, theme: 'auto',
+    callback: t => { adminCaptchaToken = t; },
+    'expired-callback': () => { adminCaptchaToken = null; }
+  });
+}
+$('#adminForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (CAPTCHA_ON && !adminCaptchaToken){ $('#adminError').textContent = 'Please finish the captcha first.'; return; }
+  const btn = $('#adminSubmit');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: $('#adminEmail').value.trim(),
+    password: $('#adminPass').value,
+    ...(CAPTCHA_ON ? { options:{ captchaToken: adminCaptchaToken } } : {})
+  });
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if (CAPTCHA_ON && adminWidget !== null){ adminCaptchaToken = null; turnstile.reset(adminWidget); }
+  if (error){ $('#adminError').textContent = niceError(error); return; }
+  $('#adminPass').value = '';
+  await loadIdentity(data.session);
+  showAdmin();
+});
+$('#adminSignOut').onclick = async () => {
+  await sb.auth.signOut();
+  me.id = null; me.isAdmin = false; me.isAnon = true;
+  $('#modBtn').hidden = true;
+  location.hash = '#/';
+  try { await ensureSession(); } catch (err){ showFatal(err); return; }
+  route();
+};
+function renderAdminTabs(){
+  const wrap = $('#adminTabs');
+  wrap.innerHTML = Object.entries(ADMIN_TABS)
+    .map(([k, v]) => `<button class="chip${k === adminTab ? ' active' : ''}" data-tab="${k}">${v}</button>`).join('');
+  wrap.querySelectorAll('button').forEach(b => b.onclick = () => { adminTab = b.dataset.tab; renderAdminTabs(); loadAdminTab(); });
+}
+$('#adminRefresh').onclick = () => loadAdminTab();
+
+function modThumb(row){
+  const d = row.data || {};
+  if (row.type === 'note') return `<div class="mod-note" style="--nc:${esc(d.color || NOTE_COLORS[0])}">${esc(d.text || '')}</div>`;
+  if (row.type === 'stroke') return strokeSVG(d);
+  const url = esc(publicUrl(row.path));
+  return row.type === 'video'
+    ? `<video src="${url}" muted controls preload="metadata"></video>`
+    : `<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="" loading="lazy"></a>`;
+}
+function modItemHTML(row){
+  const room = row.rooms || {};
+  const kind = { image:'Image', video:'Video', note:'Note', stroke:'Drawing' }[row.type] || 'Item';
+  const reports = row.report_count > 0
+    ? `<span class="badge warn">${ic('flag', 11)} ${row.report_count} report${row.report_count > 1 ? 's' : ''}${row.report_count >= REPORT_HIDE ? ' · hidden' : ''}</span>` : '';
+  return `
+    <div class="mod-card">
+      <div class="mod-thumb">${modThumb(row)}</div>
+      <div class="mod-body">
+        <div class="mod-title">${kind} in <a href="#/room/${row.room_id}">${esc(room.name || 'a room')}</a> ${reports}</div>
+        <div class="mod-meta">Posted ${ago(Date.parse(row.created_at))} · poster ${esc(shortId(row.author))}</div>
+        <div class="mod-actions">
+          ${row.report_count > 0 ? `<button class="btn sm" data-act="restore" data-id="${row.id}">${ic('check', 14)} Restore</button>` : ''}
+          <button class="btn sm danger" data-act="delete-item" data-id="${row.id}">${ic('trash', 14)} Delete</button>
+          ${row.author ? `<button class="btn sm danger" data-act="ban" data-user="${row.author}">${ic('ban', 14)} Ban poster</button>
+          <button class="btn sm danger" data-act="ban-purge" data-user="${row.author}">${ic('ban', 14)} Ban + remove all</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+function modRoomHTML(r){
+  return `
+    <div class="mod-card">
+      <div class="mod-body">
+        <div class="mod-title"><a href="#/room/${r.id}">${esc(r.name)}</a>
+          ${r.visibility === 'private' ? `<span class="badge accent">${ic('lock', 11)} Private</span>` : ''}</div>
+        <div class="mod-meta">${esc(r.category)} · ${r.pin_count} pins · created ${ago(Date.parse(r.created_at))} · owner ${esc(shortId(r.owner))}</div>
+        ${r.description ? `<div class="mod-meta">${esc(r.description)}</div>` : ''}
+        <div class="mod-actions">
+          <a class="btn sm" href="#/room/${r.id}">${ic('external', 14)} Open</a>
+          <button class="btn sm danger" data-act="delete-room" data-id="${r.id}" data-name="${esc(r.name)}">${ic('trash', 14)} Delete room</button>
+          ${r.owner ? `<button class="btn sm danger" data-act="ban" data-user="${r.owner}">${ic('ban', 14)} Ban owner</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+function modBanHTML(b){
+  return `
+    <div class="mod-card">
+      <div class="mod-body">
+        <div class="mod-title">${ic('ban', 14)} User ${esc(shortId(b.user_id))}</div>
+        <div class="mod-meta">Banned ${ago(Date.parse(b.created_at))}${b.reason ? ` · ${esc(b.reason)}` : ''}</div>
+        <div class="mod-actions"><button class="btn sm" data-act="unban" data-user="${b.user_id}">${ic('check', 14)} Unban</button></div>
+      </div>
+    </div>`;
+}
+async function loadAdminTab(){
+  const list = $('#adminList');
+  list.innerHTML = '<div class="loading">Loading…</div>';
+  let html = '', empty = '';
+  if (adminTab === 'reported' || adminTab === 'recent'){
+    let q = sb.from('items').select('*, rooms(name, visibility)');
+    q = adminTab === 'reported'
+      ? q.gt('report_count', 0).order('report_count', { ascending:false }).order('created_at', { ascending:false })
+      : q.neq('type', 'stroke').order('created_at', { ascending:false });
+    const { data, error } = await q.limit(80);
+    if (error){ list.innerHTML = `<div class="loading">${esc(error.message)}</div>`; return; }
+    html = data.map(modItemHTML).join('');
+    empty = adminTab === 'reported' ? 'Nothing reported right now. Nice.' : 'No posts yet.';
+  } else if (adminTab === 'rooms'){
+    const { data, error } = await sb.from('rooms').select('*').order('created_at', { ascending:false }).limit(200);
+    if (error){ list.innerHTML = `<div class="loading">${esc(error.message)}</div>`; return; }
+    html = data.map(modRoomHTML).join('');
+    empty = 'No rooms yet.';
+  } else {
+    const { data, error } = await sb.rpc('admin_bans');
+    if (error){ list.innerHTML = `<div class="loading">${esc(error.message)}</div>`; return; }
+    html = (data || []).map(modBanHTML).join('');
+    empty = 'Nobody is banned.';
+  }
+  list.innerHTML = html || `<div class="loading">${empty}</div>`;
+}
+$('#adminList').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const { act, id, user, name } = b.dataset;
+  b.disabled = true;
+  let res = { error:null };
+  if (act === 'restore'){
+    res = await sb.rpc('admin_clear_reports', { p_item: id });
+    if (!res.error) toast('Restored and reports cleared');
+  } else if (act === 'delete-item'){
+    res = await sb.from('items').delete().eq('id', id);
+    if (!res.error){ cleanupOrphans(); toast('Deleted'); }
+  } else if (act === 'delete-room'){
+    if (!confirm(`Delete the room "${name}" and everything on it?`)){ b.disabled = false; return; }
+    res = await sb.from('rooms').delete().eq('id', id);
+    if (!res.error){ cleanupOrphans(); toast('Room deleted'); }
+  } else if (act === 'ban' || act === 'ban-purge'){
+    const purge = act === 'ban-purge';
+    const reason = prompt(purge ? 'Ban this user and remove everything they posted. Reason (optional):' : 'Ban this user. Reason (optional):', '');
+    if (reason === null){ b.disabled = false; return; }
+    res = await sb.rpc('admin_ban', { p_user: user, p_reason: reason, p_purge: purge });
+    if (!res.error){
+      if (purge) cleanupOrphans();
+      toast(purge ? `Banned, and removed ${res.data || 0} posts` : 'Banned');
+    }
+  } else if (act === 'unban'){
+    res = await sb.rpc('admin_unban', { p_user: user });
+    if (!res.error) toast('Unbanned');
+  }
+  if (res.error){ toast(niceError(res.error)); b.disabled = false; return; }
+  loadAdminTab();
 });
 
 /* ================= Create room ================= */
@@ -1017,7 +1313,7 @@ drawPath.setAttribute('stroke-linejoin', 'round');
 drawLayer.appendChild(drawPath);
 world.appendChild(drawLayer);
 
-const isRoomOwner = () => !!(currentRoom && currentRoom.owner === me.id);
+const isRoomOwner = () => !!(currentRoom && (currentRoom.owner === me.id || me.isAdmin));
 const canEdit = it => !!it && (it.pending || it.author === me.id || isRoomOwner());
 const findItem = id => items.find(i => i.id === id);
 
@@ -1096,7 +1392,7 @@ $('#roomStyleBtn').onclick = () => {
   });
 };
 
-/* ================= Realtime: changes, live moves, cursors ================= */
+/* ================= Realtime ================= */
 function subscribeRoom(r){
   channel = sb.channel('room:' + r.id, { config:{ broadcast:{ self:false }, presence:{ key: me.id } } });
   channel
@@ -1455,7 +1751,7 @@ function removeLocal(it){
 }
 function updateCount(){
   const pins = items.filter(i => i.type !== 'stroke').length;
-  if (currentRoom) $('#roomSub').textContent = `${currentRoom.category} · ${pins} / ${cap} pins${canPost ? '' : ' · view only'}`;
+  if (currentRoom) $('#roomSub').textContent = `${currentRoom.category} · ${pins} / ${cap} pins${canPost ? '' : ' · view only'}${me.isAdmin ? ' · mod' : ''}`;
   $('#meterFill').style.width = Math.min(100, pins / cap * 100) + '%';
   $('#meterText').textContent = `${pins} / ${cap} pins`;
   $('#roomEmpty').style.display = items.length ? 'none' : 'flex';
@@ -1622,7 +1918,7 @@ function openItemMenu(x, y){
   const anyUnlocked = editable.some(i => !i.locked);
   const lockEntry = {
     icon: anyUnlocked ? 'lock' : 'unlock', kbd:'L', disabled: !editable.length,
-    label: anyUnlocked || !editable.length ? (list.length > 1 ? 'Lock in place' : 'Lock in place') : 'Unlock',
+    label: anyUnlocked || !editable.length ? 'Lock in place' : 'Unlock',
     run: () => toggleLock(list)
   };
   const layer = [
@@ -1632,7 +1928,7 @@ function openItemMenu(x, y){
   const dup = { icon:'copy', label:'Duplicate', kbd:'Ctrl+D', disabled: !canPost, run:() => duplicate(list) };
   const del = {
     icon:'trash', danger:true, kbd:'Del', disabled: !editable.length,
-    label: list.length > 1 ? `Delete ${editable.length} of yours` : 'Delete',
+    label: list.length > 1 ? `Delete ${editable.length} of these` : 'Delete',
     run: () => deleteItems(list)
   };
 
@@ -1655,7 +1951,7 @@ function openItemMenu(x, y){
   const reportEntry = !mine ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
   if (it.type === 'note'){
     openMenu(x, y, [
-      { title: mine ? 'Your note' : 'Note' },
+      { title: it.author === me.id ? 'Your note' : 'Note' },
       { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
       { colors:NOTE_COLORS, current:it.data.color, disabled: !mine, pick:c => { setColor(list, c); noteColor = c; } },
       '-', ...layer, lockEntry,
@@ -1666,7 +1962,7 @@ function openItemMenu(x, y){
   }
   if (it.type === 'stroke'){
     openMenu(x, y, [
-      { title: mine ? 'Your drawing' : 'Drawing' },
+      { title: it.author === me.id ? 'Your drawing' : 'Drawing' },
       { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
       '-', ...layer, lockEntry, dup,
       { icon:'download', label:'Download as SVG', run:() => downloadItem(it) },
@@ -2036,7 +2332,6 @@ async function prepareFile(f){
     if (f.size > limit) throw new Error(`GIFs need to be under ${MAX_UPLOAD_MB} MB`);
     return { blob: f, mime: 'image/gif', ext: 'gif' };
   }
-  // Re-encode: shrinks big photos and strips EXIF data (including GPS location)
   let bmp;
   try { bmp = await createImageBitmap(f, { imageOrientation:'from-image' }); }
   catch { bmp = await createImageBitmap(f); }
@@ -2181,26 +2476,19 @@ addEventListener('blur', () => { spaceDown = false; vp.classList.remove('space')
 addEventListener('resize', () => { if (currentRoom){ computeMinZ(); applyView(); } closeMenu(); });
 
 /* ================= Start ================= */
+function showFatal(err){
+  $('#gate').hidden = true;
+  $('#fatalText').textContent =
+    `${niceError(err)}. If you run this site, check that anonymous sign-ins and the captcha keys are set up in Supabase.`;
+  $('#fatal').hidden = false;
+}
 async function start(){
   hydrateIcons();
   renderChips();
   applyStyle(globalStyle);
   updateMeDot();
-  try {
-    let { data:{ session } } = await sb.auth.getSession();
-    if (!session){
-      const { data, error } = await sb.auth.signInAnonymously();
-      if (error) throw error;
-      session = data.session;
-    }
-    me.id = session.user.id;
-    me.isAnon = !!session.user.is_anonymous;
-  } catch (err){
-    $('#fatalText').textContent =
-      `${niceError(err)}. If you run this site, make sure "Allow anonymous sign-ins" is turned on in Supabase under Authentication → Sign In / Providers.`;
-    $('#fatal').hidden = false;
-    return;
-  }
+  try { await ensureSession(); }
+  catch (err){ showFatal(err); return; }
   route();
 }
 start();
