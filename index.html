@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0e1014">
 <title>Picboard</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="description" content="Shared boards where anyone can pin pictures, videos, doodles, and notes, live with everyone else in the room.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Picboard">
+<meta property="og:title" content="Picboard">
+<meta property="og:description" content="Shared boards where anyone can pin pictures, videos, doodles, and notes, live with everyone else in the room.">
+<meta property="og:url" content="https://picboard.org/">
+<meta property="og:image" content="https://picboard.org/share-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://picboard.org/share-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,7 +35,7 @@
 }
 html[data-style="midnight"]{
   --bg:#0e1014; --surface:#171a21; --surface-2:#1f232c; --surface-3:#282d38; --line:#2a2f3a;
-  --text:#e9ecf2; --muted:#98a0b0; --accent:#8aa4ff; --accent-ink:#0d1020; --accent-soft:rgba(138,164,255,.16);
+  --text:#e9ecf2; --muted:#98a0b0; --accent:#7c6cff; --accent-ink:#ffffff; --accent-soft:rgba(124,108,255,.18);
   --shadow:0 14px 40px rgba(0,0,0,.45); --tilt:0; color-scheme:dark;
 }
 html[data-style="cozy"]{
@@ -39,7 +55,7 @@ html[data-style="blackboard"]{
 }
 html[data-style="whiteboard"]{
   --bg:#eef0f4; --surface:#ffffff; --surface-2:#f3f4f7; --surface-3:#e8eaef; --line:#dde1e8;
-  --text:#1c2030; --muted:#687083; --accent:#3b6cf6; --accent-ink:#ffffff; --accent-soft:rgba(59,108,246,.12);
+  --text:#1c2030; --muted:#687083; --accent:#5b45f7; --accent-ink:#ffffff; --accent-soft:rgba(91,69,247,.12);
   --shadow:0 12px 34px rgba(30,40,70,.14); --tilt:.35; color-scheme:light;
 }
 
@@ -137,7 +153,13 @@ i[data-ic]{display:inline-flex; font-style:normal}
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
 }
 .logo{display:flex; align-items:center; gap:10px; font-weight:900; font-size:19px; color:var(--text); text-decoration:none; margin-right:auto}
-.logo-mark{width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:var(--accent); color:var(--accent-ink); transform:rotate(-6deg)}
+.logo-img{width:40px; height:40px; display:block}
+.logo .wm{height:26px; width:auto; display:block}
+.wm-dark{display:none !important}
+html[data-style="whiteboard"] .wm-light{display:none !important}
+html[data-style="whiteboard"] .wm-dark{display:block !important}
+.hero h1 em{color:#ff2d6b}
+@media (max-width:420px){ .logo .wm{display:none !important} }
 .wrap{max-width:1180px; margin:0 auto; padding:0 24px calc(40px + env(safe-area-inset-bottom,0px))}
 .hero{padding:54px 0 26px}
 .hero h1{margin:0 0 12px; font-size:clamp(40px, 6vw, 66px); font-weight:900; letter-spacing:-1.5px; line-height:1.02}
@@ -422,7 +444,7 @@ html[data-style="whiteboard"] .pin{
 <!-- ================= HOME ================= -->
 <div id="home" class="page" hidden>
   <header class="nav">
-    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <a class="logo" href="#/" aria-label="Picboard home"><img class="logo-img" src="/logo.png" alt=""><img class="wm wm-light" src="/wordmark-light.png" alt="Picboard"><img class="wm wm-dark" src="/wordmark-dark.png" alt="Picboard"></a>
     <a class="btn ghost" id="modBtn" href="#/admin" hidden><i data-ic="shield"></i><span class="hide-sm">Mod board</span></a>
     <button class="btn ghost" id="accountBtn" title="Your account"><i data-ic="user"></i><span class="hide-sm" id="accountLabel">Save account</span></button>
     <button class="btn ghost" id="styleBtn" title="Change style">
@@ -463,7 +485,7 @@ html[data-style="whiteboard"] .pin{
 <!-- ================= RULES ================= -->
 <div id="rules" class="page" hidden>
   <header class="nav">
-    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <a class="logo" href="#/" aria-label="Picboard home"><img class="logo-img" src="/logo.png" alt=""><img class="wm wm-light" src="/wordmark-light.png" alt="Picboard"><img class="wm wm-dark" src="/wordmark-dark.png" alt="Picboard"></a>
     <a class="btn" href="#/"><i data-ic="back"></i><span class="hide-sm">Back to site</span></a>
   </header>
   <main class="wrap">
@@ -497,7 +519,7 @@ html[data-style="whiteboard"] .pin{
 <!-- ================= MOD BOARD ================= -->
 <div id="admin" class="page" hidden>
   <header class="nav">
-    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <a class="logo" href="#/" aria-label="Picboard home"><img class="logo-img" src="/logo.png" alt=""><img class="wm wm-light" src="/wordmark-light.png" alt="Picboard"><img class="wm wm-dark" src="/wordmark-dark.png" alt="Picboard"></a>
     <button class="btn ghost" id="adminSignOut" hidden><i data-ic="logout"></i><span class="hide-sm">Sign out</span></button>
     <a class="btn" href="#/"><i data-ic="back"></i><span class="hide-sm">Back to site</span></a>
   </header>
