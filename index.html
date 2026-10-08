@@ -190,4 +190,2020 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .foot{margin-top:40px; text-align:center; font-size:13px; font-weight:700; color:var(--muted); line-height:1.6}
 
 /* ================= Modals ================= */
-.modal{position:fixed; inset:0; z-index:60; display:flex;
+.modal{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(5,7,12,.6); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px)}
+.sheet{width:min(640px, 100%); max-height:calc(100% - 24px); overflow:auto; padding:24px; border-radius:18px; background:var(--surface); border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.sheet.small{width:min(390px, 100%)}
+.sheet h2{margin:0 0 18px; font-size:22px; font-weight:900; display:flex; align-items:center; gap:10px}
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px 18px}
+.full{grid-column:1 / -1}
+.field{display:flex; flex-direction:column; gap:7px; min-width:0}
+.flabel{font-weight:800; font-size:13px}
+.hint{font-size:12px; font-weight:600; color:var(--muted)}
+.seg-opts{display:flex; flex-wrap:wrap; gap:6px}
+.opt{position:relative}
+.opt input{position:absolute; opacity:0; pointer-events:none}
+.opt span{display:inline-flex; align-items:center; padding:8px 13px; border-radius:9px; cursor:pointer; font-size:13.5px; font-weight:800; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); transition:all .15s}
+.opt span:hover{color:var(--text)}
+.opt input:checked + span{background:var(--accent-soft); border-color:var(--accent); color:var(--text)}
+.opt input:disabled + span{opacity:.45; cursor:not-allowed}
+.opt input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+.style-opts{display:grid; grid-template-columns:repeat(5, 1fr); gap:8px}
+.style-opt{position:relative; display:flex; flex-direction:column; gap:6px; cursor:pointer}
+.style-opt input{position:absolute; opacity:0; pointer-events:none}
+.style-opt .sw{position:relative; aspect-ratio:4/3; border-radius:10px; border:2px solid var(--line); overflow:hidden; transition:border-color .15s}
+.style-opt .sw::after{content:""; position:absolute; left:30%; top:22%; width:40%; aspect-ratio:1; background:linear-gradient(135deg, #7cc3ff, #2f7bea); border:4px solid #fdfcf8; transform:rotate(-5deg); box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.style-opt .sw-name{font-size:12px; font-weight:800; text-align:center; color:var(--muted)}
+.style-opt input:checked ~ .sw{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.style-opt input:checked ~ .sw-name{color:var(--text)}
+.style-opt input:focus-visible ~ .sw{outline:2px solid var(--accent); outline-offset:2px}
+.error{color:var(--danger); font-size:13px; font-weight:700; min-height:1em; margin:0}
+.actions{display:flex; justify-content:flex-end; gap:8px}
+.row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+
+/* ================= Context menu ================= */
+#ctx{
+  position:fixed; z-index:80; min-width:220px; max-width:290px; padding:6px; border-radius:13px;
+  background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow); font-size:13.5px; font-weight:700;
+}
+.ctx-title{padding:7px 10px 5px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.ctx-item{width:100%; display:flex; align-items:center; gap:10px; padding:8px 10px; border:0; border-radius:8px; background:transparent; color:var(--text); font:inherit; text-align:left; cursor:pointer}
+.ctx-item:hover:not(:disabled){background:var(--surface-2)}
+.ctx-item:disabled{opacity:.4; cursor:default}
+.ctx-item.danger{color:var(--danger)}
+.ctx-item .kbd{margin-left:auto; font-size:11px; font-weight:800; color:var(--muted)}
+.ctx-sep{height:1px; background:var(--line); margin:5px 4px}
+.ctx-swatches{display:flex; flex-wrap:wrap; gap:7px; padding:6px 10px 8px}
+
+/* ================= Room ================= */
+#viewport{
+  position:fixed; inset:0; overflow:hidden; touch-action:none; cursor:grab; --z:1;
+  background:radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--bg) 80%, #fff 3%) 0%, var(--bg) 75%);
+}
+#viewport.panning,#viewport.space{cursor:grabbing}
+#viewport.tool-pen,#viewport.tool-pen .item{cursor:crosshair}
+#viewport.tool-eraser,#viewport.tool-eraser .item{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='rgba(255,255,255,.25)' stroke='white' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 12 12, crosshair}
+#viewport.tool-note,#viewport.tool-note .item{cursor:cell}
+#world{position:absolute; left:0; top:0; transform-origin:0 0}
+#board{position:absolute; left:0; top:0; z-index:-2147483647; border-radius:8px; box-shadow:0 0 0 1px var(--line), 0 30px 100px rgba(0,0,0,.5)}
+html[data-style="cozy"] #board{border-radius:4px; box-shadow:0 0 0 24px #9a6a45, 0 0 0 30px #6a452b, 0 30px 120px 40px rgba(0,0,0,.6)}
+html[data-style="cork"] #board{border-radius:3px; box-shadow:0 0 0 28px #6a4527, 0 0 0 34px #3b2412, 0 30px 120px 40px rgba(0,0,0,.6)}
+html[data-style="blackboard"] #board{border-radius:3px; box-shadow:0 0 0 30px #7a5536, 0 0 0 36px #4d3320, 0 30px 120px 40px rgba(0,0,0,.6)}
+html[data-style="whiteboard"] #board{border-radius:6px; box-shadow:0 0 0 16px #d7dbe2, 0 0 0 20px #aeb4be, 0 30px 80px rgba(30,40,70,.25)}
+#drawLayer{position:absolute; left:0; top:0; width:1px; height:1px; overflow:visible; pointer-events:none; z-index:2147483600}
+
+/* items */
+.item{
+  position:absolute; touch-action:none; cursor:move;
+  transform:rotate(calc(var(--r, 0deg) * var(--tilt)));
+  transition:transform .15s ease, filter .15s ease, opacity .2s;
+}
+.item.lifting{transform:rotate(calc(var(--r, 0deg) * var(--tilt))) scale(1.03); filter:drop-shadow(0 16px 18px rgba(0,0,0,.3))}
+.item.animating{transition:left .35s cubic-bezier(.2,.8,.2,1), top .35s cubic-bezier(.2,.8,.2,1), width .35s, transform .35s ease}
+.item.locked{cursor:default}
+.item.uploading{opacity:.55}
+.item.selected{outline:calc(2px / var(--z)) solid var(--accent); outline-offset:calc(5px / var(--z)); border-radius:4px}
+
+.item.media .card{position:relative; border-radius:10px; overflow:hidden; background:#000; box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.card img,.card video{display:block; width:100%; height:auto; min-height:40px; background:#222; pointer-events:none; user-select:none; -webkit-user-drag:none}
+html[data-style="cozy"] .item.media .card,
+html[data-style="cork"] .item.media .card,
+html[data-style="blackboard"] .item.media .card{background:#fdfcf8; padding:8px 8px 10px; border-radius:2px; box-shadow:0 2px 3px rgba(0,0,0,.25), 0 8px 18px rgba(0,0,0,.25)}
+html[data-style="whiteboard"] .item.media .card{background:#fff; padding:6px; border-radius:6px; box-shadow:0 2px 4px rgba(20,30,60,.12), 0 10px 24px rgba(20,30,60,.14)}
+.item.reported .card img,.item.reported .card video,.item.reported .note-body{filter:blur(8px) grayscale(.6)}
+.item.reported .card::after{content:"⚑ Reported"; position:absolute; left:14px; top:14px; background:var(--danger); color:#fff; font:800 12px var(--font); padding:3px 8px; border-radius:5px}
+
+/* pins, tape and magnets */
+.pin{display:none; position:absolute; z-index:2; pointer-events:none}
+html[data-style="cozy"] .pin,html[data-style="cork"] .pin{
+  display:block; left:50%; top:-8px; width:18px; height:18px; margin-left:-9px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.6) 0 2px, transparent 3px), radial-gradient(circle at 40% 40%, var(--pc), color-mix(in srgb, var(--pc) 55%, #000));
+  box-shadow:2px 4px 4px rgba(0,0,0,.35);
+}
+html[data-style="blackboard"] .pin{
+  display:block; left:50%; top:-10px; width:64px; height:20px; margin-left:-32px; transform:rotate(-3deg);
+  background:rgba(245,240,225,.62); box-shadow:0 1px 2px rgba(0,0,0,.2);
+  clip-path:polygon(2% 0, 98% 6%, 100% 50%, 97% 100%, 3% 94%, 0 50%);
+}
+html[data-style="whiteboard"] .pin{
+  display:block; left:50%; top:-9px; width:18px; height:18px; margin-left:-9px; border-radius:50%; background:var(--pc);
+  box-shadow:0 2px 3px rgba(0,0,0,.3), inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.35);
+}
+
+/* note bubbles */
+.item.note{filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
+.note-body{
+  position:relative; min-height:56px; padding:14px 18px 16px; border-radius:20px; background:var(--nc); color:#2a2420;
+  font-family:var(--hand); font-size:27px; font-weight:600; line-height:1.12; white-space:pre-wrap; word-break:break-word; outline:none;
+}
+.note-body::after{
+  content:""; position:absolute; left:28px; bottom:-15px; width:0; height:0;
+  border-left:6px solid transparent; border-right:16px solid transparent; border-top:17px solid var(--nc);
+}
+.note-body:empty::before{content:"Type something…"; opacity:.45}
+.item.note.editing{cursor:text}
+.item.note.editing .note-body{box-shadow:inset 0 0 0 3px rgba(0,0,0,.15); cursor:text; user-select:text}
+
+/* drawings */
+.item.stroke{pointer-events:none; transition:none}
+.item.stroke > svg{display:block; width:100%; height:auto; overflow:visible}
+.item.stroke .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.item.stroke .hit{fill:none; stroke:transparent; stroke-linecap:round; stroke-linejoin:round; pointer-events:stroke}
+.item.stroke.selected{outline-style:dashed}
+
+/* per-item controls */
+.badge-lock,.more-btn,.resize{position:absolute; z-index:5; transform:scale(calc(1 / var(--z)))}
+.badge-lock{top:-11px; left:-11px; width:24px; height:24px; border-radius:50%; display:none; place-items:center; background:var(--surface); color:var(--text); border:1px solid var(--line); box-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none}
+.item.locked .badge-lock{display:grid}
+.more-btn{top:-13px; right:-13px; width:28px; height:28px; border-radius:50%; border:0; display:none; place-items:center; background:var(--accent); color:var(--accent-ink); cursor:pointer; pointer-events:auto; box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.item.selected.solo .more-btn{display:grid}
+.resize{right:-8px; bottom:-8px; width:18px; height:18px; border-radius:50%; display:none; background:var(--accent); border:3px solid #fff; cursor:nwse-resize; pointer-events:auto; box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.item.selected.solo:not(.locked) .resize{display:block}
+#viewport:not(.tool-move) .resize,#viewport:not(.tool-move) .more-btn{display:none !important}
+
+/* other people's cursors */
+.rcursor{position:absolute; left:0; top:0; z-index:2147483500; pointer-events:none; transform:scale(calc(1 / var(--z))); transform-origin:0 0; transition:left .1s linear, top .1s linear}
+.rcursor svg{display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.rcursor span{position:absolute; left:16px; top:18px; white-space:nowrap; padding:2px 8px; border-radius:7px; background:var(--cc); color:#fff; font:800 11px var(--font); text-shadow:0 1px 1px rgba(0,0,0,.35); box-shadow:0 2px 6px rgba(0,0,0,.3)}
+
+/* room chrome */
+.float{
+  position:fixed; z-index:10; background:color-mix(in srgb, var(--surface) 94%, transparent);
+  border:1px solid var(--line); box-shadow:var(--shadow);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+#roomBar{top:calc(12px + env(safe-area-inset-top,0px)); left:12px; display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:14px; max-width:calc(100vw - 24px)}
+#roomBar .titles{min-width:0}
+#roomBar strong{display:flex; align-items:center; gap:6px; font-size:15px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#roomBar .sub{font-size:12px; font-weight:700; color:var(--muted); white-space:nowrap}
+#viewBar{top:calc(12px + env(safe-area-inset-top,0px)); right:12px; display:flex; align-items:center; gap:4px; padding:5px; border-radius:14px}
+#zoomBtn{min-width:58px}
+.me-dot{width:12px; height:12px; border-radius:50%; background:var(--mc); box-shadow:0 0 0 2px var(--surface)}
+#toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px}
+#toolbar.disabled .tool:not([data-tool="move"]){opacity:.3; pointer-events:none}
+.tool{position:relative; width:44px; height:44px; border:0; border-radius:11px; display:grid; place-items:center; background:transparent; color:var(--text); cursor:pointer; transition:background .15s}
+.tool:hover{background:var(--surface-2)}
+.tool.active{background:var(--accent); color:var(--accent-ink)}
+.tool .k{position:absolute; right:5px; bottom:3px; font-size:9px; font-weight:900; opacity:.55}
+.tsep{width:1px; align-self:stretch; margin:6px 3px; background:var(--line)}
+#toolOpts{left:50%; transform:translateX(-50%); bottom:calc(14px + 66px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center; padding:10px 14px; border-radius:14px; max-width:calc(100vw - 24px); font-size:13px; font-weight:700; color:var(--muted)}
+#toolOpts .swatches{display:flex; flex-wrap:wrap; gap:7px}
+#toolOpts input[type=range]{width:110px; accent-color:var(--accent)}
+.size-dot{border-radius:50%; background:var(--text); flex:none}
+#pinMeter{left:12px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; font-size:12px; font-weight:800; color:var(--muted)}
+.meter-bar{width:90px; height:6px; border-radius:999px; background:var(--surface-3); overflow:hidden}
+.meter-bar span{display:block; height:100%; width:0; background:var(--accent); transition:width .3s}
+#marquee{position:fixed; z-index:15; pointer-events:none; border:1.5px dashed var(--accent); background:var(--accent-soft); border-radius:4px}
+#roomEmpty{position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center; pointer-events:none}
+.empty-card{max-width:360px; margin:16px; padding:24px 26px; border-radius:16px; text-align:center; background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow)}
+.empty-card h2{margin:0 0 6px; font-size:20px; font-weight:900}
+.empty-card p{margin:0; font-size:14px; font-weight:600; line-height:1.5; color:var(--muted)}
+#dropHint{position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center; background:var(--accent-soft); border:4px dashed var(--accent); color:var(--text); font-size:28px; font-weight:900; pointer-events:none}
+#dropHint.show{display:flex}
+#toast{
+  position:fixed; left:50%; top:calc(16px + env(safe-area-inset-top,0px)); z-index:90; pointer-events:none;
+  transform:translate(-50%,-20px); opacity:0; transition:.25s; max-width:calc(100vw - 32px); text-align:center;
+  padding:9px 15px; border-radius:11px; background:var(--surface); border:1px solid var(--line); color:var(--text);
+  font-size:14px; font-weight:800; box-shadow:var(--shadow);
+}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+#fatal{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--bg)}
+#fatal .empty-card{max-width:440px}
+
+@media (max-width:720px){
+  .nav{padding-left:16px; padding-right:16px}
+  .wrap{padding-left:16px; padding-right:16px}
+  .hide-sm{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .style-opts{grid-template-columns:repeat(3, 1fr)}
+  #pinMeter{display:none}
+  #viewBar .hide-sm{display:none}
+  #roomBar{max-width:calc(100vw - 190px)}
+  .tool{width:40px; height:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HOME ================= -->
+<div id="home" class="page" hidden>
+  <header class="nav">
+    <a class="logo" href="#/"><span class="logo-mark"><i data-ic="pin" data-s="18"></i></span>Picboard</a>
+    <button class="btn ghost" id="styleBtn" title="Change style">
+      <span class="sw-dot" id="styleDot"></span><span id="styleLabel" class="hide-sm"></span><i data-ic="chevron" data-s="14"></i>
+    </button>
+    <button class="btn primary" id="newRoomBtn"><i data-ic="plus"></i><span class="hide-sm">New room</span></button>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Pin it <em>up.</em></h1>
+      <p>Shared boards where anyone can pin pictures, videos, doodles, and notes, live with everyone else in the room.</p>
+      <div class="stat-chips" id="statChips"></div>
+    </section>
+    <div class="controls">
+      <label class="search"><i data-ic="search"></i><input id="search" placeholder="Search rooms" autocomplete="off"></label>
+      <select id="sortSel" class="sel" title="Sort">
+        <option value="active">Recently active</option>
+        <option value="newest">Newest</option>
+        <option value="pins">Most pins</option>
+        <option value="az">A–Z</option>
+      </select>
+      <label class="switch"><input type="checkbox" id="privToggle"><span class="track"></span>Show private</label>
+      <button class="btn icon" id="refreshBtn" title="Refresh"><i data-ic="refresh"></i></button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+    <div class="home-empty" id="homeEmpty" hidden>
+      <p id="homeEmptyText">No rooms match that.</p>
+      <button class="btn primary" id="newRoomBtn2"><i data-ic="plus"></i> Make one</button>
+    </div>
+    <footer class="foot">
+      Be kind. No illegal content. Anything reported by 3 people is hidden until reviewed.<br>
+      Uploaded photos are resized and have location data stripped automatically.
+    </footer>
+  </main>
+</div>
+
+<!-- ================= ROOM ================= -->
+<div id="room" class="page" hidden>
+  <div id="viewport" class="tool-move">
+    <div id="world"><div id="board"></div></div>
+  </div>
+
+  <div id="roomBar" class="float">
+    <a href="#/" class="btn sm icon ghost" title="Back to rooms"><i data-ic="back"></i></a>
+    <div class="titles">
+      <strong id="roomName"></strong>
+      <div class="sub" id="roomSub"></div>
+    </div>
+  </div>
+
+  <div id="viewBar" class="float">
+    <button class="btn sm ghost" id="meBtn" title="People here · your name and cursor color">
+      <span class="me-dot" id="meDot"></span><span id="presenceCount">1</span><i data-ic="users" data-s="14"></i>
+    </button>
+    <button class="btn sm ghost" id="roomStyleBtn" title="Change style">
+      <span class="sw-dot" id="roomStyleDot"></span><span id="roomStyleLabel" class="hide-sm"></span><i data-ic="chevron" data-s="14"></i>
+    </button>
+    <button class="btn sm icon ghost hide-sm" id="zoomOutBtn" title="Zoom out"><i data-ic="zoomOut"></i></button>
+    <button class="btn sm ghost hide-sm" id="zoomBtn" title="Reset to 100%">100%</button>
+    <button class="btn sm icon ghost hide-sm" id="zoomInBtn" title="Zoom in"><i data-ic="zoomIn"></i></button>
+    <button class="btn sm icon ghost" id="boardBtn" title="Whole board (B)"><i data-ic="maximize"></i></button>
+  </div>
+
+  <div id="toolbar" class="float">
+    <button class="tool active" data-tool="move" title="Move & select (V)"><i data-ic="cursor" data-s="20"></i><span class="k">V</span></button>
+    <button class="tool" data-tool="pen" title="Draw (P)"><i data-ic="pen" data-s="20"></i><span class="k">P</span></button>
+    <button class="tool" data-tool="eraser" title="Erase your drawings (E)"><i data-ic="eraser" data-s="20"></i><span class="k">E</span></button>
+    <button class="tool" data-tool="note" title="Note bubble (N)"><i data-ic="note" data-s="20"></i><span class="k">N</span></button>
+    <div class="tsep"></div>
+    <button class="tool" id="addBtn" title="Add images or videos"><i data-ic="upload" data-s="20"></i></button>
+  </div>
+  <div id="toolOpts" class="float" hidden></div>
+
+  <div id="pinMeter" class="float"><div class="meter-bar"><span id="meterFill"></span></div><span id="meterText"></span></div>
+
+  <div id="roomEmpty">
+    <div class="empty-card">
+      <h2>This board is empty</h2>
+      <p>Drop in images or videos, draw with the pen, or stick a note bubble anywhere. Everyone in the room sees it live.</p>
+    </div>
+  </div>
+  <div id="marquee" hidden></div>
+  <div id="dropHint">Drop to pin it</div>
+</div>
+
+<!-- ================= CREATE ROOM ================= -->
+<div class="modal" id="createModal" hidden>
+  <form class="sheet" id="createForm" novalidate>
+    <h2><i data-ic="plus" data-s="22"></i> New room</h2>
+    <div class="form-grid">
+      <div class="field">
+        <span class="flabel">Room name</span>
+        <input class="inp" name="name" maxlength="40" placeholder="e.g. Cozy Desk Setups" autocomplete="off">
+      </div>
+      <div class="field">
+        <span class="flabel">Category</span>
+        <select class="inp" name="category" id="catSel"></select>
+      </div>
+      <div class="field full">
+        <span class="flabel">Description <span class="muted">(optional)</span></span>
+        <input class="inp" name="desc" maxlength="120" placeholder="What goes on this board?" autocomplete="off">
+      </div>
+      <div class="field full">
+        <span class="flabel">Board style</span>
+        <div class="style-opts" id="styleOpts"></div>
+        <span class="hint">Visitors can still switch styles for themselves.</span>
+      </div>
+      <div class="field full">
+        <span class="flabel">Board size</span>
+        <div class="seg-opts">
+          <label class="opt"><input type="radio" name="size" value="small"><span>Small</span></label>
+          <label class="opt"><input type="radio" name="size" value="medium" checked><span>Medium</span></label>
+          <label class="opt"><input type="radio" name="size" value="large"><span>Large</span></label>
+          <label class="opt"><input type="radio" name="size" value="huge"><span>Huge</span></label>
+          <label class="opt"><input type="radio" name="size" value="custom"><span>Custom</span></label>
+        </div>
+        <div class="row" id="customSize" hidden>
+          <input class="inp num" type="number" name="cw" value="8000" min="1000" max="40000" step="500">
+          <span class="muted">×</span>
+          <input class="inp num" type="number" name="ch" value="5000" min="1000" max="40000" step="500">
+        </div>
+        <span class="hint" id="sizeHint"></span>
+      </div>
+      <div class="field">
+        <span class="flabel">Visibility</span>
+        <div class="seg-opts">
+          <label class="opt"><input type="radio" name="visibility" value="public" checked><span>Public</span></label>
+          <label class="opt"><input type="radio" name="visibility" value="private"><span>Private</span></label>
+        </div>
+        <input class="inp" type="password" name="password" id="pwField" placeholder="Room password" autocomplete="new-password" hidden>
+      </div>
+      <div class="field">
+        <span class="flabel">Who can post</span>
+        <div class="seg-opts">
+          <label class="opt"><input type="radio" name="posting" value="anyone" checked><span>Anyone</span></label>
+          <label class="opt"><input type="radio" name="posting" value="accounts" disabled><span>Accounts only (soon)</span></label>
+        </div>
+      </div>
+      <div class="field full">
+        <span class="flabel">Pin cap</span>
+        <div class="row">
+          <input class="inp num" type="number" name="cap" value="60" min="5" max="500">
+          <span class="hint">Oldest pins and notes rotate off once the board is full.</span>
+        </div>
+      </div>
+      <p class="error full" id="createError"></p>
+      <div class="actions full">
+        <button type="button" class="btn" data-close>Cancel</button>
+        <button type="submit" class="btn primary" id="createSubmit">Create room</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- ================= PASSWORD ================= -->
+<div class="modal" id="pwModal" hidden>
+  <form class="sheet small" id="pwForm">
+    <h2><i data-ic="lock" data-s="20"></i> <span id="pwRoomName"></span></h2>
+    <p class="muted" style="margin:-8px 0 14px; font-weight:600">This room is private. Enter its password to come in.</p>
+    <input class="inp" type="password" id="pwInput" placeholder="Password" autocomplete="current-password">
+    <p class="error" id="pwError" style="margin:8px 0 12px"></p>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary" id="pwSubmit">Enter</button>
+    </div>
+  </form>
+</div>
+
+<div id="fatal" hidden><div class="empty-card"><h2>Couldn't connect</h2><p id="fatalText"></p></div></div>
+<div id="ctx" hidden></div>
+<div id="toast"></div>
+<input type="file" id="fileInput" multiple accept="image/*,video/*" hidden>
+
+<script>
+const $ = s => document.querySelector(s);
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+/* ================= Supabase ================= */
+const SUPABASE_URL = 'https://nutnmlgbsjfldemcrvzu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Uxr5Bj9VVxdQC0vhxCFe4A_gAMOhE_Z';
+const BUCKET = 'media';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const publicUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+
+/* ================= Config ================= */
+const STYLES = {
+  midnight:   { name:'Midnight' },
+  cozy:       { name:'Cozy' },
+  cork:       { name:'Corkboard' },
+  blackboard: { name:'Blackboard' },
+  whiteboard: { name:'Whiteboard' }
+};
+const STYLE_IDS = Object.keys(STYLES);
+const CATEGORIES = ['Random','Art','Memes','Photography','Gaming','Music','Pets','Other'];
+const SIZES = { small:[4000,2500], medium:[8000,5000], large:[16000,10000], huge:[24000,15000] };
+const SIZE_NAMES = { small:'Small', medium:'Medium', large:'Large', huge:'Huge' };
+const PIN_COLORS = ['#e5483b','#f2b632','#3a8ee6','#41b06e','#9b5de5','#ff7aa8'];
+const PEN_COLORS = ['#ffffff','#1d1f27','#ff5d5d','#ffa94d','#ffd84d','#4cd18a','#4ea6ff','#a78bfa','#ff7ac6'];
+const NOTE_COLORS = ['#ffe58a','#ffb8c9','#a8d8ff','#bdf0b4','#d9c6ff','#ffffff'];
+const CURSOR_COLORS = ['#ff5d5d','#ff9f43','#f7c948','#2ecc71','#1abc9c','#3b9cff','#7c6cff','#e056fd','#ff6fa8'];
+const MAX_UPLOAD_MB = 10;
+const MAX_IMAGE_SIDE = 2048;
+const REPORT_HIDE = 3;
+const IMAGE_TYPES = ['image/jpeg','image/png','image/webp','image/gif','image/avif','image/bmp'];
+const VIDEO_TYPES = ['video/mp4','video/webm','video/quicktime'];
+const PREFS_KEY = 'picboard.prefs.v1', STYLE_KEY = 'picboard.style.v1',
+      NAME_KEY = 'picboard.name.v1', COLOR_KEY = 'picboard.color.v1', REPORTED_KEY = 'picboard.reported.v1';
+
+/* ================= Icons ================= */
+const ICONS = {
+  dot:'',
+  pin:'<path d="M12 17v5"/><path d="M9 10.76V4h6v6.76a2 2 0 0 0 1.11 1.79l1.78.9A2 2 0 0 1 19 15.24V17H5v-1.76a2 2 0 0 1 1.11-1.79l1.78-.9A2 2 0 0 0 9 10.76z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>',
+  chevron:'<path d="m6 9 6 6 6-6"/>',
+  tag:'<path d="M3 12V3h9l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  unlock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  maximize:'<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  vol:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',
+  volOff:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/>',
+  cursor:'<path d="M5 3l14 7.5-6.5 1.8L10 19z"/>',
+  pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  eraser:'<path d="M7 21h12"/><path d="M5.6 15.6 14.2 7a2 2 0 0 1 2.8 0l2.8 2.8a2 2 0 0 1 0 2.8L12.4 20H9.6z"/><path d="m9.5 11.5 5 5"/>',
+  note:'<path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/>',
+  upload:'<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>',
+  front:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',
+  backL:'<rect x="8" y="8" width="12" height="12" rx="2" stroke-dasharray="2 3"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',
+  straighten:'<path d="M3 12h18"/><path d="M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+  download:'<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+  external:'<path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+  copy:'<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  grid:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+  row:'<rect x="2" y="8" width="6" height="8" rx="1"/><rect x="9" y="8" width="6" height="8" rx="1"/><rect x="16" y="8" width="6" height="8" rx="1"/>',
+  pile:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+  zoomIn:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',
+  zoomOut:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',
+  check:'<path d="m5 12 5 5 9-10"/>',
+  selectAll:'<rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><path d="m8 12 3 3 5-6"/>',
+  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
+};
+const ic = (name, size = 16) =>
+  `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+function hydrateIcons(root = document){
+  root.querySelectorAll('i[data-ic]').forEach(el => { el.innerHTML = ic(el.dataset.ic, +(el.dataset.s || 16)); });
+}
+
+/* ================= Helpers ================= */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const byZ = (a, b) => (a.z || 0) - (b.z || 0);
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+function newId(){
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 3 | 8)).toString(16);
+  });
+}
+function loadJSON(store, key, fallback){ try { const v = store.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } }
+function saveJSON(store, key, val){ try { store.setItem(key, JSON.stringify(val)); } catch {} }
+function ago(ts){
+  const s = (Date.now() - ts) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+function sizeLabel(r){ return r.size === 'custom' ? `${r.w.toLocaleString()}×${r.h.toLocaleString()}` : SIZE_NAMES[r.size]; }
+const niceError = e => (e && (e.message || e.error_description)) || 'Something went wrong';
+const Z_EPOCH = 1767225600000;
+let zCounter = 0;
+function zNow(){ zCounter = Math.max(zCounter + 1, Math.floor((Date.now() - Z_EPOCH) / 100)); return zCounter; }
+let toastTimer;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ================= Local prefs ================= */
+const prefs = loadJSON(localStorage, PREFS_KEY, {});
+let globalStyle = loadJSON(localStorage, STYLE_KEY, 'midnight');
+if (!STYLES[globalStyle]) globalStyle = 'midnight';
+const reportedByMe = new Set(loadJSON(localStorage, REPORTED_KEY, []));
+const me = {
+  id: null, isAnon: true,
+  name: loadJSON(localStorage, NAME_KEY, null),
+  color: loadJSON(localStorage, COLOR_KEY, null) || pick(CURSOR_COLORS)
+};
+
+/* ================= Styles ================= */
+let penColor = '#ffffff', penTouched = false, penSize = 6, noteColor = NOTE_COLORS[0];
+function applyStyle(s){
+  if (!STYLES[s]) s = 'midnight';
+  document.documentElement.dataset.style = s;
+  $('#board').className = 'surf-' + s;
+  for (const [dot, label] of [['#styleDot','#styleLabel'], ['#roomStyleDot','#roomStyleLabel']]){
+    $(dot).className = 'sw-dot surf-' + s;
+    $(label).textContent = STYLES[s].name;
+  }
+  if (!penTouched) penColor = (s === 'midnight' || s === 'blackboard') ? '#ffffff' : '#1d1f27';
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  if (bg) document.querySelector('meta[name="theme-color"]').content = bg;
+  renderToolOpts();
+}
+function openStyleMenu(btn, current, onPick){
+  const r = btn.getBoundingClientRect();
+  openMenu(r.left, r.bottom + 6, [
+    { title:'Style' },
+    ...STYLE_IDS.map(id => ({ swatch:'surf-' + id, label:STYLES[id].name, checked:id === current, run:() => onPick(id) }))
+  ]);
+}
+
+/* ================= Context menu ================= */
+const ctx = $('#ctx');
+function openMenu(x, y, entries){
+  ctx.innerHTML = '';
+  for (const e of entries){
+    if (e === '-'){ ctx.insertAdjacentHTML('beforeend', '<div class="ctx-sep"></div>'); continue; }
+    if (e.title){
+      const d = document.createElement('div');
+      d.className = 'ctx-title'; d.textContent = e.title;
+      ctx.appendChild(d); continue;
+    }
+    if (e.colors){
+      const row = document.createElement('div');
+      row.className = 'ctx-swatches';
+      e.colors.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'swatch' + (c === e.current ? ' on' : '');
+        b.style.setProperty('--c', c);
+        b.title = c;
+        b.disabled = !!e.disabled;
+        b.onclick = () => { closeMenu(); e.pick(c); };
+        row.appendChild(b);
+      });
+      ctx.appendChild(row); continue;
+    }
+    const b = document.createElement('button');
+    b.className = 'ctx-item' + (e.danger ? ' danger' : '');
+    b.disabled = !!e.disabled;
+    b.innerHTML =
+      (e.swatch ? `<span class="sw-dot ${e.swatch}"></span>` : ic(e.icon || 'dot', 16)) +
+      `<span>${esc(e.label)}</span>` +
+      (e.checked ? `<span class="kbd">${ic('check', 14)}</span>` : e.kbd ? `<span class="kbd">${esc(e.kbd)}</span>` : '');
+    b.onclick = () => { closeMenu(); e.run(); };
+    ctx.appendChild(b);
+  }
+  ctx.hidden = false;
+  const w = ctx.offsetWidth, h = ctx.offsetHeight;
+  ctx.style.left = clamp(x, 8, innerWidth - w - 8) + 'px';
+  ctx.style.top = (y + h > innerHeight - 8 ? Math.max(8, y - h) : y) + 'px';
+}
+function closeMenu(){ ctx.hidden = true; }
+addEventListener('pointerdown', e => { if (!ctx.hidden && !ctx.contains(e.target)) closeMenu(); }, true);
+addEventListener('wheel', () => closeMenu(), { passive:true });
+
+/* ================= Router ================= */
+let currentRoom = null;
+function showPage(name){
+  $('#home').hidden = name !== 'home';
+  $('#room').hidden = name !== 'room';
+}
+function route(){
+  const m = location.hash.match(/^#\/room\/([0-9a-f-]{36})/i);
+  if (m) openRoom(m[1]); else showHome();
+}
+addEventListener('hashchange', route);
+
+/* ================= Home ================= */
+const homeState = { q:'', cat:'All', sort:'active', showPrivate:false };
+let rooms = [], previews = new Map();
+const PREVIEW_POS = [ {l:8,t:16,r:-6}, {l:37,t:9,r:3}, {l:65,t:20,r:-2} ];
+
+function fromRoomRow(r){
+  return {
+    id:r.id, name:r.name, category:r.category, desc:r.description, size:r.size, w:r.w, h:r.h,
+    theme: STYLES[r.theme] ? r.theme : 'midnight', visibility:r.visibility, posting:r.posting,
+    cap:r.pin_cap, count:r.pin_count, owner:r.owner,
+    created: Date.parse(r.created_at), lastActive: Date.parse(r.last_active)
+  };
+}
+async function showHome(){
+  if (currentRoom) leaveRoom();
+  closeMenu();
+  showPage('home');
+  document.title = 'Picboard';
+  applyStyle(globalStyle);
+  await refreshHome();
+}
+async function refreshHome(){
+  $('#grid').innerHTML = '<div class="loading">Loading rooms…</div>';
+  $('#homeEmpty').hidden = true;
+  const [roomsRes, prevRes] = await Promise.all([
+    sb.from('rooms').select('*').order('last_active', { ascending:false }).limit(300),
+    sb.rpc('room_previews')
+  ]);
+  if (roomsRes.error){
+    $('#grid').innerHTML = `<div class="loading">Couldn't load rooms: ${esc(roomsRes.error.message)}</div>`;
+    return;
+  }
+  rooms = roomsRes.data.map(fromRoomRow);
+  previews = new Map();
+  (prevRes.data || []).forEach(p => {
+    if (!previews.has(p.room_id)) previews.set(p.room_id, []);
+    previews.get(p.room_id).push(p);
+  });
+  for (const list of previews.values()) list.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+  renderHome();
+  updateStats();
+}
+function renderChips(){
+  const wrap = $('#chips');
+  wrap.innerHTML = '';
+  ['All', ...CATEGORIES].forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c === homeState.cat ? ' active' : '');
+    b.textContent = c;
+    b.onclick = () => { homeState.cat = c; renderChips(); renderHome(); };
+    wrap.appendChild(b);
+  });
+}
+function renderHome(){
+  const q = homeState.q.trim().toLowerCase();
+  const list = rooms.filter(r =>
+    (homeState.showPrivate || r.visibility !== 'private') &&
+    (homeState.cat === 'All' || r.category === homeState.cat) &&
+    (!q || r.name.toLowerCase().includes(q) || (r.desc || '').toLowerCase().includes(q))
+  );
+  const sorters = {
+    active:(a, b) => b.lastActive - a.lastActive,
+    newest:(a, b) => b.created - a.created,
+    pins:(a, b) => b.count - a.count,
+    az:(a, b) => a.name.localeCompare(b.name)
+  };
+  list.sort(sorters[homeState.sort]);
+  const grid = $('#grid');
+  grid.innerHTML = '';
+  $('#homeEmpty').hidden = list.length > 0;
+  $('#homeEmptyText').textContent = rooms.length ? 'No rooms match that.' : 'No rooms yet. Make the very first one!';
+  for (const r of list){
+    const a = document.createElement('a');
+    a.className = 'room-card';
+    a.href = '#/room/' + r.id;
+    a.innerHTML = cardHTML(r);
+    const del = a.querySelector('.rc-del');
+    if (del) del.onclick = e => { e.preventDefault(); e.stopPropagation(); deleteRoom(r); };
+    grid.appendChild(a);
+  }
+}
+function minisHTML(r){
+  return (previews.get(r.id) || []).slice(0, 3).map((p, i) => {
+    const P = PREVIEW_POS[i];
+    const style = `left:${P.l}%;top:${P.t}%;--r:${P.r}deg`;
+    if (p.type === 'note'){
+      return `<div class="mini note" style="${style};--nc:${esc((p.data && p.data.color) || NOTE_COLORS[0])}">${esc((p.data && p.data.text) || '')}</div>`;
+    }
+    const url = esc(publicUrl(p.path));
+    return `<div class="mini media" style="${style}">${
+      p.type === 'video' ? `<video muted preload="metadata" src="${url}#t=0.5"></video>` : `<img alt="" loading="lazy" src="${url}">`
+    }</div>`;
+  }).join('');
+}
+function cardHTML(r){
+  const priv = r.visibility === 'private';
+  const ov = priv
+    ? `<div class="thumb-ov">${ic('lock', 22)}<span>Password protected</span></div>`
+    : (r.count ? minisHTML(r) : `<div class="thumb-ov soft"><span>Empty board, be the first</span></div>`);
+  const badges = [];
+  if (priv) badges.push(`<span class="badge accent">${ic('lock', 11)} Private</span>`);
+  if (r.owner === me.id) badges.push(`<span class="badge accent">${ic('user', 11)} Yours</span>`);
+  badges.push(`<span class="badge">${esc(STYLES[r.theme].name)}</span>`);
+  return `
+    <div class="thumb surf-${r.theme}">${ov}</div>
+    <div class="rc-body">
+      <div class="rc-name">${esc(r.name)}</div>
+      ${r.desc ? `<div class="rc-desc">${esc(r.desc)}</div>` : ''}
+      <div class="rc-meta">
+        <span>${ic('tag', 13)}${esc(r.category)}</span>
+        <span>${ic('pin', 13)}${r.count} / ${r.cap}</span>
+        <span>${ic('clock', 13)}${ago(r.lastActive)}</span>
+      </div>
+      <div class="badges">${badges.join('')}</div>
+    </div>
+    ${r.owner === me.id ? `<button class="rc-del" title="Delete your room">${ic('trash', 15)}</button>` : ''}`;
+}
+async function deleteRoom(r){
+  if (!confirm(`Delete "${r.name}" and everything on it? This can't be undone.`)) return;
+  const { error } = await sb.from('rooms').delete().eq('id', r.id);
+  if (error){ toast(niceError(error)); return; }
+  delete prefs[r.id]; saveJSON(localStorage, PREFS_KEY, prefs);
+  cleanupOrphans();
+  toast('Room deleted');
+  refreshHome();
+}
+function updateStats(){
+  const pins = rooms.reduce((n, r) => n + (r.count || 0), 0);
+  $('#statChips').innerHTML =
+    `<span class="stat-chip"><b>${rooms.length}</b> rooms</span><span class="stat-chip"><b>${pins}</b> pins</span>`;
+}
+
+$('#search').addEventListener('input', e => { homeState.q = e.target.value; renderHome(); });
+$('#sortSel').onchange = e => { homeState.sort = e.target.value; renderHome(); };
+$('#privToggle').onchange = e => { homeState.showPrivate = e.target.checked; renderHome(); };
+$('#refreshBtn').onclick = refreshHome;
+$('#styleBtn').onclick = () => openStyleMenu($('#styleBtn'), globalStyle, id => {
+  globalStyle = id; saveJSON(localStorage, STYLE_KEY, id); applyStyle(id);
+});
+
+/* ================= Create room ================= */
+const form = $('#createForm');
+$('#catSel').innerHTML = CATEGORIES.map(c => `<option>${c}</option>`).join('');
+$('#styleOpts').innerHTML = STYLE_IDS.map(id => `
+  <label class="style-opt">
+    <input type="radio" name="theme" value="${id}">
+    <span class="sw surf-${id}"></span>
+    <span class="sw-name">${STYLES[id].name}</span>
+  </label>`).join('');
+function readSize(fd){
+  const size = fd.get('size');
+  return size === 'custom'
+    ? [clamp(+fd.get('cw') || 8000, 1000, 40000), clamp(+fd.get('ch') || 5000, 1000, 40000)]
+    : SIZES[size];
+}
+function updateCreateForm(){
+  const fd = new FormData(form);
+  $('#customSize').hidden = fd.get('size') !== 'custom';
+  const [w, h] = readSize(fd);
+  $('#sizeHint').textContent = `${w.toLocaleString()} × ${h.toLocaleString()} px board`;
+  $('#pwField').hidden = fd.get('visibility') !== 'private';
+}
+form.addEventListener('change', updateCreateForm);
+form.addEventListener('input', updateCreateForm);
+function openCreate(){
+  form.reset();
+  form.querySelector(`input[name="theme"][value="${globalStyle}"]`).checked = true;
+  $('#createError').textContent = '';
+  updateCreateForm();
+  $('#createModal').hidden = false;
+  setTimeout(() => form.elements.name.focus(), 30);
+}
+$('#newRoomBtn').onclick = openCreate;
+$('#newRoomBtn2').onclick = openCreate;
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd = new FormData(form);
+  const name = (fd.get('name') || '').trim();
+  if (!name){ $('#createError').textContent = 'Give your room a name.'; form.elements.name.focus(); return; }
+  const [w, h] = readSize(fd);
+  const visibility = fd.get('visibility');
+  const pw = fd.get('password') || '';
+  if (visibility === 'private' && pw.length < 3){ $('#createError').textContent = 'Private rooms need a password of at least 3 characters.'; return; }
+  const btn = $('#createSubmit');
+  btn.disabled = true; btn.textContent = 'Creating…';
+  const { data, error } = await sb.rpc('create_room', {
+    p_name: name, p_category: fd.get('category'), p_description: (fd.get('desc') || '').trim(),
+    p_size: fd.get('size'), p_w: w, p_h: h, p_theme: fd.get('theme') || 'midnight',
+    p_visibility: visibility, p_posting: 'anyone', p_cap: clamp(+fd.get('cap') || 60, 5, 500),
+    p_password: visibility === 'private' ? pw : null
+  });
+  btn.disabled = false; btn.textContent = 'Create room';
+  if (error || !data){ $('#createError').textContent = niceError(error); return; }
+  closeModal('createModal');
+  location.hash = '#/room/' + data.id;
+});
+
+/* ================= Password modal ================= */
+let pwResolve = null, pwRoom = null;
+function closeModal(id, result){
+  $('#' + id).hidden = true;
+  if (id === 'pwModal' && pwResolve){ const r = pwResolve; pwResolve = null; r(!!result); }
+}
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('mousedown', e => { if (e.target === m) closeModal(m.id, false); });
+  m.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closeModal(m.id, false));
+});
+function askPassword(r){
+  return new Promise(res => {
+    pwResolve = res; pwRoom = r;
+    $('#pwRoomName').textContent = r.name;
+    $('#pwInput').value = '';
+    $('#pwError').textContent = '';
+    $('#pwModal').hidden = false;
+    setTimeout(() => $('#pwInput').focus(), 30);
+  });
+}
+$('#pwForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!pwRoom) return;
+  const btn = $('#pwSubmit');
+  btn.disabled = true;
+  const { data, error } = await sb.rpc('join_room', { p_room: pwRoom.id, p_password: $('#pwInput').value });
+  btn.disabled = false;
+  if (error){ $('#pwError').textContent = niceError(error); return; }
+  if (data === true) closeModal('pwModal', true);
+  else { $('#pwError').textContent = 'Wrong password.'; $('#pwInput').select(); }
+});
+const modalOpen = () => !!document.querySelector('.modal:not([hidden])');
+
+/* ================= Room state ================= */
+const vp = $('#viewport'), world = $('#world'), board = $('#board');
+let BW = 8000, BH = 5000, cap = 60;
+const view = { x:0, y:0, z:1 };
+const MAX_Z = 4, VIDEO_MIN_Z = 0.15;
+let minZ = 0.05;
+let items = [], roomToken = 0, openToken = 0, canPost = true, channel = null;
+const selection = new Set();
+let tool = 'move', editing = null, spaceDown = false, pendingDrop = null;
+
+const drawLayer = document.createElementNS(SVGNS, 'svg');
+drawLayer.id = 'drawLayer';
+const drawPath = document.createElementNS(SVGNS, 'path');
+drawPath.setAttribute('fill', 'none');
+drawPath.setAttribute('stroke-linecap', 'round');
+drawPath.setAttribute('stroke-linejoin', 'round');
+drawLayer.appendChild(drawPath);
+world.appendChild(drawLayer);
+
+const isRoomOwner = () => !!(currentRoom && currentRoom.owner === me.id);
+const canEdit = it => !!it && (it.pending || it.author === me.id || isRoomOwner());
+const findItem = id => items.find(i => i.id === id);
+
+async function openRoom(id){
+  if (currentRoom && currentRoom.id === id) return;
+  const tok = ++openToken;
+  const { data:row, error } = await sb.from('rooms').select('*').eq('id', id).maybeSingle();
+  if (tok !== openToken) return;
+  if (error || !row){ toast("That room doesn't exist anymore"); location.replace('#/'); return; }
+  const r = fromRoomRow(row);
+  if (r.visibility === 'private'){
+    const { data: ok } = await sb.rpc('can_view', { rid: id });
+    if (tok !== openToken) return;
+    if (!ok){
+      if (currentRoom || $('#home').hidden) showHome();
+      const passed = await askPassword(r);
+      if (!passed){ location.replace('#/'); return; }
+      if (location.hash !== '#/room/' + id) return;
+    }
+  }
+  enterRoom(r);
+}
+
+async function enterRoom(r){
+  if (currentRoom) leaveRoom();
+  currentRoom = r;
+  showPage('room');
+  closeMenu();
+  document.title = r.name + ' · Picboard';
+  $('#roomName').innerHTML = (r.visibility === 'private' ? ic('lock', 14) : '') + `<span>${esc(r.name)}</span>`;
+  BW = r.w; BH = r.h; cap = r.cap;
+  board.style.width = BW + 'px';
+  board.style.height = BH + 'px';
+  canPost = r.posting === 'anyone' || !me.isAnon;
+  $('#toolbar').classList.toggle('disabled', !canPost);
+  applyStyle((prefs[r.id] && prefs[r.id].theme) || r.theme);
+  setTool('move');
+  computeMinZ();
+  fitBoard();
+  updateCount();
+  if (!canPost) toast('This room is view-only for now');
+
+  const token = ++roomToken;
+  subscribeRoom(r);
+  const { data, error } = await sb.from('items').select('*').eq('room_id', r.id).order('created_at').limit(3000);
+  if (token !== roomToken) return;
+  if (error) toast("Couldn't load this board: " + error.message);
+  (data || []).forEach(row => { if (!findItem(row.id)) mount(fromItemRow(row)); });
+  items.forEach(i => { zCounter = Math.max(zCounter, i.z); });
+  updateCount();
+}
+
+function leaveRoom(){
+  roomToken++;
+  if (editing) stopEditing();
+  if (channel){ sb.removeChannel(channel); channel = null; }
+  for (const c of cursors.values()) c.el.remove();
+  cursors.clear();
+  [...items].forEach(removeLocal);
+  items = [];
+  selection.clear();
+  currentRoom = null;
+  mode = null; st = {}; pointers.clear();
+  drawPath.setAttribute('d', '');
+  $('#marquee').hidden = true;
+  vp.classList.remove('panning');
+}
+
+$('#roomStyleBtn').onclick = () => {
+  if (!currentRoom) return;
+  const cur = document.documentElement.dataset.style;
+  openStyleMenu($('#roomStyleBtn'), cur, id => {
+    prefs[currentRoom.id] = { theme:id };
+    saveJSON(localStorage, PREFS_KEY, prefs);
+    applyStyle(id);
+  });
+};
+
+/* ================= Realtime: changes, live moves, cursors ================= */
+function subscribeRoom(r){
+  channel = sb.channel('room:' + r.id, { config:{ broadcast:{ self:false }, presence:{ key: me.id } } });
+  channel
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'items', filter:`room_id=eq.${r.id}` }, p => onRemoteInsert(p.new))
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'items', filter:`room_id=eq.${r.id}` }, p => onRemoteUpdate(p.new))
+    .on('postgres_changes', { event:'DELETE', schema:'public', table:'items' }, p => { const it = findItem(p.old && p.old.id); if (it) removeLocal(it); })
+    .on('broadcast', { event:'move' }, ({ payload }) => onRemoteMove(payload))
+    .on('broadcast', { event:'cursor' }, ({ payload }) => onRemoteCursor(payload))
+    .on('presence', { event:'sync' }, updatePresence)
+    .on('presence', { event:'leave' }, ({ key }) => removeCursor(key))
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') channel.track({ n: myName(), c: me.color });
+    });
+}
+function onRemoteInsert(row){
+  if (findItem(row.id)) return;
+  mount(fromItemRow(row));
+  updateCount();
+}
+const isBusy = it => (mode === 'drag' && st.movers && st.movers.some(m => m.it === it)) || (mode === 'resize' && st.it === it);
+function onRemoteUpdate(row){
+  const visible = row.report_count < REPORT_HIDE || row.author === me.id || isRoomOwner();
+  const it = findItem(row.id);
+  if (!it){ if (visible){ mount(fromItemRow(row)); updateCount(); } return; }
+  if (!visible){ removeLocal(it); return; }
+  it.reportCount = row.report_count;
+  it.locked = row.locked;
+  it.el.classList.toggle('locked', it.locked);
+  if (!isBusy(it)){
+    const moved = it.x !== row.x || it.y !== row.y || it.w !== row.w || it.rot !== row.rot;
+    if (moved){
+      it.el.classList.add('animating');
+      setTimeout(() => it.el && it.el.classList.remove('animating'), 400);
+    }
+    it.x = row.x; it.y = row.y; it.w = row.w; it.rot = row.rot;
+    it.el.style.setProperty('--r', it.rot + 'deg');
+    placeClamped(it);
+  }
+  it.z = Number(row.z); setZ(it); zCounter = Math.max(zCounter, it.z);
+  if (editing !== it) applyData(it, row.data || {});
+  updateReportedClass(it);
+  refreshSelectionUI();
+}
+function onRemoteMove(payload){
+  for (const [id, x, y] of (payload.p || [])){
+    const it = findItem(id);
+    if (!it || isBusy(it)) continue;
+    it.x = x; it.y = y;
+    it.el.style.left = x + 'px';
+    it.el.style.top = y + 'px';
+  }
+}
+let lastMoveSend = 0;
+function broadcastMoves(list, force = false){
+  if (!channel) return;
+  const now = performance.now();
+  if (!force && now - lastMoveSend < 50) return;
+  lastMoveSend = now;
+  channel.send({ type:'broadcast', event:'move', payload:{ p: list.map(i => [i.id, Math.round(i.x), Math.round(i.y)]) } });
+}
+
+const cursors = new Map();
+function myName(){ return me.name || ('anon-' + (me.id || '0000').slice(0, 4)); }
+let lastCursorSend = 0;
+function sendCursor(cx, cy){
+  if (!channel || !currentRoom) return;
+  const now = performance.now();
+  if (now - lastCursorSend < 70) return;
+  lastCursorSend = now;
+  const w = toWorld(cx, cy);
+  channel.send({ type:'broadcast', event:'cursor', payload:{ u: me.id, x: Math.round(w.x), y: Math.round(w.y), n: myName(), c: me.color } });
+}
+function onRemoteCursor(p){
+  if (!p || p.u === me.id) return;
+  let c = cursors.get(p.u);
+  if (!c){
+    const el = document.createElement('div');
+    el.className = 'rcursor';
+    el.innerHTML = `<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 7.5-6.5 1.8L7.5 18z" fill="var(--cc)" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg><span></span>`;
+    world.appendChild(el);
+    c = { el };
+    cursors.set(p.u, c);
+  }
+  if (p.gone){ c.el.style.display = 'none'; return; }
+  c.el.style.display = '';
+  c.el.style.left = p.x + 'px';
+  c.el.style.top = p.y + 'px';
+  c.el.style.setProperty('--cc', p.c || '#888');
+  c.el.querySelector('span').textContent = String(p.n || 'anon').slice(0, 24);
+  c.t = Date.now();
+}
+function removeCursor(key){ const c = cursors.get(key); if (c){ c.el.remove(); cursors.delete(key); } }
+setInterval(() => { for (const [k, c] of cursors) if (Date.now() - (c.t || 0) > 10000) removeCursor(k); }, 3000);
+function updatePresence(){
+  const n = channel ? Object.keys(channel.presenceState()).length : 1;
+  $('#presenceCount').textContent = Math.max(1, n);
+}
+function updateMeDot(){ $('#meDot').style.setProperty('--mc', me.color); }
+$('#meBtn').onclick = () => {
+  const r = $('#meBtn').getBoundingClientRect();
+  const n = $('#presenceCount').textContent;
+  openMenu(r.left, r.bottom + 6, [
+    { title:`${n} here · you're ${myName()}` },
+    { icon:'user', label:'Change your name', run: () => {
+        const v = prompt('Name shown next to your cursor:', myName());
+        if (v === null) return;
+        me.name = v.trim().slice(0, 24) || null;
+        saveJSON(localStorage, NAME_KEY, me.name);
+        if (channel) channel.track({ n: myName(), c: me.color });
+      } },
+    { colors: CURSOR_COLORS, current: me.color, pick: c => {
+        me.color = c; saveJSON(localStorage, COLOR_KEY, c); updateMeDot();
+        if (channel) channel.track({ n: myName(), c: me.color });
+      } }
+  ]);
+};
+
+/* ================= Database writes ================= */
+function fromItemRow(row){
+  return {
+    id: row.id, type: row.type, x: row.x, y: row.y, w: row.w, rot: row.rot || 0, z: Number(row.z) || 0,
+    locked: !!row.locked, path: row.path, mime: row.mime, data: row.data || {},
+    author: row.author, reportCount: row.report_count || 0, created: Date.parse(row.created_at)
+  };
+}
+function toRow(it){
+  return {
+    id: it.id, room_id: currentRoom.id, type: it.type,
+    x: it.x, y: it.y, w: it.w, rot: it.rot, z: it.z, locked: it.locked,
+    path: it.path || null, mime: it.mime || null, data: it.data
+  };
+}
+async function insertItem(it){
+  const { error } = await sb.from('items').insert(toRow(it));
+  if (error){ toast(niceError(error)); removeLocal(it); return false; }
+  cleanupOrphans();
+  return true;
+}
+async function saveItems(list, fields){
+  const jobs = list.filter(i => !i.pending && items.includes(i)).map(it => {
+    const patch = {};
+    fields.forEach(f => { patch[f] = it[f]; });
+    return sb.from('items').update(patch).eq('id', it.id);
+  });
+  const results = await Promise.all(jobs);
+  const bad = results.find(r => r.error);
+  if (bad) toast(niceError(bad.error));
+}
+async function deleteItems(list){
+  const mine = list.filter(canEdit);
+  const skipped = list.length - mine.length;
+  if (!mine.length){ toast('You can only delete things you added'); return; }
+  const ids = mine.filter(i => !i.pending).map(i => i.id);
+  mine.forEach(removeLocal);
+  setSelection([]);
+  if (ids.length){
+    const { error } = await sb.from('items').delete().in('id', ids);
+    if (error) toast(niceError(error));
+    cleanupOrphans();
+  }
+  if (skipped) toast(`${skipped} item${skipped > 1 ? 's weren\'t' : ' wasn\'t'} yours, so ${skipped > 1 ? 'they' : 'it'} stayed`);
+}
+let orphanTimer;
+function cleanupOrphans(){
+  clearTimeout(orphanTimer);
+  orphanTimer = setTimeout(async () => {
+    const { data } = await sb.rpc('take_orphans');
+    const paths = (data || []).map(d => typeof d === 'string' ? d : d.orphan_path).filter(Boolean);
+    if (paths.length) await sb.storage.from(BUCKET).remove(paths);
+  }, 900);
+}
+
+/* ================= View ================= */
+function fitZoom(){ return Math.min(innerWidth / BW, innerHeight / BH); }
+function computeMinZ(){ minZ = fitZoom() * 0.5; }
+function clampView(){
+  view.z = clamp(view.z, minZ, MAX_Z);
+  const bw = BW * view.z, bh = BH * view.z, mx = innerWidth * 0.5, my = innerHeight * 0.5;
+  view.x = clamp(view.x, innerWidth - bw - mx, mx);
+  view.y = clamp(view.y, innerHeight - bh - my, my);
+}
+let lastTiny = null;
+function applyView(){
+  clampView();
+  world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.z})`;
+  vp.style.setProperty('--z', view.z);
+  const pct = view.z * 100;
+  $('#zoomBtn').textContent = (pct < 10 ? pct.toFixed(1) : Math.round(pct)) + '%';
+  const tiny = view.z < VIDEO_MIN_Z;
+  if (tiny !== lastTiny){
+    lastTiny = tiny;
+    items.forEach(it => it.type === 'video' && updateVideo(it));
+  }
+}
+function toWorld(cx, cy){ return { x:(cx - view.x) / view.z, y:(cy - view.y) / view.z }; }
+function zoomAt(cx, cy, factor){
+  const nz = clamp(view.z * factor, minZ, MAX_Z);
+  const w = toWorld(cx, cy);
+  view.z = nz;
+  view.x = cx - w.x * nz;
+  view.y = cy - w.y * nz;
+}
+function fitBoard(){
+  view.z = fitZoom() * 0.9;
+  view.x = innerWidth / 2 - (BW / 2) * view.z;
+  view.y = innerHeight / 2 - (BH / 2) * view.z;
+  applyView();
+}
+function fitPins(){
+  if (!items.length){ fitBoard(); return; }
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const it of items){
+    const h = it.el.offsetHeight;
+    minX = Math.min(minX, it.x); minY = Math.min(minY, it.y);
+    maxX = Math.max(maxX, it.x + it.w); maxY = Math.max(maxY, it.y + h);
+  }
+  const pad = 90, bw = Math.max(1, maxX - minX), bh = Math.max(1, maxY - minY);
+  view.z = Math.min(1.5, Math.min((innerWidth - pad * 2) / bw, (innerHeight - pad * 2) / bh));
+  view.x = innerWidth / 2 - (minX + bw / 2) * view.z;
+  view.y = innerHeight / 2 - (minY + bh / 2) * view.z;
+  applyView();
+}
+
+/* ================= Items: building ================= */
+function updateVideo(it){
+  if (it.visible && view.z >= VIDEO_MIN_Z) it.media.play().catch(() => {});
+  else it.media.pause();
+}
+const io = new IntersectionObserver(entries => {
+  for (const en of entries){
+    const it = en.target._item;
+    if (!it) continue;
+    it.visible = en.isIntersecting;
+    updateVideo(it);
+  }
+});
+
+function pathD(pts){
+  if (!pts || !pts.length) return '';
+  if (pts.length === 1){ const [x, y] = pts[0]; return `M${x} ${y} L${x + 0.01} ${y}`; }
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++){
+    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+    d += ` Q${x1} ${y1} ${((x1 + x2) / 2).toFixed(1)} ${((y1 + y2) / 2).toFixed(1)}`;
+  }
+  const l = pts[pts.length - 1];
+  return d + ` L${l[0]} ${l[1]}`;
+}
+function strokeSVG(d){
+  const p = pathD(d.points);
+  return `<svg xmlns="${SVGNS}" viewBox="0 0 ${+d.vw || 1} ${+d.vh || 1}">` +
+    `<path class="hit" d="${p}" stroke-width="${(+d.size || 4) + 14}"/>` +
+    `<path class="vis" d="${p}" stroke="${esc(d.color)}" stroke-width="${+d.size || 4}"/></svg>`;
+}
+function setZ(it){ it.el.style.zIndex = clamp(Math.round(it.z || 0), -2000000000, 2000000000); }
+function placeClamped(it){
+  it.w = clamp(it.w, 20, BW);
+  it.el.style.width = it.w + 'px';
+  const h = it.el.offsetHeight || it.w;
+  it.x = clamp(it.x, 0, Math.max(0, BW - it.w));
+  it.y = clamp(it.y, 0, Math.max(0, BH - h));
+  it.el.style.left = it.x + 'px';
+  it.el.style.top = it.y + 'px';
+}
+function updateReportedClass(it){
+  it.el.classList.toggle('reported', reportedByMe.has(it.id) || it.reportCount >= REPORT_HIDE);
+}
+function applyData(it, d){
+  it.data = d;
+  if (it.type === 'note'){
+    it.el.style.setProperty('--nc', d.color || NOTE_COLORS[0]);
+    if (it.body.textContent !== (d.text || '')){ it.body.textContent = d.text || ''; placeClamped(it); }
+  } else if (it.type === 'stroke'){
+    const vis = it.el.querySelector('.vis');
+    if (vis) vis.setAttribute('stroke', d.color);
+  }
+}
+
+function mount(it){
+  it.visible = false;
+  const el = document.createElement('div');
+  el.dataset.id = it.id;
+  el.style.setProperty('--r', (it.rot || 0) + 'deg');
+
+  if (it.type === 'image' || it.type === 'video'){
+    el.className = 'item media';
+    it.src = it.localSrc || (it.path ? publicUrl(it.path) : '');
+    const card = document.createElement('div');
+    card.className = 'card';
+    let media;
+    if (it.type === 'video'){
+      media = document.createElement('video');
+      media.muted = true; media.loop = true; media.playsInline = true; media.preload = 'metadata';
+      media.addEventListener('loadedmetadata', () => placeClamped(it), { once:true });
+    } else {
+      media = document.createElement('img');
+      media.draggable = false; media.alt = '';
+      media.addEventListener('load', () => placeClamped(it), { once:true });
+    }
+    media._item = it;
+    media.src = it.src;
+    card.appendChild(media);
+    el.appendChild(card);
+    it.media = media;
+  } else if (it.type === 'note'){
+    el.className = 'item note';
+    el.style.setProperty('--nc', it.data.color || NOTE_COLORS[0]);
+    const body = document.createElement('div');
+    body.className = 'note-body';
+    body.textContent = it.data.text || '';
+    body.addEventListener('blur', () => { if (editing === it) stopEditing(); });
+    body.addEventListener('paste', e => {
+      e.preventDefault(); e.stopPropagation();
+      document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+    });
+    el.appendChild(body);
+    it.body = body;
+  } else if (it.type === 'stroke'){
+    el.className = 'item stroke';
+    el.innerHTML = strokeSVG(it.data);
+  }
+
+  if (it.type !== 'stroke'){
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.style.setProperty('--pc', it.data.pc || PIN_COLORS[0]);
+    el.appendChild(pin);
+  }
+  el.insertAdjacentHTML('beforeend',
+    `<div class="badge-lock">${ic('lock', 12)}</div>` +
+    `<button class="more-btn" title="Options">${ic('more', 16)}</button>` +
+    `<div class="resize"></div>`);
+  if (it.locked) el.classList.add('locked');
+
+  it.el = el;
+  world.insertBefore(el, drawLayer);
+  setZ(it);
+  placeClamped(it);
+  updateReportedClass(it);
+  if (it.type === 'video') io.observe(it.media);
+  items.push(it);
+  updateCount();
+  return it;
+}
+function removeLocal(it){
+  const idx = items.indexOf(it);
+  if (idx === -1) return;
+  if (editing === it) editing = null;
+  items.splice(idx, 1);
+  selection.delete(it);
+  if (it.type === 'video'){ io.unobserve(it.media); it.media.pause(); }
+  it.el.remove();
+  if (it.localSrc) URL.revokeObjectURL(it.localSrc);
+  refreshSelectionUI();
+  updateCount();
+}
+function updateCount(){
+  const pins = items.filter(i => i.type !== 'stroke').length;
+  if (currentRoom) $('#roomSub').textContent = `${currentRoom.category} · ${pins} / ${cap} pins${canPost ? '' : ' · view only'}`;
+  $('#meterFill').style.width = Math.min(100, pins / cap * 100) + '%';
+  $('#meterText').textContent = `${pins} / ${cap} pins`;
+  $('#roomEmpty').style.display = items.length ? 'none' : 'flex';
+}
+
+function baseItem(type, extra){
+  return {
+    id: newId(), type, x:0, y:0, w:240, rot:0, z: zNow(), locked:false,
+    path:null, mime:null, data:{}, author: me.id, reportCount:0, created: Date.now(), ...extra
+  };
+}
+function newNote(wx, wy){
+  return baseItem('note', {
+    x: wx - 110, y: wy - 30, w: 220, rot: +rand(-3, 3).toFixed(2), pending: true,
+    data: { text:'', color: noteColor, pc: pick(PIN_COLORS) }
+  });
+}
+
+/* ================= Selection ================= */
+function refreshSelectionUI(){
+  const solo = selection.size === 1;
+  for (const it of items){
+    const on = selection.has(it);
+    it.el.classList.toggle('selected', on);
+    it.el.classList.toggle('solo', on && solo);
+  }
+}
+function setSelection(list){ selection.clear(); list.forEach(i => selection.add(i)); refreshSelectionUI(); }
+function toggleSel(it){ if (selection.has(it)) selection.delete(it); else selection.add(it); refreshSelectionUI(); }
+function selectAll(){ setSelection(items); }
+const sel = () => [...selection];
+
+/* ================= Item actions ================= */
+function toggleLock(list){
+  const mine = list.filter(canEdit);
+  if (!mine.length){ toast('Only the person who added it (or the room owner) can lock it'); return; }
+  const lockIt = mine.some(i => !i.locked);
+  mine.forEach(i => { i.locked = lockIt; i.el.classList.toggle('locked', lockIt); });
+  refreshSelectionUI();
+  saveItems(mine, ['locked']);
+  toast(lockIt ? (mine.length > 1 ? `Locked ${mine.length} items` : 'Locked in place') : 'Unlocked');
+}
+function bringToFront(list, save = true){
+  const movable = list.filter(i => !i.locked || canEdit(i));
+  movable.slice().sort(byZ).forEach(i => { i.z = zNow(); setZ(i); });
+  if (save) saveItems(movable, ['z']);
+}
+function sendToBack(list){
+  const movable = list.filter(i => !i.locked || canEdit(i));
+  let low = Math.min(...items.map(i => i.z)) - 1;
+  movable.slice().sort(byZ).reverse().forEach(i => { i.z = low--; setZ(i); });
+  saveItems(movable, ['z']);
+}
+function straighten(list){
+  const movable = list.filter(i => !i.locked);
+  movable.forEach(i => { i.rot = 0; i.el.style.setProperty('--r', '0deg'); });
+  saveItems(movable, ['rot']);
+}
+function setColor(list, c){
+  const mine = list.filter(canEdit);
+  mine.forEach(i => {
+    i.data = { ...i.data, color: c };
+    applyData(i, i.data);
+  });
+  saveItems(mine, ['data']);
+}
+async function duplicate(list){
+  if (!canPost) return;
+  const made = [];
+  for (const i of list.slice().sort(byZ)){
+    if (i.pending) continue;
+    const it = baseItem(i.type, {
+      x: i.x + 40, y: i.y + 40, w: i.w, rot: i.rot, path: i.path, mime: i.mime,
+      data: JSON.parse(JSON.stringify(i.data))
+    });
+    mount(it);
+    made.push(it);
+  }
+  setSelection(made);
+  for (const it of made) await insertItem(it);
+}
+async function report(it){
+  if (reportedByMe.has(it.id)) return;
+  const { error } = await sb.from('reports').insert({ item_id: it.id });
+  if (error && error.code !== '23505'){ toast(niceError(error)); return; }
+  reportedByMe.add(it.id);
+  saveJSON(localStorage, REPORTED_KEY, [...reportedByMe].slice(-500));
+  updateReportedClass(it);
+  toast('Reported. It\'s hidden for you, and gets hidden for everyone after 3 reports.');
+}
+function toggleMute(it){
+  it.media.muted = !it.media.muted;
+  if (!it.media.muted) it.media.play().catch(() => {});
+}
+
+function arrange(kind){
+  const list = sel().filter(i => !i.locked);
+  if (list.length < 2){ toast('Select at least two unlocked items to arrange'); return; }
+  const hs = new Map(list.map(i => [i, i.el.offsetHeight]));
+  const minX = Math.min(...list.map(i => i.x)), minY = Math.min(...list.map(i => i.y));
+  const maxX = Math.max(...list.map(i => i.x + i.w)), maxY = Math.max(...list.map(i => i.y + hs.get(i)));
+  const gap = 40;
+  list.forEach(i => i.el.classList.add('animating'));
+  if (kind === 'grid'){
+    list.sort((a, b) => (a.y - b.y) || (a.x - b.x));
+    const cols = Math.ceil(Math.sqrt(list.length));
+    const cellW = Math.max(...list.map(i => i.w)) + gap;
+    let y = minY;
+    for (let r = 0; r * cols < list.length; r++){
+      const row = list.slice(r * cols, (r + 1) * cols);
+      row.forEach((it, c) => { it.x = minX + c * cellW + (cellW - gap - it.w) / 2; it.y = y; it.rot = 0; });
+      y += Math.max(...row.map(i => hs.get(i))) + gap;
+    }
+  } else if (kind === 'row'){
+    list.sort((a, b) => a.x - b.x);
+    let x = minX;
+    list.forEach(it => { it.x = x; it.y = minY; it.rot = 0; x += it.w + gap; });
+  } else if (kind === 'pile'){
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    list.forEach(it => {
+      it.x = cx - it.w / 2 + rand(-24, 24);
+      it.y = cy - hs.get(it) / 2 + rand(-24, 24);
+      it.rot = +rand(-9, 9).toFixed(2);
+    });
+    bringToFront(list, false);
+  }
+  list.forEach(it => { it.el.style.setProperty('--r', it.rot + 'deg'); placeClamped(it); });
+  saveItems(list, ['x', 'y', 'rot', 'z']);
+  setTimeout(() => list.forEach(i => i.el && i.el.classList.remove('animating')), 400);
+}
+
+const EXT = {'image/jpeg':'jpg','image/png':'png','image/gif':'gif','image/webp':'webp','image/avif':'avif','video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'};
+function saveBlob(blob, name){
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 3000);
+}
+async function downloadItem(it){
+  if (it.type === 'stroke'){
+    const d = it.data;
+    const svg = `<svg xmlns="${SVGNS}" width="${Math.round(d.vw)}" height="${Math.round(d.vh)}" viewBox="0 0 ${d.vw} ${d.vh}"><path d="${pathD(d.points)}" fill="none" stroke="${d.color}" stroke-width="${d.size}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    saveBlob(new Blob([svg], { type:'image/svg+xml' }), `drawing-${it.id.slice(0, 8)}.svg`);
+    return;
+  }
+  try {
+    const r = await fetch(it.src);
+    if (!r.ok) throw 0;
+    const blob = await r.blob();
+    saveBlob(blob, `picboard-${it.id.slice(0, 8)}.${EXT[blob.type] || (it.type === 'video' ? 'mp4' : 'webp')}`);
+  } catch {
+    window.open(it.src, '_blank');
+  }
+}
+async function downloadMany(list){
+  for (const it of list){ await downloadItem(it); await new Promise(r => setTimeout(r, 300)); }
+}
+
+function openItemMenu(x, y){
+  const list = sel();
+  if (!list.length) return;
+  const editable = list.filter(canEdit);
+  const anyUnlocked = editable.some(i => !i.locked);
+  const lockEntry = {
+    icon: anyUnlocked ? 'lock' : 'unlock', kbd:'L', disabled: !editable.length,
+    label: anyUnlocked || !editable.length ? (list.length > 1 ? 'Lock in place' : 'Lock in place') : 'Unlock',
+    run: () => toggleLock(list)
+  };
+  const layer = [
+    { icon:'front', label:'Bring to front', kbd:']', run:() => bringToFront(list) },
+    { icon:'backL', label:'Send to back', kbd:'[', run:() => sendToBack(list) }
+  ];
+  const dup = { icon:'copy', label:'Duplicate', kbd:'Ctrl+D', disabled: !canPost, run:() => duplicate(list) };
+  const del = {
+    icon:'trash', danger:true, kbd:'Del', disabled: !editable.length,
+    label: list.length > 1 ? `Delete ${editable.length} of yours` : 'Delete',
+    run: () => deleteItems(list)
+  };
+
+  if (list.length > 1){
+    const media = list.filter(i => i.type === 'image' || i.type === 'video');
+    openMenu(x, y, [
+      { title:`${list.length} selected` },
+      { icon:'grid', label:'Tidy into a grid', run:() => arrange('grid') },
+      { icon:'row', label:'Line up in a row', run:() => arrange('row') },
+      { icon:'pile', label:'Stack into a pile', run:() => arrange('pile') },
+      { icon:'straighten', label:'Straighten all', run:() => straighten(list) },
+      '-', ...layer, lockEntry, dup,
+      ...(media.length ? [{ icon:'download', label:`Download ${media.length} file${media.length > 1 ? 's' : ''}`, run:() => downloadMany(media) }] : []),
+      '-', del
+    ]);
+    return;
+  }
+  const it = list[0];
+  const mine = canEdit(it);
+  const reportEntry = !mine ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
+  if (it.type === 'note'){
+    openMenu(x, y, [
+      { title: mine ? 'Your note' : 'Note' },
+      { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
+      { colors:NOTE_COLORS, current:it.data.color, disabled: !mine, pick:c => { setColor(list, c); noteColor = c; } },
+      '-', ...layer, lockEntry,
+      { icon:'straighten', label:'Straighten', run:() => straighten(list) },
+      dup, '-', ...reportEntry, del
+    ]);
+    return;
+  }
+  if (it.type === 'stroke'){
+    openMenu(x, y, [
+      { title: mine ? 'Your drawing' : 'Drawing' },
+      { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
+      '-', ...layer, lockEntry, dup,
+      { icon:'download', label:'Download as SVG', run:() => downloadItem(it) },
+      '-', ...reportEntry, del
+    ]);
+    return;
+  }
+  const entries = [{ title: it.type === 'video' ? 'Video' : 'Image' }, ...layer, lockEntry];
+  if (it.rot) entries.push({ icon:'straighten', label:'Straighten', run:() => straighten(list) });
+  if (it.type === 'video') entries.push({ icon: it.media.muted ? 'vol' : 'volOff', label: it.media.muted ? 'Unmute' : 'Mute', run:() => toggleMute(it) });
+  entries.push('-',
+    { icon:'download', label:'Download', run:() => downloadItem(it) },
+    { icon:'external', label:'Open full size', run:() => window.open(it.src, '_blank') },
+    dup, '-', ...reportEntry, del);
+  openMenu(x, y, entries);
+}
+function openBoardMenu(x, y, wp){
+  openMenu(x, y, [
+    { title:'Board' },
+    { icon:'note', label:'Add a note here', kbd:'N', disabled: !canPost, run:() => {
+        const it = mount(newNote(wp.x, wp.y));
+        setSelection([it]); startEditing(it);
+      } },
+    { icon:'upload', label:'Add media here', disabled: !canPost, run:() => { pendingDrop = wp; $('#fileInput').click(); } },
+    '-',
+    { icon:'selectAll', label:'Select all', kbd:'Ctrl+A', run:selectAll },
+    { icon:'image', label:'Fit pins', kbd:'F', run:fitPins },
+    { icon:'maximize', label:'Whole board', kbd:'B', run:fitBoard }
+  ]);
+}
+
+/* ================= Notes ================= */
+function startEditing(it){
+  if (!it || it.type !== 'note' || it.locked || !items.includes(it) || !canEdit(it)) return;
+  if (editing && editing !== it) stopEditing();
+  editing = it;
+  const b = it.body;
+  try { b.contentEditable = 'plaintext-only'; } catch {}
+  if (b.contentEditable !== 'plaintext-only') b.contentEditable = 'true';
+  it.el.classList.add('editing');
+  b.focus();
+  const r = document.createRange();
+  r.selectNodeContents(b); r.collapse(false);
+  const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function stopEditing(){
+  if (!editing) return;
+  const it = editing;
+  editing = null;
+  const b = it.body;
+  b.contentEditable = 'false';
+  it.el.classList.remove('editing');
+  b.blur();
+  const text = b.innerText.replace(/\s+$/, '').slice(0, 500);
+  if (!text.trim()){
+    if (it.pending) removeLocal(it);
+    else deleteItems([it]);
+    return;
+  }
+  const changed = text !== (it.data.text || '');
+  it.data = { ...it.data, text };
+  b.textContent = text;
+  placeClamped(it);
+  if (it.pending){ it.pending = false; insertItem(it); }
+  else if (changed) saveItems([it], ['data']);
+}
+world.addEventListener('dblclick', e => {
+  if (tool !== 'move') return;
+  const el = e.target.closest('.item.note');
+  if (!el) return;
+  const it = findItem(el.dataset.id);
+  if (canEdit(it)) startEditing(it);
+});
+
+/* ================= Tools ================= */
+function setTool(t){
+  if (t !== 'move' && !canPost){ toast('This room is view-only for now'); t = 'move'; }
+  tool = t;
+  if (editing) stopEditing();
+  vp.classList.remove('tool-move', 'tool-pen', 'tool-eraser', 'tool-note');
+  vp.classList.add('tool-' + t);
+  document.querySelectorAll('#toolbar .tool[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === t));
+  if (t !== 'move') setSelection([]);
+  renderToolOpts();
+}
+function renderToolOpts(){
+  const box = $('#toolOpts');
+  if (tool === 'move'){ box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = '';
+  const swatches = (colors, current, onPick) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'swatches';
+    colors.forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'swatch' + (c === current ? ' on' : '');
+      b.style.setProperty('--c', c);
+      b.title = c;
+      b.onclick = () => onPick(c);
+      wrap.appendChild(b);
+    });
+    return wrap;
+  };
+  if (tool === 'pen'){
+    box.appendChild(swatches(PEN_COLORS, penColor, c => { penColor = c; penTouched = true; renderToolOpts(); }));
+    const range = document.createElement('input');
+    range.type = 'range'; range.min = 2; range.max = 40; range.value = penSize; range.title = 'Brush size';
+    const dot = document.createElement('span');
+    dot.className = 'size-dot';
+    const sizeDot = () => { const s = Math.max(4, Math.min(28, penSize)); dot.style.width = dot.style.height = s + 'px'; };
+    range.oninput = () => { penSize = +range.value; sizeDot(); };
+    sizeDot();
+    box.append(range, dot);
+  } else if (tool === 'note'){
+    box.appendChild(swatches(NOTE_COLORS, noteColor, c => { noteColor = c; renderToolOpts(); }));
+    box.insertAdjacentHTML('beforeend', '<span>Click the board to place a note</span>');
+  } else if (tool === 'eraser'){
+    box.innerHTML = '<span>Click or drag across your drawings to erase them</span>';
+  }
+}
+document.querySelectorAll('#toolbar .tool[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+
+/* ================= Drawing ================= */
+function startDraw(e, wp){
+  mode = 'draw';
+  st = { pid:e.pointerId, pts:[[+clamp(wp.x, 0, BW).toFixed(1), +clamp(wp.y, 0, BH).toFixed(1)]], size: penSize / view.z, color: penColor };
+  drawPath.setAttribute('stroke', st.color);
+  drawPath.setAttribute('stroke-width', st.size);
+  drawPath.setAttribute('d', pathD(st.pts));
+}
+function addDrawPoint(e){
+  const wp = toWorld(e.clientX, e.clientY);
+  const x = +clamp(wp.x, 0, BW).toFixed(1), y = +clamp(wp.y, 0, BH).toFixed(1);
+  const last = st.pts[st.pts.length - 1];
+  if (Math.hypot(x - last[0], y - last[1]) < 2 / view.z) return;
+  if (st.pts.length >= 3900) return;
+  st.pts.push([x, y]);
+  drawPath.setAttribute('d', pathD(st.pts));
+}
+function cancelDraw(){ drawPath.setAttribute('d', ''); mode = null; st = {}; }
+function finishDraw(){
+  const { pts, size, color } = st;
+  drawPath.setAttribute('d', '');
+  if (!pts || !pts.length) return;
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const pad = size / 2 + 2;
+  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
+  const vw = +(Math.max(...xs) - Math.min(...xs) + pad * 2).toFixed(1);
+  const vh = +(Math.max(...ys) - Math.min(...ys) + pad * 2).toFixed(1);
+  const it = mount(baseItem('stroke', {
+    x: x0, y: y0, w: vw,
+    data: { points: pts.map(([x, y]) => [+(x - x0).toFixed(1), +(y - y0).toFixed(1)]), color, size: +size.toFixed(2), vw, vh }
+  }));
+  insertItem(it);
+}
+function eraseAt(cx, cy){
+  const target = document.elementFromPoint(cx, cy);
+  const el = target && target.closest && target.closest('.item.stroke');
+  const it = el && findItem(el.dataset.id);
+  if (!it || it.locked || !canEdit(it)) return;
+  removeLocal(it);
+  sb.from('items').delete().eq('id', it.id).then(({ error }) => { if (error) toast(niceError(error)); });
+}
+
+/* ================= Pointer handling ================= */
+const pointers = new Map();
+let mode = null, st = {};
+const marquee = $('#marquee');
+
+function startPanAt(pid, p){
+  mode = 'pan';
+  st = { pid, sx:p.x, sy:p.y, vx:view.x, vy:view.y };
+  vp.classList.add('panning');
+}
+function startPinch(){
+  const [a, b] = [...pointers.values()];
+  mode = 'pinch';
+  st = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, m:{ x:(a.x + b.x) / 2, y:(a.y + b.y) / 2 } };
+}
+function updateMarquee(e){
+  const x1 = Math.min(st.sx, e.clientX), y1 = Math.min(st.sy, e.clientY);
+  const x2 = Math.max(st.sx, e.clientX), y2 = Math.max(st.sy, e.clientY);
+  Object.assign(marquee.style, { left:x1 + 'px', top:y1 + 'px', width:(x2 - x1) + 'px', height:(y2 - y1) + 'px' });
+  marquee.hidden = false;
+  const hit = items.filter(it => {
+    const r = it.el.getBoundingClientRect();
+    return r.right > x1 && r.left < x2 && r.bottom > y1 && r.top < y2;
+  });
+  setSelection([...new Set([...st.base, ...hit])]);
+}
+
+vp.addEventListener('pointerdown', e => {
+  if (!currentRoom || e.button === 2) return;
+  const moreBtn = e.target.closest('.more-btn');
+  if (moreBtn){
+    e.preventDefault(); e.stopPropagation();
+    const it = findItem(moreBtn.closest('.item').dataset.id);
+    if (it){
+      if (!selection.has(it)) setSelection([it]);
+      const r = moreBtn.getBoundingClientRect();
+      openItemMenu(r.right + 6, r.top);
+    }
+    return;
+  }
+  if (editing && e.target.closest('.note-body') === editing.body) return;
+  if (editing) stopEditing();
+
+  pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+  vp.setPointerCapture(e.pointerId);
+  if (pointers.size === 2 && [null, 'pan', 'draw', 'erase', 'marquee'].includes(mode)){
+    if (mode === 'draw') cancelDraw();
+    marquee.hidden = true;
+    vp.classList.remove('panning');
+    startPinch();
+    return;
+  }
+  if (pointers.size > 1) return;
+
+  const wp = toWorld(e.clientX, e.clientY);
+  if (e.button === 1 || spaceDown){ startPanAt(e.pointerId, { x:e.clientX, y:e.clientY }); e.preventDefault(); return; }
+  const itemEl = e.target.closest('.item');
+
+  if (tool === 'pen'){ startDraw(e, wp); e.preventDefault(); return; }
+  if (tool === 'eraser'){ mode = 'erase'; st = { pid:e.pointerId }; eraseAt(e.clientX, e.clientY); e.preventDefault(); return; }
+  if (tool === 'note'){
+    pointers.delete(e.pointerId);
+    e.preventDefault();
+    const it = mount(newNote(wp.x, wp.y));
+    setTool('move');
+    setSelection([it]);
+    setTimeout(() => startEditing(it), 0);
+    return;
+  }
+
+  if (itemEl){
+    const it = findItem(itemEl.dataset.id);
+    if (!it) return;
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey || e.shiftKey){ pointers.delete(e.pointerId); toggleSel(it); return; }
+    if (e.target.classList.contains('resize') && !it.locked){
+      setSelection([it]);
+      mode = 'resize';
+      st = { pid:e.pointerId, it, sx:e.clientX, w:it.w };
+      return;
+    }
+    const collapse = selection.has(it) && selection.size > 1 ? it : null;
+    if (!selection.has(it)) setSelection([it]);
+    const movers = sel().filter(i => !i.locked);
+    mode = 'drag';
+    st = { pid:e.pointerId, sx:e.clientX, sy:e.clientY, movers: movers.map(i => ({ it:i, x:i.x, y:i.y })), moved:false, collapse };
+    return;
+  }
+  if (e.ctrlKey || e.metaKey || e.shiftKey){
+    mode = 'marquee';
+    st = { pid:e.pointerId, sx:e.clientX, sy:e.clientY, base:new Set(selection) };
+    e.preventDefault();
+    return;
+  }
+  setSelection([]);
+  startPanAt(e.pointerId, { x:e.clientX, y:e.clientY });
+});
+
+vp.addEventListener('pointermove', e => {
+  sendCursor(e.clientX, e.clientY);
+  if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+  if (mode === 'pinch'){
+    if (pointers.size < 2) return;
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+    const m = { x:(a.x + b.x) / 2, y:(a.y + b.y) / 2 };
+    zoomAt(m.x, m.y, d / st.d);
+    view.x += m.x - st.m.x; view.y += m.y - st.m.y;
+    st.d = d; st.m = m;
+    applyView();
+    return;
+  }
+  if (e.pointerId !== st.pid) return;
+  if (mode === 'drag'){
+    if (!st.moved && Math.hypot(e.clientX - st.sx, e.clientY - st.sy) < 3) return;
+    if (!st.moved){
+      st.moved = true;
+      bringToFront(st.movers.map(m => m.it), false);
+      st.movers.forEach(m => m.it.el.classList.add('lifting'));
+    }
+    const dx = (e.clientX - st.sx) / view.z, dy = (e.clientY - st.sy) / view.z;
+    for (const m of st.movers){ m.it.x = m.x + dx; m.it.y = m.y + dy; placeClamped(m.it); }
+    broadcastMoves(st.movers.map(m => m.it));
+  } else if (mode === 'resize'){
+    st.it.w = Math.min(BW - st.it.x, st.w + (e.clientX - st.sx) / view.z);
+    placeClamped(st.it);
+  } else if (mode === 'pan'){
+    view.x = st.vx + (e.clientX - st.sx);
+    view.y = st.vy + (e.clientY - st.sy);
+    applyView();
+  } else if (mode === 'draw'){
+    addDrawPoint(e);
+  } else if (mode === 'erase'){
+    eraseAt(e.clientX, e.clientY);
+  } else if (mode === 'marquee'){
+    updateMarquee(e);
+  }
+});
+vp.addEventListener('pointerleave', () => {
+  if (channel) channel.send({ type:'broadcast', event:'cursor', payload:{ u: me.id, gone:true } });
+});
+
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if (mode === 'pinch'){
+    if (pointers.size === 1){ const [[pid, p]] = [...pointers]; startPanAt(pid, p); }
+    else if (pointers.size === 0){ mode = null; st = {}; }
+    return;
+  }
+  if (e.pointerId !== st.pid) return;
+  const done = st, m = mode;
+  mode = null; st = {};
+  if (m === 'drag'){
+    done.movers.forEach(x => x.it.el.classList.remove('lifting'));
+    if (done.moved){
+      const list = done.movers.map(x => x.it);
+      broadcastMoves(list, true);
+      saveItems(list, ['x', 'y', 'z']);
+    } else if (done.collapse) setSelection([done.collapse]);
+  } else if (m === 'resize'){
+    saveItems([done.it], ['x', 'y', 'w']);
+  } else if (m === 'draw'){
+    st = done; finishDraw(); st = {};
+  } else if (m === 'marquee'){
+    marquee.hidden = true;
+  } else if (m === 'pan'){
+    vp.classList.remove('panning');
+  }
+}
+vp.addEventListener('pointerup', endPointer);
+vp.addEventListener('pointercancel', endPointer);
+
+vp.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  if (!currentRoom || mode) return;
+  if (editing) stopEditing();
+  const el = e.target.closest('.item');
+  const it = el && findItem(el.dataset.id);
+  if (it){
+    if (!selection.has(it)) setSelection([it]);
+    openItemMenu(e.clientX, e.clientY);
+  } else {
+    openBoardMenu(e.clientX, e.clientY, toWorld(e.clientX, e.clientY));
+  }
+});
+
+vp.addEventListener('wheel', e => {
+  e.preventDefault();
+  const dy = e.deltaY * (e.deltaMode === 1 ? 33 : 1);
+  zoomAt(e.clientX, e.clientY, Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0015)));
+  applyView();
+}, { passive:false });
+
+/* ================= Uploads ================= */
+async function prepareFile(f){
+  const limit = MAX_UPLOAD_MB * 1024 * 1024;
+  if (VIDEO_TYPES.includes(f.type)){
+    if (f.size > limit) throw new Error(`Videos need to be under ${MAX_UPLOAD_MB} MB`);
+    return { blob: f, mime: f.type, ext: EXT[f.type] || 'mp4' };
+  }
+  if (!IMAGE_TYPES.includes(f.type)) throw new Error(`${f.name || 'That file'} isn't a supported image or video`);
+  if (f.type === 'image/gif'){
+    if (f.size > limit) throw new Error(`GIFs need to be under ${MAX_UPLOAD_MB} MB`);
+    return { blob: f, mime: 'image/gif', ext: 'gif' };
+  }
+  // Re-encode: shrinks big photos and strips EXIF data (including GPS location)
+  let bmp;
+  try { bmp = await createImageBitmap(f, { imageOrientation:'from-image' }); }
+  catch { bmp = await createImageBitmap(f); }
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bmp.width, bmp.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bmp.width * scale));
+  canvas.height = Math.max(1, Math.round(bmp.height * scale));
+  canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+  if (bmp.close) bmp.close();
+  let blob = await new Promise(res => canvas.toBlob(res, 'image/webp', 0.85));
+  if (!blob || blob.type !== 'image/webp') blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.88));
+  if (!blob) throw new Error("Couldn't process that image");
+  if (blob.size > limit) throw new Error('That image is too large even after shrinking');
+  return { blob, mime: blob.type, ext: blob.type === 'image/webp' ? 'webp' : 'jpg' };
+}
+
+async function uploadFiles(files, w){
+  if (!currentRoom || !canPost) return;
+  let i = 0;
+  for (const f of files){
+    const room = currentRoom;
+    let prep;
+    try { prep = await prepareFile(f); }
+    catch (err){ toast(err.message); continue; }
+    if (currentRoom !== room) return;
+    const id = newId();
+    const type = prep.mime.startsWith('video') ? 'video' : 'image';
+    const it = mount(baseItem(type, {
+      id, x: w.x - (type === 'video' ? 150 : 120) + i * 36, y: w.y - 20 + i * 36,
+      w: type === 'video' ? 300 : 240, rot: +rand(-5, 5).toFixed(2),
+      path: `${room.id}/${id}.${prep.ext}`, mime: prep.mime,
+      data: { pc: pick(PIN_COLORS) }, localSrc: URL.createObjectURL(prep.blob)
+    }));
+    i++;
+    it.el.classList.add('uploading');
+    const { error } = await sb.storage.from(BUCKET).upload(it.path, prep.blob, { contentType: prep.mime, cacheControl: '31536000' });
+    if (error){ toast(niceError(error)); removeLocal(it); continue; }
+    if (await insertItem(it)) it.el.classList.remove('uploading');
+  }
+}
+
+async function handleTransfer(dt, w){
+  if (!dt || !currentRoom) return;
+  if (!canPost){ toast('This room is view-only for now'); return; }
+  const files = [...(dt.files || [])];
+  if (files.length){ uploadFiles(files, w); return; }
+  const url = ((dt.getData && (dt.getData('text/uri-list') || dt.getData('text/plain'))) || '')
+    .split('\n').map(s => s.trim()).find(s => /^https?:\/\//i.test(s));
+  if (!url) return;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw 0;
+    const blob = await r.blob();
+    const file = new File([blob], 'dropped', { type: blob.type });
+    uploadFiles([file], w);
+  } catch {
+    toast("That site won't let us grab the image. Save it, then drop the file in.");
+  }
+}
+
+let dragDepth = 0;
+addEventListener('dragenter', e => {
+  e.preventDefault();
+  if (!currentRoom || modalOpen()) return;
+  dragDepth++;
+  $('#dropHint').classList.add('show');
+});
+addEventListener('dragleave', () => {
+  dragDepth = Math.max(0, dragDepth - 1);
+  if (!dragDepth) $('#dropHint').classList.remove('show');
+});
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => {
+  e.preventDefault();
+  dragDepth = 0;
+  $('#dropHint').classList.remove('show');
+  if (!currentRoom || modalOpen()) return;
+  handleTransfer(e.dataTransfer, toWorld(e.clientX, e.clientY));
+});
+addEventListener('paste', e => {
+  if (!currentRoom || modalOpen() || editing) return;
+  if (e.target.isContentEditable || (e.target.matches && e.target.matches('input, select, textarea'))) return;
+  handleTransfer(e.clipboardData, toWorld(innerWidth / 2, innerHeight / 2));
+});
+
+$('#addBtn').onclick = () => {
+  if (!canPost){ toast('This room is view-only for now'); return; }
+  pendingDrop = null; $('#fileInput').click();
+};
+$('#fileInput').onchange = e => {
+  uploadFiles([...e.target.files], pendingDrop || toWorld(innerWidth / 2, innerHeight / 2));
+  pendingDrop = null;
+  e.target.value = '';
+};
+
+/* ================= Room controls & keyboard ================= */
+$('#boardBtn').onclick = fitBoard;
+$('#zoomBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 1 / view.z); applyView(); };
+$('#zoomInBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 1.25); applyView(); };
+$('#zoomOutBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 0.8); applyView(); };
+
+let nudgeTimer, nudged = new Set();
+addEventListener('keydown', e => {
+  const open = document.querySelector('.modal:not([hidden])');
+  if (open){ if (e.key === 'Escape') closeModal(open.id, false); return; }
+  if (!ctx.hidden && e.key === 'Escape'){ closeMenu(); return; }
+  if (!currentRoom) return;
+  if (editing){ if (e.key === 'Escape'){ e.preventDefault(); stopEditing(); } return; }
+  if (e.target.matches && e.target.matches('input, select, textarea')) return;
+
+  const mod = e.ctrlKey || e.metaKey;
+  const k = e.key.toLowerCase();
+  if (e.key === ' '){ if (!spaceDown){ spaceDown = true; vp.classList.add('space'); } e.preventDefault(); return; }
+  if (mod && k === 'a'){ e.preventDefault(); selectAll(); return; }
+  if (mod && k === 'd'){ e.preventDefault(); if (selection.size) duplicate(sel()); return; }
+  if (mod) return;
+  if (e.key === 'Delete' || e.key === 'Backspace'){ if (selection.size){ e.preventDefault(); deleteItems(sel()); } return; }
+  if (e.key === 'Escape'){ setSelection([]); if (tool !== 'move') setTool('move'); return; }
+  if (e.key === 'Enter' && selection.size === 1 && sel()[0].type === 'note'){ e.preventDefault(); startEditing(sel()[0]); return; }
+  if (e.key.startsWith('Arrow') && selection.size){
+    e.preventDefault();
+    const step = (e.shiftKey ? 20 : 3) / view.z;
+    const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+    const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+    sel().filter(i => !i.locked).forEach(i => { i.x += dx; i.y += dy; placeClamped(i); nudged.add(i); });
+    clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(() => { saveItems([...nudged], ['x', 'y']); nudged = new Set(); }, 400);
+    return;
+  }
+  if (k === 'v') setTool('move');
+  else if (k === 'p') setTool('pen');
+  else if (k === 'e') setTool('eraser');
+  else if (k === 'n') setTool('note');
+  else if (k === 'f') fitPins();
+  else if (k === 'b') fitBoard();
+  else if (k === 'l' && selection.size) toggleLock(sel());
+  else if (e.key === ']' && selection.size) bringToFront(sel());
+  else if (e.key === '[' && selection.size) sendToBack(sel());
+});
+addEventListener('keyup', e => { if (e.key === ' '){ spaceDown = false; vp.classList.remove('space'); } });
+addEventListener('blur', () => { spaceDown = false; vp.classList.remove('space'); });
+addEventListener('resize', () => { if (currentRoom){ computeMinZ(); applyView(); } closeMenu(); });
+
+/* ================= Start ================= */
+async function start(){
+  hydrateIcons();
+  renderChips();
+  applyStyle(globalStyle);
+  updateMeDot();
+  try {
+    let { data:{ session } } = await sb.auth.getSession();
+    if (!session){
+      const { data, error } = await sb.auth.signInAnonymously();
+      if (error) throw error;
+      session = data.session;
+    }
+    me.id = session.user.id;
+    me.isAnon = !!session.user.is_anonymous;
+  } catch (err){
+    $('#fatalText').textContent =
+      `${niceError(err)}. If you run this site, make sure "Allow anonymous sign-ins" is turned on in Supabase under Authentication → Sign In / Providers.`;
+    $('#fatal').hidden = false;
+    return;
+  }
+  route();
+}
+start();
+</script>
+</body>
+</html>
