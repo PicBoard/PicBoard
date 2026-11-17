@@ -142,6 +142,9 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .sw-dot{display:inline-block; width:18px; height:18px; border-radius:6px; border:1px solid var(--line); flex:none}
 .swatch{width:26px; height:26px; border-radius:50%; border:2px solid rgba(0,0,0,.25); background:var(--c); cursor:pointer; padding:0; flex:none}
 .swatch.on{outline:2px solid var(--accent); outline-offset:2px}
+.choice{height:30px; padding:0 11px; border-radius:8px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); font:800 12.5px var(--font); cursor:pointer; flex:none}
+.choice.on{border-color:var(--accent); background:var(--accent-soft)}
+.choice:disabled{opacity:.4; cursor:default}
 .captcha-box{display:flex; justify-content:center; min-height:65px; margin:4px 0}
 
 /* ================= Home ================= */
@@ -284,6 +287,12 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 .error{color:var(--danger); font-size:13px; font-weight:700; min-height:1em; margin:0}
 .actions{display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px}
 .row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.gif-sheet .search{min-width:0}
+.gif-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:8px; max-height:min(55vh, 460px); overflow:auto; margin:12px 0}
+.gif-cell{border:0; padding:0; border-radius:10px; overflow:hidden; background:var(--surface-2); cursor:pointer; aspect-ratio:1}
+.gif-cell img{display:block; width:100%; height:100%; object-fit:cover}
+.gif-cell:hover{outline:2px solid var(--accent); outline-offset:-2px}
+.gif-foot{display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; color:var(--muted)}
 
 /* ================= Context menu ================= */
 #ctx{
@@ -310,7 +319,8 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
   background:radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--bg) 80%, #fff 3%) 0%, var(--bg) 75%);
 }
 #viewport.panning,#viewport.space{cursor:grabbing}
-#viewport.tool-pen,#viewport.tool-pen .item{cursor:crosshair}
+#viewport.tool-pen,#viewport.tool-pen .item,#viewport.tool-arrow,#viewport.tool-arrow .item{cursor:crosshair}
+#viewport.tool-text,#viewport.tool-text .item{cursor:text}
 #viewport.tool-eraser,#viewport.tool-eraser .item{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='rgba(255,255,255,.25)' stroke='white' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 12 12, crosshair}
 #viewport.tool-note,#viewport.tool-note .item{cursor:cell}
 #world{position:absolute; left:0; top:0; transform-origin:0 0}
@@ -339,12 +349,19 @@ html[data-style="cork"] .item.media .card,
 html[data-style="blackboard"] .item.media .card{background:#fdfcf8; padding:8px 8px 10px; border-radius:2px; box-shadow:0 2px 3px rgba(0,0,0,.25), 0 8px 18px rgba(0,0,0,.25)}
 html[data-style="whiteboard"] .item.media .card{background:#fff; padding:6px; border-radius:6px; box-shadow:0 2px 4px rgba(20,30,60,.12), 0 10px 24px rgba(20,30,60,.14)}
 
+/* captions under photos, videos and GIFs */
+.caption{padding:.25em .3em 0; font-family:var(--hand); font-size:calc(24px * var(--ns, 1)); font-weight:700; line-height:1.1; text-align:center; color:#2a2420; white-space:pre-wrap; word-break:break-word; outline:none}
+.caption:empty{display:none}
+html[data-style="midnight"] .caption{color:#fff; padding-bottom:.3em}
+.item.editing-cap .caption{display:block; min-height:1.2em; box-shadow:inset 0 0 0 2px rgba(127,127,127,.45); cursor:text; user-select:text}
+.item.editing-cap .caption:empty::before{content:"Write a caption…"; opacity:.45}
+
 /* aging: pins yellow and fade as they near the end of the rotation */
 .item.media .card,.item.note .note-body{filter:sepia(calc(var(--age, 0) * .5)) saturate(calc(1 - var(--age, 0) * .35)) brightness(calc(1 - var(--age, 0) * .05))}
 @keyframes bumpPop{0%{transform:scale(1)} 35%{transform:scale(1.08)} 100%{transform:scale(1)}}
 .item.bumped > .card,.item.bumped > .note-body{animation:bumpPop .6s ease}
 
-.item.reported .card img,.item.reported .card video,.item.reported .note-body,.item.reported .yt-frame,.item.reported .lk-body{filter:blur(8px) grayscale(.6)}
+.item.reported .card img,.item.reported .card video,.item.reported .note-body,.item.reported .yt-frame,.item.reported .lk-body,.item.reported .caption,.item.reported .label-text{filter:blur(8px) grayscale(.6)}
 .item.reported .card::after{content:"⚑ Reported"; position:absolute; left:14px; top:14px; background:var(--danger); color:#fff; font:800 12px var(--font); padding:3px 8px; border-radius:5px; z-index:2}
 
 .pin{display:none; position:absolute; z-index:2; pointer-events:none}
@@ -363,19 +380,38 @@ html[data-style="whiteboard"] .pin{
   box-shadow:0 2px 3px rgba(0,0,0,.3), inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.35);
 }
 
+/* notes: everything is in em, so resizing a note scales its text too */
 .item.note{filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
 .note-body{
-  position:relative; min-height:56px; padding:14px 18px 16px; border-radius:20px; background:var(--nc); color:#2a2420;
-  font-family:var(--hand); font-size:27px; font-weight:600; line-height:1.12; white-space:pre-wrap; word-break:break-word; outline:none;
+  position:relative; min-height:2.1em; padding:.52em .67em .6em; border-radius:.74em; background:var(--nc); color:#2a2420;
+  font-family:var(--hand); font-size:calc(27px * var(--ns, 1)); font-weight:600; line-height:1.12; white-space:pre-wrap; word-break:break-word; outline:none;
 }
-.note-body::after{
-  content:""; position:absolute; left:28px; bottom:-15px; width:0; height:0;
-  border-left:6px solid transparent; border-right:16px solid transparent; border-top:17px solid var(--nc);
+.item.note.shape-bubble .note-body::after{
+  content:""; position:absolute; left:1.04em; bottom:-.55em; width:0; height:0;
+  border-left:.22em solid transparent; border-right:.6em solid transparent; border-top:.63em solid var(--nc);
+}
+.item.note.shape-sticky .note-body{border-radius:2px; aspect-ratio:1; padding:.7em; background-image:linear-gradient(170deg, transparent 72%, rgba(0,0,0,.08))}
+.item.note.shape-sticky{filter:drop-shadow(0 8px 10px rgba(0,0,0,.3))}
+.item.note.shape-scrap .note-body{
+  border-radius:0; padding:.85em .8em;
+  clip-path:polygon(0 4%,6% 0,13% 3%,21% 0,30% 4%,38% 1%,47% 4%,55% 0,63% 3%,72% 0,80% 4%,88% 1%,95% 4%,100% 1%,100% 96%,94% 100%,86% 97%,78% 100%,70% 96%,61% 100%,52% 97%,44% 100%,35% 96%,27% 100%,18% 97%,10% 100%,3% 96%,0 99%);
+}
+.item.note.shape-card .note-body{
+  border-radius:3px; border-top:.25em solid var(--nc); background-color:#fffdf8;
+  background-image:linear-gradient(rgba(230,80,80,.55), rgba(230,80,80,.55)), repeating-linear-gradient(transparent 0 calc(1.12em - 1px), rgba(70,120,210,.28) calc(1.12em - 1px) 1.12em);
+  background-size:100% 2px, 100% 100%; background-position:0 1.6em, 0 .52em; background-repeat:no-repeat, repeat;
 }
 .note-body:empty::before{content:"Type something…"; opacity:.45}
 .item.note.editing{cursor:text}
 .item.note.editing .note-body{box-shadow:inset 0 0 0 3px rgba(0,0,0,.15); cursor:text; user-select:text}
 
+/* text labels: big marker headings written on the board */
+.label-text{min-height:1em; color:var(--lc); font-family:var(--hand); font-weight:700; font-size:calc(64px * var(--ns, 1)); line-height:1; white-space:pre-wrap; word-break:break-word; outline:none; text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.label-text:empty::before{content:"Type a label…"; opacity:.45}
+.item.label.editing{cursor:text}
+.item.label.editing .label-text{box-shadow:inset 0 0 0 2px var(--accent); border-radius:6px; cursor:text; user-select:text}
+
+/* drawings and arrows */
 .item.stroke{pointer-events:none; transition:none}
 .item.stroke > svg{display:block; width:100%; height:auto; overflow:visible}
 .item.stroke .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
@@ -383,7 +419,7 @@ html[data-style="whiteboard"] .pin{
 .item.stroke.selected{outline-style:dashed}
 
 /* link + YouTube cards */
-.item.embed .card{background:#fff}
+.item.embed:not(.gif) .card{background:#fff}
 .emb-head{display:flex; align-items:center; gap:6px; padding:8px 10px; background:#fff; color:#1c2030; font:800 13px var(--font); white-space:nowrap; overflow:hidden; cursor:move}
 .emb-head span{overflow:hidden; text-overflow:ellipsis}
 .emb-head .ic{color:#ff0033}
@@ -436,7 +472,8 @@ html[data-style="whiteboard"] .pin{
 #viewBar{top:calc(12px + env(safe-area-inset-top,0px)); right:12px; display:flex; align-items:center; gap:4px; padding:5px; border-radius:14px}
 #zoomBtn{min-width:58px}
 .me-dot{width:12px; height:12px; border-radius:50%; background:var(--mc); box-shadow:0 0 0 2px var(--surface)}
-#toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px; max-width:calc(100vw - 16px)}
+#toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px; max-width:calc(100vw - 16px); overflow-x:auto; scrollbar-width:none}
+#toolbar::-webkit-scrollbar{display:none}
 #toolbar.disabled .tool:not([data-tool="move"]):not(.hist){opacity:.3; pointer-events:none}
 .tool{position:relative; width:44px; height:44px; border:0; border-radius:11px; display:grid; place-items:center; background:transparent; color:var(--text); cursor:pointer; transition:background .15s, opacity .15s; flex:none}
 .tool:hover:not(:disabled){background:var(--surface-2)}
@@ -550,13 +587,13 @@ html[data-style="whiteboard"] .pin{
       <p>Moderators have the final say on anything not spelled out here.</p>
 
       <h2>How the board works</h2>
-      <p>Every room has a pin limit. When it's full, each new pin pushes the oldest one off the board. The little badge on each pin shows how many more pins can go up before it's gone, and pins slowly fade as they near the end. If you like something, bump it to send it back to the top.</p>
+      <p>Every room has a pin limit. When it's full, each new pin pushes the oldest one off the board. The little badge on each pin shows how many more pins can go up before it's gone, and pins slowly fade as they near the end. If you like something, bump it to send it back to the top. Drawings, arrows, and labels don't count toward the pin limit.</p>
 
       <h2>How moderation works</h2>
-      <p>Anyone can report a pin, note, link, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
+      <p>Anyone can report a pin, note, link, label, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
 
       <h2>Privacy</h2>
-      <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor and the name you choose. If you save an account, your email is only used to send you sign-in links.</p>
+      <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor and the name you choose. If you save an account, your email is only used to send you sign-in links. GIF search is powered by KLIPY.</p>
 
       <h2>Contact &amp; takedowns</h2>
       <p>Email <a class="contact-link"></a> for anything else, including copyright takedown requests. For copyright, include a link to the room, which item it is, and how you own it.</p>
@@ -629,9 +666,12 @@ html[data-style="whiteboard"] .pin{
   <div id="toolbar" class="float">
     <button class="tool active" data-tool="move" title="Move & select (V)"><i data-ic="cursor" data-s="20"></i><span class="k">V</span></button>
     <button class="tool" data-tool="pen" title="Draw (P)"><i data-ic="pen" data-s="20"></i><span class="k">P</span></button>
-    <button class="tool" data-tool="eraser" title="Erase your drawings (E)"><i data-ic="eraser" data-s="20"></i><span class="k">E</span></button>
-    <button class="tool" data-tool="note" title="Note bubble (N)"><i data-ic="note" data-s="20"></i><span class="k">N</span></button>
+    <button class="tool" data-tool="arrow" title="Arrow (A)"><i data-ic="arrowTool" data-s="20"></i><span class="k">A</span></button>
+    <button class="tool" data-tool="text" title="Text label (T)"><i data-ic="type" data-s="20"></i><span class="k">T</span></button>
+    <button class="tool" data-tool="eraser" title="Erase your drawings and labels (E)"><i data-ic="eraser" data-s="20"></i><span class="k">E</span></button>
+    <button class="tool" data-tool="note" title="Note (N)"><i data-ic="note" data-s="20"></i><span class="k">N</span></button>
     <div class="tsep"></div>
+    <button class="tool" id="gifBtn" title="Pin a GIF (G)"><i data-ic="gif" data-s="20"></i><span class="k">G</span></button>
     <button class="tool" id="linkBtn" title="Pin a link or YouTube video"><i data-ic="link" data-s="20"></i></button>
     <button class="tool" id="addBtn" title="Add images or videos"><i data-ic="upload" data-s="20"></i></button>
     <div class="tsep"></div>
@@ -645,7 +685,7 @@ html[data-style="whiteboard"] .pin{
   <div id="roomEmpty">
     <div class="empty-card">
       <h2>This board is empty</h2>
-      <p>Drop in images or videos, paste a link, draw with the pen, or stick a note bubble anywhere. Everyone in the room sees it live.</p>
+      <p>Drop in images or videos, pin a GIF or a link, draw, label things, or stick a note anywhere. Everyone in the room sees it live.</p>
     </div>
   </div>
   <div id="marquee" hidden></div>
@@ -759,6 +799,16 @@ html[data-style="whiteboard"] .pin{
   </form>
 </div>
 
+<!-- ================= GIF PICKER ================= -->
+<div class="modal" id="gifModal" hidden>
+  <div class="sheet gif-sheet">
+    <h2><i data-ic="gif" data-s="22"></i> Pin a GIF</h2>
+    <label class="search"><i data-ic="search"></i><input id="gifSearch" placeholder="Search GIFs" autocomplete="off"></label>
+    <div class="gif-grid" id="gifGrid"></div>
+    <div class="gif-foot"><span>Powered by KLIPY</span><button type="button" class="btn" data-close>Close</button></div>
+  </div>
+</div>
+
 <div id="gate" hidden>
   <div class="empty-card">
     <h2>Quick check</h2>
@@ -802,6 +852,7 @@ const SIZE_NAMES = { small:'Small', medium:'Medium', large:'Large', huge:'Huge' 
 const PIN_COLORS = ['#e5483b','#f2b632','#3a8ee6','#41b06e','#9b5de5','#ff7aa8'];
 const PEN_COLORS = ['#ffffff','#1d1f27','#ff5d5d','#ffa94d','#ffd84d','#4cd18a','#4ea6ff','#a78bfa','#ff7ac6'];
 const NOTE_COLORS = ['#ffe58a','#ffb8c9','#a8d8ff','#bdf0b4','#d9c6ff','#ffffff'];
+const NOTE_SHAPES = [['bubble','Bubble'],['sticky','Sticky'],['scrap','Scrap'],['card','Card']];
 const CURSOR_COLORS = ['#ff5d5d','#ff9f43','#f7c948','#2ecc71','#1abc9c','#3b9cff','#7c6cff','#e056fd','#ff6fa8'];
 const REACTIONS = [['heart','❤️'],['fire','🔥'],['laugh','😂'],['skull','💀'],['eyes','👀'],['star','⭐'],['thumbs','👍'],['wow','🤯']];
 const REACT_CHAR = Object.fromEntries(REACTIONS);
@@ -815,6 +866,9 @@ const REPORT_REASONS = [
   ['other', 'Something else', 'Other']
 ];
 const REASON_SHORT = Object.fromEntries(REPORT_REASONS.map(([k, , s]) => [k, s]));
+const PIN_TYPES = new Set(['image','video','note','embed']);
+const isPin = it => PIN_TYPES.has(it.type);
+const BASE_W = { note:220, label:300 };
 const MAX_UPLOAD_MB = 10;
 const MAX_IMAGE_SIDE = 2048;
 const REPORT_HIDE = 3;
@@ -853,6 +907,10 @@ const ICONS = {
   volOff:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/>',
   cursor:'<path d="M5 3l14 7.5-6.5 1.8L10 19z"/>',
   pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  arrowTool:'<path d="M5 19 19 5"/><path d="M10 5h9v9"/>',
+  type:'<path d="M5 7V5h14v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+  gif:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 10H8.5A1.5 1.5 0 0 0 7 11.5v1A1.5 1.5 0 0 0 8.5 14H10v-2H9"/><path d="M13 10v4"/><path d="M16 14v-4h2.5M16 12h2"/>',
+  caption:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M7 20h10"/>',
   eraser:'<path d="M7 21h12"/><path d="M5.6 15.6 14.2 7a2 2 0 0 1 2.8 0l2.8 2.8a2 2 0 0 1 0 2.8L12.4 20H9.6z"/><path d="m9.5 11.5 5 5"/>',
   note:'<path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/>',
   upload:'<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>',
@@ -1142,7 +1200,7 @@ addEventListener('focus', async () => {
 });
 
 /* ================= Styles ================= */
-let penColor = '#ffffff', penTouched = false, penSize = 6, noteColor = NOTE_COLORS[0];
+let penColor = '#ffffff', penTouched = false, penSize = 6, noteColor = NOTE_COLORS[0], noteShape = 'bubble';
 function applyStyle(s){
   if (!STYLES[s]) s = 'midnight';
   document.documentElement.dataset.style = s;
@@ -1184,6 +1242,19 @@ function openMenu(x, y, entries){
         b.className = 'emo' + (e.mine && e.mine.has(key) ? ' on' : '');
         b.textContent = ch;
         b.title = key;
+        b.disabled = !!e.disabled;
+        b.onclick = () => { closeMenu(); e.pick(key); };
+        row.appendChild(b);
+      });
+      ctx.appendChild(row); continue;
+    }
+    if (e.choices){
+      const row = document.createElement('div');
+      row.className = 'ctx-swatches';
+      e.choices.forEach(([key, label]) => {
+        const b = document.createElement('button');
+        b.className = 'choice' + (key === e.current ? ' on' : '');
+        b.textContent = label;
         b.disabled = !!e.disabled;
         b.onclick = () => { closeMenu(); e.pick(key); };
         row.appendChild(b);
@@ -1336,6 +1407,9 @@ function minisHTML(r){
       return `<div class="mini note" style="${style};--nc:${esc(d.color || NOTE_COLORS[0])}">${esc(d.text || '')}</div>`;
     }
     if (p.type === 'embed'){
+      if (d.kind === 'gif' && d.url){
+        return `<div class="mini media" style="${style}"><img alt="" loading="lazy" src="${esc(proxiedImage(d.url))}"></div>`;
+      }
       if (d.kind === 'youtube' && /^[\w-]{6,20}$/.test(d.vid || '')){
         return `<div class="mini media" style="${style}"><img alt="" loading="lazy" src="https://i.ytimg.com/vi/${d.vid}/mqdefault.jpg"></div>`;
       }
@@ -1455,8 +1529,12 @@ $('#adminRefresh').onclick = () => loadAdminTab();
 function modThumb(row){
   const d = row.data || {};
   if (row.type === 'note') return `<div class="mod-note" style="--nc:${esc(d.color || NOTE_COLORS[0])}">${esc(d.text || '')}</div>`;
+  if (row.type === 'label') return `<div class="mod-link">${esc(d.text || '')}<small>Text label</small></div>`;
   if (row.type === 'stroke') return strokeSVG(d);
-  if (row.type === 'embed') return `<div class="mod-link">${esc(d.title || 'Link')}<small>${esc(d.url || '')}</small></div>`;
+  if (row.type === 'embed'){
+    if (d.kind === 'gif' && d.url) return `<img src="${esc(proxiedImage(d.url))}" alt="" loading="lazy">`;
+    return `<div class="mod-link">${esc(d.title || 'Link')}<small>${esc(d.url || '')}</small></div>`;
+  }
   const url = esc(publicUrl(row.path));
   return row.type === 'video'
     ? `<video src="${url}" muted controls preload="metadata"></video>`
@@ -1464,7 +1542,9 @@ function modThumb(row){
 }
 function modItemHTML(row){
   const room = row.rooms || {};
-  const kind = { image:'Image', video:'Video', note:'Note', stroke:'Drawing', embed:'Link' }[row.type] || 'Item';
+  const d = row.data || {};
+  const kind = row.type === 'embed' ? (d.kind === 'gif' ? 'GIF' : 'Link')
+    : ({ image:'Image', video:'Video', note:'Note', stroke:'Drawing', label:'Label' }[row.type] || 'Item');
   const reports = row.report_count > 0
     ? `<span class="badge warn">${ic('flag', 11)} ${row.report_count} report point${row.report_count > 1 ? 's' : ''}${row.report_count >= REPORT_HIDE ? ' · hidden' : ''}</span>` : '';
   const reasons = row._reasons && Object.keys(row._reasons).length
@@ -1477,6 +1557,7 @@ function modItemHTML(row){
       <div class="mod-body">
         <div class="mod-title">${kind} in <a href="#/room/${row.room_id}">${esc(room.name || 'a room')}</a> ${reports}</div>
         ${reasons}
+        ${d.caption ? `<div class="mod-meta">Caption: ${esc(d.caption)}</div>` : ''}
         <div class="mod-meta">Posted ${ago(Date.parse(row.created_at))} · poster ${esc(shortId(row.author))}</div>
         <div class="mod-actions">
           ${row.report_count > 0 ? `<button class="btn sm" data-act="restore" data-id="${row.id}">${ic('check', 14)} Restore</button>` : ''}
@@ -1725,7 +1806,7 @@ let items = [], roomToken = 0, openToken = 0, canPost = true, channel = null;
 const selection = new Set();
 const reacts = new Map();
 const hist = { undo:[], redo:[] };
-let tool = 'move', editing = null, spaceDown = false, pendingDrop = null, histBusy = false;
+let tool = 'move', editing = null, editField = 'text', spaceDown = false, pendingDrop = null, histBusy = false;
 
 const drawLayer = document.createElementNS(SVGNS, 'svg');
 drawLayer.id = 'drawLayer';
@@ -2012,7 +2093,7 @@ function applyRemoteReaction(row, delta){
 }
 async function toggleReaction(it, key){
   if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
-  if (!it || it.pending || it.type === 'stroke') return;
+  if (!it || it.pending || !isPin(it)) return;
   const e = reactEntry(it.id, key);
   const adding = !e.mine;
   e.mine = adding;
@@ -2267,8 +2348,22 @@ function pathD(pts){
   const l = pts[pts.length - 1];
   return d + ` L${l[0]} ${l[1]}`;
 }
+function arrowHead(p0, p1, size){
+  const ang = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]);
+  const L = Math.max(14, size * 3.2);
+  const a1 = ang + Math.PI * 0.84, a2 = ang - Math.PI * 0.84;
+  return [[p1[0] + Math.cos(a1) * L, p1[1] + Math.sin(a1) * L], [p1[0] + Math.cos(a2) * L, p1[1] + Math.sin(a2) * L]];
+}
+function arrowD(pts, size){
+  if (!pts || pts.length < 2) return '';
+  const [p0, p1] = pts;
+  const [h1, h2] = arrowHead(p0, p1, size);
+  const f = n => (+n).toFixed(1);
+  return `M${f(p0[0])} ${f(p0[1])} L${f(p1[0])} ${f(p1[1])} M${f(h1[0])} ${f(h1[1])} L${f(p1[0])} ${f(p1[1])} L${f(h2[0])} ${f(h2[1])}`;
+}
+function strokePath(d){ return d.head ? arrowD(d.points, +d.size || 4) : pathD(d.points); }
 function strokeSVG(d){
-  const p = pathD(d.points);
+  const p = strokePath(d);
   return `<svg xmlns="${SVGNS}" viewBox="0 0 ${+d.vw || 1} ${+d.vh || 1}">` +
     `<path class="hit" d="${p}" stroke-width="${(+d.size || 4) + 14}"/>` +
     `<path class="vis" d="${p}" stroke="${esc(d.color)}" stroke-width="${+d.size || 4}"/></svg>`;
@@ -2277,6 +2372,7 @@ function setZ(it){ it.el.style.zIndex = clamp(Math.round(it.z || 0), -2000000000
 function placeClamped(it){
   it.w = clamp(it.w, 20, BW);
   it.el.style.width = it.w + 'px';
+  if (it.type !== 'stroke') it.el.style.setProperty('--ns', (it.w / (BASE_W[it.type] || 240)).toFixed(3));
   const h = it.el.offsetHeight || it.w;
   it.x = clamp(it.x, 0, Math.max(0, BW - it.w));
   it.y = clamp(it.y, 0, Math.max(0, BH - h));
@@ -2286,15 +2382,27 @@ function placeClamped(it){
 function updateReportedClass(it){
   it.el.classList.toggle('reported', reportedByMe.has(it.id) || it.reportCount >= REPORT_HIDE);
 }
+function setNoteShape(it, shape){
+  NOTE_SHAPES.forEach(([s]) => it.el.classList.toggle('shape-' + s, s === (shape || 'bubble')));
+}
 function applyData(it, d){
   it.data = d;
+  const editingText = editing === it && editField === 'text';
+  const editingCap = editing === it && editField === 'caption';
+  let changed = false;
   if (it.type === 'note'){
     it.el.style.setProperty('--nc', d.color || NOTE_COLORS[0]);
-    if (it.body.textContent !== (d.text || '')){ it.body.textContent = d.text || ''; placeClamped(it); }
+    setNoteShape(it, d.shape);
+    if (!editingText && it.body.textContent !== (d.text || '')){ it.body.textContent = d.text || ''; changed = true; }
+  } else if (it.type === 'label'){
+    it.el.style.setProperty('--lc', d.color || '#ffffff');
+    if (!editingText && it.body.textContent !== (d.text || '')){ it.body.textContent = d.text || ''; changed = true; }
   } else if (it.type === 'stroke'){
     const vis = it.el.querySelector('.vis');
     if (vis) vis.setAttribute('stroke', d.color);
   }
+  if (it.cap && !editingCap && it.cap.textContent !== (d.caption || '')){ it.cap.textContent = d.caption || ''; changed = true; }
+  if (changed) placeClamped(it);
 }
 function embedHTML(d){
   if (d.kind === 'youtube'){
@@ -2307,13 +2415,28 @@ function embedHTML(d){
     (d.desc ? `<div class="lk-desc">${esc(d.desc)}</div>` : '') +
     `<div class="lk-site">${ic('external', 12)} ${esc(d.site || '')}</div></div>`;
 }
+function addCaptionEl(it, card){
+  const cap = document.createElement('div');
+  cap.className = 'caption';
+  cap.textContent = it.data.caption || '';
+  cap.addEventListener('blur', () => { if (editing === it && editField === 'caption') stopEditing(); });
+  cap.addEventListener('paste', pastePlain);
+  card.appendChild(cap);
+  it.cap = cap;
+}
+function pastePlain(e){
+  e.preventDefault(); e.stopPropagation();
+  document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+}
 
 function mount(it){
   it.visible = false;
   if (!it.bumped) it.bumped = it.created || Date.now();
+  const d = it.data || (it.data = {});
   const el = document.createElement('div');
   el.dataset.id = it.id;
   el.style.setProperty('--r', (it.rot || 0) + 'deg');
+  it.el = el;
 
   if (it.type === 'image' || it.type === 'video'){
     el.className = 'item media';
@@ -2333,13 +2456,26 @@ function mount(it){
     media._item = it;
     media.src = it.src;
     card.appendChild(media);
+    addCaptionEl(it, card);
     el.appendChild(card);
     it.media = media;
+  } else if (it.type === 'embed' && d.kind === 'gif'){
+    el.className = 'item media embed gif';
+    it.src = proxiedImage(d.url);
+    const card = document.createElement('div');
+    card.className = 'card';
+    const img = document.createElement('img');
+    img.draggable = false; img.alt = d.title || 'GIF';
+    img.addEventListener('load', () => placeClamped(it), { once:true });
+    img.src = it.src;
+    card.appendChild(img);
+    addCaptionEl(it, card);
+    el.appendChild(card);
   } else if (it.type === 'embed'){
     el.className = 'item media embed';
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = embedHTML(it.data || {});
+    card.innerHTML = embedHTML(d);
     const img = card.querySelector('.lk-img');
     if (img){
       img.draggable = false;
@@ -2347,28 +2483,30 @@ function mount(it){
       img.addEventListener('error', () => { img.remove(); placeClamped(it); }, { once:true });
     }
     el.appendChild(card);
-  } else if (it.type === 'note'){
-    el.className = 'item note';
-    el.style.setProperty('--nc', it.data.color || NOTE_COLORS[0]);
+  } else if (it.type === 'note' || it.type === 'label'){
+    el.className = it.type === 'note' ? 'item note' : 'item label';
     const body = document.createElement('div');
-    body.className = 'note-body';
-    body.textContent = it.data.text || '';
-    body.addEventListener('blur', () => { if (editing === it) stopEditing(); });
-    body.addEventListener('paste', e => {
-      e.preventDefault(); e.stopPropagation();
-      document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
-    });
+    body.className = it.type === 'note' ? 'note-body' : 'label-text';
+    body.textContent = d.text || '';
+    body.addEventListener('blur', () => { if (editing === it && editField === 'text') stopEditing(); });
+    body.addEventListener('paste', pastePlain);
     el.appendChild(body);
     it.body = body;
+    if (it.type === 'note'){
+      el.style.setProperty('--nc', d.color || NOTE_COLORS[0]);
+      setNoteShape(it, d.shape);
+    } else {
+      el.style.setProperty('--lc', d.color || '#ffffff');
+    }
   } else if (it.type === 'stroke'){
     el.className = 'item stroke';
-    el.innerHTML = strokeSVG(it.data);
+    el.innerHTML = strokeSVG(d);
   }
 
-  if (it.type !== 'stroke'){
+  if (isPin(it)){
     const pin = document.createElement('div');
     pin.className = 'pin';
-    pin.style.setProperty('--pc', it.data.pc || PIN_COLORS[0]);
+    pin.style.setProperty('--pc', d.pc || PIN_COLORS[0]);
     el.appendChild(pin);
     el.insertAdjacentHTML('beforeend',
       `<div class="countdown">${ic('hourglass', 11)}<span></span></div><div class="reacts"></div>`);
@@ -2379,7 +2517,6 @@ function mount(it){
     `<div class="resize"></div>`);
   if (it.locked) el.classList.add('locked');
 
-  it.el = el;
   world.insertBefore(el, drawLayer);
   setZ(it);
   placeClamped(it);
@@ -2404,7 +2541,7 @@ function removeLocal(it){
   updateCount();
 }
 function recomputeRanks(){
-  const pins = items.filter(i => i.type !== 'stroke' && !i.pending)
+  const pins = items.filter(i => isPin(i) && !i.pending)
     .sort((a, b) => (b.bumped - a.bumped) || a.id.localeCompare(b.id));
   pins.forEach((it, idx) => {
     const left = Math.max(0, cap - (idx + 1));
@@ -2421,7 +2558,7 @@ function leftLabel(it){
   return it.left === 0 ? 'next to rotate off' : `${it.left} left`;
 }
 function updateCount(){
-  const pins = items.filter(i => i.type !== 'stroke').length;
+  const pins = items.filter(isPin).length;
   if (currentRoom) $('#roomSub').textContent = `${currentRoom.category} · ${pins} / ${cap} pins${canPost ? '' : ' · view only'}${me.isAdmin ? ' · mod' : ''}`;
   $('#meterFill').style.width = Math.min(100, pins / cap * 100) + '%';
   $('#meterText').textContent = `${pins} / ${cap} pins`;
@@ -2439,7 +2576,13 @@ function baseItem(type, extra){
 function newNote(wx, wy){
   return baseItem('note', {
     x: wx - 110, y: wy - 30, w: 220, rot: +rand(-3, 3).toFixed(2), pending: true,
-    data: { text:'', color: noteColor, pc: pick(PIN_COLORS) }
+    data: { text:'', color: noteColor, shape: noteShape, pc: pick(PIN_COLORS) }
+  });
+}
+function newLabel(wx, wy){
+  return baseItem('label', {
+    x: wx - 20, y: wy - 40, w: 300, rot: 0, pending: true,
+    data: { text:'', color: penColor }
   });
 }
 
@@ -2493,16 +2636,16 @@ function straighten(list){
   saveItems(movable, ['rot']);
   recordUpdate(before.map(b => ({ ...b, after: { rot:0 } })), 'straighten');
 }
-function setColor(list, c){
+function setData(list, patch, label){
   const mine = list.filter(canEdit);
+  if (!mine.length) return;
   const before = mine.map(i => ({ id:i.id, before: grab(i, ['data']) }));
-  mine.forEach(i => {
-    i.data = { ...i.data, color: c };
-    applyData(i, i.data);
-  });
+  mine.forEach(i => applyData(i, { ...i.data, ...patch }));
   saveItems(mine, ['data']);
-  recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['data']) })), 'color change');
+  recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['data']) })), label);
 }
+const setColor = (list, c) => setData(list, { color:c }, 'color change');
+const setShape = (list, s) => setData(list, { shape:s }, 'shape change');
 async function duplicate(list){
   if (!canPost) return;
   const made = [];
@@ -2520,7 +2663,7 @@ async function duplicate(list){
   recordAdd(made, 'duplicate');
 }
 async function bumpItems(list){
-  const pins = list.filter(i => i.type !== 'stroke' && !i.pending);
+  const pins = list.filter(i => isPin(i) && !i.pending);
   if (!pins.length) return;
   if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
   let ok = 0, lastErr = null;
@@ -2603,7 +2746,7 @@ function saveBlob(blob, name){
 async function downloadItem(it){
   if (it.type === 'stroke'){
     const d = it.data;
-    const svg = `<svg xmlns="${SVGNS}" width="${Math.round(d.vw)}" height="${Math.round(d.vh)}" viewBox="0 0 ${d.vw} ${d.vh}"><path d="${pathD(d.points)}" fill="none" stroke="${d.color}" stroke-width="${d.size}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const svg = `<svg xmlns="${SVGNS}" width="${Math.round(d.vw)}" height="${Math.round(d.vh)}" viewBox="0 0 ${d.vw} ${d.vh}"><path d="${strokePath(d)}" fill="none" stroke="${d.color}" stroke-width="${d.size}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     saveBlob(new Blob([svg], { type:'image/svg+xml' }), `drawing-${it.id.slice(0, 8)}.svg`);
     return;
   }
@@ -2642,8 +2785,8 @@ function openItemMenu(x, y){
   };
 
   if (list.length > 1){
-    const media = list.filter(i => i.type === 'image' || i.type === 'video');
-    const bumpable = list.filter(i => i.type !== 'stroke');
+    const media = list.filter(i => i.type === 'image' || i.type === 'video' || (i.type === 'embed' && i.data.kind === 'gif'));
+    const bumpable = list.filter(isPin);
     openMenu(x, y, [
       { title:`${list.length} selected` },
       { icon:'grid', label:'Tidy into a grid', run:() => arrange('grid') },
@@ -2662,6 +2805,7 @@ function openItemMenu(x, y){
   const reportEntry = it.author !== me.id ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
   const reactRow = { emojis:true, mine: myReactions(it.id), disabled: !canPost, pick: k => toggleReaction(it, k) };
   const bumpEntry = { icon:'arrowUp', label:'Bump to the top', kbd:'U', disabled: !canPost, run:() => bumpItems([it]) };
+  const captionEntry = it.cap ? { icon:'caption', label: it.data.caption ? 'Edit caption' : 'Add caption', disabled: !mine || it.locked, run:() => startEditing(it, 'caption') } : null;
   const left = leftLabel(it);
 
   if (it.type === 'note'){
@@ -2669,6 +2813,7 @@ function openItemMenu(x, y){
       { title: (it.author === me.id ? 'Your note' : 'Note') + (left ? ` · ${left}` : '') },
       reactRow, bumpEntry,
       { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
+      { choices: NOTE_SHAPES, current: it.data.shape || 'bubble', disabled: !mine, pick: s => { setShape(list, s); noteShape = s; } },
       { colors:NOTE_COLORS, current:it.data.color, disabled: !mine, pick:c => { setColor(list, c); noteColor = c; } },
       '-', ...layer, lockEntry,
       { icon:'straighten', label:'Straighten', run:() => straighten(list) },
@@ -2676,9 +2821,18 @@ function openItemMenu(x, y){
     ]);
     return;
   }
+  if (it.type === 'label'){
+    openMenu(x, y, [
+      { title: it.author === me.id ? 'Your label' : 'Label' },
+      { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
+      { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
+      '-', ...layer, lockEntry, dup, '-', ...reportEntry, del
+    ]);
+    return;
+  }
   if (it.type === 'stroke'){
     openMenu(x, y, [
-      { title: it.author === me.id ? 'Your drawing' : 'Drawing' },
+      { title: (it.author === me.id ? 'Your ' : '') + (it.data.head ? 'arrow' : 'drawing') },
       { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
       '-', ...layer, lockEntry, dup,
       { icon:'download', label:'Download as SVG', run:() => downloadItem(it) },
@@ -2686,7 +2840,7 @@ function openItemMenu(x, y){
     ]);
     return;
   }
-  if (it.type === 'embed'){
+  if (it.type === 'embed' && it.data.kind !== 'gif'){
     const d = it.data || {};
     openMenu(x, y, [
       { title: (d.kind === 'youtube' ? 'YouTube' : 'Link') + (left ? ` · ${left}` : '') },
@@ -2701,9 +2855,10 @@ function openItemMenu(x, y){
     ]);
     return;
   }
+  const kind = it.type === 'video' ? 'Video' : it.type === 'embed' ? 'GIF' : 'Image';
   openMenu(x, y, [
-    { title: (it.type === 'video' ? 'Video' : 'Image') + (left ? ` · ${left}` : '') },
-    reactRow, bumpEntry,
+    { title: kind + (left ? ` · ${left}` : '') },
+    reactRow, bumpEntry, captionEntry,
     '-', ...layer, lockEntry,
     it.rot ? { icon:'straighten', label:'Straighten', run:() => straighten(list) } : null,
     it.type === 'video' ? { icon: it.media.muted ? 'vol' : 'volOff', label: it.media.muted ? 'Unmute' : 'Mute', run:() => toggleMute(it) } : null,
@@ -2720,6 +2875,11 @@ function openBoardMenu(x, y, wp){
         const it = mount(newNote(wp.x, wp.y));
         setSelection([it]); startEditing(it);
       } },
+    { icon:'type', label:'Add a label here', kbd:'T', disabled: !canPost, run:() => {
+        const it = mount(newLabel(wp.x, wp.y));
+        setSelection([it]); startEditing(it);
+      } },
+    { icon:'gif', label:'Add a GIF here', kbd:'G', disabled: !canPost, run:() => openGifs(wp) },
     { icon:'upload', label:'Add media here', disabled: !canPost, run:() => { pendingDrop = wp; $('#fileInput').click(); } },
     { icon:'link', label:'Add a link here', disabled: !canPost, run:() => promptLink(wp) },
     '-',
@@ -2732,16 +2892,20 @@ function openBoardMenu(x, y, wp){
   ]);
 }
 
-/* ================= Notes ================= */
-function startEditing(it){
-  if (!it || it.type !== 'note' || it.locked || !items.includes(it) || !canEdit(it)) return;
-  if (editing && editing !== it) stopEditing();
+/* ================= Text editing (notes, labels, captions) ================= */
+const editEl = (it, field) => field === 'caption' ? it.cap : it.body;
+function startEditing(it, field = 'text'){
+  if (!it || !items.includes(it) || it.locked || !canEdit(it)) return;
+  if (field === 'text' && it.type !== 'note' && it.type !== 'label') return;
+  if (field === 'caption' && !it.cap) return;
+  if (editing && (editing !== it || editField !== field)) stopEditing();
   editing = it;
-  it._textBefore = it.data.text || '';
-  const b = it.body;
+  editField = field;
+  it._before = JSON.parse(JSON.stringify(it.data || {}));
+  const b = editEl(it, field);
   try { b.contentEditable = 'plaintext-only'; } catch {}
   if (b.contentEditable !== 'plaintext-only') b.contentEditable = 'true';
-  it.el.classList.add('editing');
+  it.el.classList.add(field === 'caption' ? 'editing-cap' : 'editing');
   b.focus();
   const r = document.createRange();
   r.selectNodeContents(b); r.collapse(false);
@@ -2749,54 +2913,75 @@ function startEditing(it){
 }
 function stopEditing(){
   if (!editing) return;
-  const it = editing;
+  const it = editing, field = editField;
   editing = null;
-  const b = it.body;
+  const b = editEl(it, field);
   b.contentEditable = 'false';
-  it.el.classList.remove('editing');
+  it.el.classList.remove('editing', 'editing-cap');
   b.blur();
-  const text = b.innerText.replace(/\s+$/, '').slice(0, 500);
+  const limit = field === 'caption' ? 120 : it.type === 'label' ? 200 : 500;
+  const text = b.innerText.replace(/\s+$/, '').slice(0, limit);
+  const before = it._before || {};
+
+  if (field === 'caption'){
+    const prev = it.data.caption || '';
+    const next = text.trim() ? text : '';
+    it.data = { ...it.data, caption: next };
+    b.textContent = next;
+    placeClamped(it);
+    if (next !== prev){
+      saveItems([it], ['data']);
+      recordUpdate([{ id: it.id, before:{ data: before }, after:{ data: JSON.parse(JSON.stringify(it.data)) } }], 'caption');
+    }
+    return;
+  }
   if (!text.trim()){
     if (it.pending) removeLocal(it);
     else deleteItems([it]);
     return;
   }
-  const beforeData = { ...it.data, text: it._textBefore || '' };
   const changed = text !== (it.data.text || '');
   it.data = { ...it.data, text };
   b.textContent = text;
   placeClamped(it);
+  const noun = it.type === 'label' ? 'label' : 'note';
   if (it.pending){
     it.pending = false;
     updateCount();
-    insertItem(it).then(ok => { if (ok) recordAdd([it], 'note'); });
+    insertItem(it).then(ok => { if (ok) recordAdd([it], noun); });
   } else if (changed){
     saveItems([it], ['data']);
-    recordUpdate([{ id: it.id, before:{ data: beforeData }, after:{ data: JSON.parse(JSON.stringify(it.data)) } }], 'note edit');
+    recordUpdate([{ id: it.id, before:{ data: before }, after:{ data: JSON.parse(JSON.stringify(it.data)) } }], noun + ' edit');
   }
 }
 world.addEventListener('dblclick', e => {
   if (tool !== 'move') return;
-  const note = e.target.closest('.item.note');
-  if (note){
-    const it = findItem(note.dataset.id);
+  const capEl = e.target.closest('.caption');
+  if (capEl){
+    const it = findItem(capEl.closest('.item').dataset.id);
+    if (canEdit(it)) startEditing(it, 'caption');
+    return;
+  }
+  const textEl = e.target.closest('.item.note, .item.label');
+  if (textEl){
+    const it = findItem(textEl.dataset.id);
     if (canEdit(it)) startEditing(it);
     return;
   }
   const emb = e.target.closest('.item.embed');
   if (emb){
     const it = findItem(emb.dataset.id);
-    if (it && it.data.kind !== 'youtube') openLink(it);
+    if (it && it.data.kind === 'link') openLink(it);
   }
 });
 
 /* ================= Tools ================= */
+const TOOLS = ['move', 'pen', 'arrow', 'text', 'eraser', 'note'];
 function setTool(t){
   if (t !== 'move' && !canPost){ toast(viewOnlyMsg(), 5000); t = 'move'; }
   tool = t;
   if (editing) stopEditing();
-  vp.classList.remove('tool-move', 'tool-pen', 'tool-eraser', 'tool-note');
-  vp.classList.add('tool-' + t);
+  TOOLS.forEach(n => vp.classList.toggle('tool-' + n, n === t));
   document.querySelectorAll('#toolbar .tool[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === t));
   if (t !== 'move') setSelection([]);
   renderToolOpts();
@@ -2819,26 +3004,46 @@ function renderToolOpts(){
     });
     return wrap;
   };
-  if (tool === 'pen'){
-    box.appendChild(swatches(PEN_COLORS, penColor, c => { penColor = c; penTouched = true; renderToolOpts(); }));
+  const pickPen = c => { penColor = c; penTouched = true; renderToolOpts(); };
+  const sizeSlider = () => {
     const range = document.createElement('input');
-    range.type = 'range'; range.min = 2; range.max = 40; range.value = penSize; range.title = 'Brush size';
+    range.type = 'range'; range.min = 2; range.max = 40; range.value = penSize; range.title = 'Size';
     const dot = document.createElement('span');
     dot.className = 'size-dot';
     const sizeDot = () => { const s = Math.max(4, Math.min(28, penSize)); dot.style.width = dot.style.height = s + 'px'; };
     range.oninput = () => { penSize = +range.value; sizeDot(); };
     sizeDot();
     box.append(range, dot);
+  };
+  if (tool === 'pen'){
+    box.appendChild(swatches(PEN_COLORS, penColor, pickPen));
+    sizeSlider();
+  } else if (tool === 'arrow'){
+    box.appendChild(swatches(PEN_COLORS, penColor, pickPen));
+    sizeSlider();
+    box.insertAdjacentHTML('beforeend', '<span>Drag to draw an arrow</span>');
+  } else if (tool === 'text'){
+    box.appendChild(swatches(PEN_COLORS, penColor, pickPen));
+    box.insertAdjacentHTML('beforeend', '<span>Click the board to write a label</span>');
   } else if (tool === 'note'){
+    const shapes = document.createElement('div');
+    shapes.className = 'swatches';
+    NOTE_SHAPES.forEach(([key, label]) => {
+      const b = document.createElement('button');
+      b.className = 'choice' + (key === noteShape ? ' on' : '');
+      b.textContent = label;
+      b.onclick = () => { noteShape = key; renderToolOpts(); };
+      shapes.appendChild(b);
+    });
+    box.appendChild(shapes);
     box.appendChild(swatches(NOTE_COLORS, noteColor, c => { noteColor = c; renderToolOpts(); }));
-    box.insertAdjacentHTML('beforeend', '<span>Click the board to place a note</span>');
   } else if (tool === 'eraser'){
-    box.innerHTML = '<span>Click or drag across your drawings to erase them</span>';
+    box.innerHTML = '<span>Click or drag across your drawings, arrows, and labels to erase them</span>';
   }
 }
 document.querySelectorAll('#toolbar .tool[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
 
-/* ================= Drawing ================= */
+/* ================= Drawing & arrows ================= */
 function startDraw(e, wp){
   mode = 'draw';
   st = { pid:e.pointerId, pts:[[+clamp(wp.x, 0, BW).toFixed(1), +clamp(wp.y, 0, BH).toFixed(1)]], size: penSize / view.z, color: penColor };
@@ -2871,11 +3076,41 @@ function finishDraw(done){
   }));
   insertItem(it).then(ok => { if (ok) recordAdd([it], 'drawing'); });
 }
+function startArrow(e, wp){
+  const p = [+clamp(wp.x, 0, BW).toFixed(1), +clamp(wp.y, 0, BH).toFixed(1)];
+  mode = 'arrow';
+  st = { pid:e.pointerId, p0:p, p1:p.slice(), size: Math.max(3, penSize) / view.z, color: penColor };
+  drawPath.setAttribute('stroke', st.color);
+  drawPath.setAttribute('stroke-width', st.size);
+  drawPath.setAttribute('d', '');
+}
+function moveArrow(e){
+  const wp = toWorld(e.clientX, e.clientY);
+  st.p1 = [+clamp(wp.x, 0, BW).toFixed(1), +clamp(wp.y, 0, BH).toFixed(1)];
+  drawPath.setAttribute('d', arrowD([st.p0, st.p1], st.size));
+}
+function finishArrow(done){
+  drawPath.setAttribute('d', '');
+  const { p0, p1, size, color } = done;
+  if (!p0 || Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 12 / view.z) return;
+  const all = [p0, p1, ...arrowHead(p0, p1, size)];
+  const xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+  const pad = size / 2 + 2;
+  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
+  const vw = +(Math.max(...xs) - Math.min(...xs) + pad * 2).toFixed(1);
+  const vh = +(Math.max(...ys) - Math.min(...ys) + pad * 2).toFixed(1);
+  const rel = p => [+(p[0] - x0).toFixed(1), +(p[1] - y0).toFixed(1)];
+  const it = mount(baseItem('stroke', {
+    x: x0, y: y0, w: vw,
+    data: { points: [rel(p0), rel(p1)], color, size: +size.toFixed(2), vw, vh, head: true }
+  }));
+  insertItem(it).then(ok => { if (ok) recordAdd([it], 'arrow'); });
+}
 function eraseAt(cx, cy){
   const target = document.elementFromPoint(cx, cy);
-  const el = target && target.closest && target.closest('.item.stroke');
+  const el = target && target.closest && target.closest('.item.stroke, .item.label');
   const it = el && findItem(el.dataset.id);
-  if (!it || it.locked || !canEdit(it)) return;
+  if (!it || it.locked || !canEdit(it) || it.pending) return;
   if (st.erased) st.erased.push(snap(it));
   removeLocal(it);
   sb.from('items').delete().eq('id', it.id).then(({ error }) => { if (error) toast(niceError(error)); });
@@ -2935,13 +3170,13 @@ vp.addEventListener('pointerdown', e => {
     }
     return;
   }
-  if (editing && e.target.closest('.note-body') === editing.body) return;
+  if (editing && editEl(editing, editField).contains(e.target)) return;
   if (editing) stopEditing();
 
   pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
   vp.setPointerCapture(e.pointerId);
-  if (pointers.size === 2 && [null, 'pan', 'draw', 'erase', 'marquee'].includes(mode)){
-    if (mode === 'draw') cancelDraw();
+  if (pointers.size === 2 && [null, 'pan', 'draw', 'arrow', 'erase', 'marquee'].includes(mode)){
+    if (mode === 'draw' || mode === 'arrow') cancelDraw();
     marquee.hidden = true;
     vp.classList.remove('panning');
     startPinch();
@@ -2954,11 +3189,12 @@ vp.addEventListener('pointerdown', e => {
   const itemEl = e.target.closest('.item');
 
   if (tool === 'pen'){ startDraw(e, wp); e.preventDefault(); return; }
+  if (tool === 'arrow'){ startArrow(e, wp); e.preventDefault(); return; }
   if (tool === 'eraser'){ mode = 'erase'; st = { pid:e.pointerId, erased:[] }; eraseAt(e.clientX, e.clientY); e.preventDefault(); return; }
-  if (tool === 'note'){
+  if (tool === 'note' || tool === 'text'){
     pointers.delete(e.pointerId);
     e.preventDefault();
-    const it = mount(newNote(wp.x, wp.y));
+    const it = mount(tool === 'note' ? newNote(wp.x, wp.y) : newLabel(wp.x, wp.y));
     setTool('move');
     setSelection([it]);
     setTimeout(() => startEditing(it), 0);
@@ -3027,6 +3263,8 @@ vp.addEventListener('pointermove', e => {
     applyView();
   } else if (mode === 'draw'){
     addDrawPoint(e);
+  } else if (mode === 'arrow'){
+    moveArrow(e);
   } else if (mode === 'erase'){
     eraseAt(e.clientX, e.clientY);
   } else if (mode === 'marquee'){
@@ -3060,6 +3298,8 @@ function endPointer(e){
     recordUpdate([{ id:done.it.id, before:done.before, after: grab(done.it, ['x', 'y', 'w']) }], 'resize');
   } else if (m === 'draw'){
     finishDraw(done);
+  } else if (m === 'arrow'){
+    finishArrow(done);
   } else if (m === 'erase'){
     if (done.erased && done.erased.length) pushHistory({ kind:'remove', label:'erase', snaps: done.erased });
   } else if (m === 'marquee'){
@@ -3146,6 +3386,55 @@ async function uploadFiles(files, w){
       recordAdd([it], 'upload');
     }
   }
+}
+
+/* ================= GIFs ================= */
+let gifPos = null, gifTimer = null, gifToken = 0;
+function openGifs(wp){
+  if (!currentRoom) return;
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
+  if (!MEDIA_BASE){ toast('GIF search needs the media Worker'); return; }
+  gifPos = wp || null;
+  $('#gifSearch').value = '';
+  $('#gifModal').hidden = false;
+  loadGifs('');
+  setTimeout(() => $('#gifSearch').focus(), 30);
+}
+async function loadGifs(q){
+  const tok = ++gifToken;
+  const grid = $('#gifGrid');
+  grid.innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    const r = await fetch(`${MEDIA_BASE}/gifs?q=${encodeURIComponent(q)}`);
+    const j = await r.json().catch(() => ({}));
+    if (tok !== gifToken) return;
+    if (!r.ok) throw new Error(j.error || 'GIF search failed');
+    const list = j.results || [];
+    if (!list.length){ grid.innerHTML = '<div class="loading">No GIFs found</div>'; return; }
+    grid.innerHTML = '';
+    list.forEach(g => {
+      const b = document.createElement('button');
+      b.className = 'gif-cell';
+      b.title = g.title || 'GIF';
+      b.innerHTML = `<img loading="lazy" alt="${esc(g.title || 'GIF')}" src="${esc(g.preview || g.url)}">`;
+      b.onclick = () => { closeModal('gifModal'); addGif(g, gifPos || toWorld(innerWidth / 2, innerHeight / 2)); };
+      grid.appendChild(b);
+    });
+  } catch (err){
+    if (tok === gifToken) grid.innerHTML = `<div class="loading">${esc(err.message || 'GIF search failed')}</div>`;
+  }
+}
+$('#gifSearch').addEventListener('input', e => {
+  clearTimeout(gifTimer);
+  gifTimer = setTimeout(() => loadGifs(e.target.value.trim()), 350);
+});
+async function addGif(g, w){
+  if (!currentRoom || !canPost || !g || !/^https?:\/\//.test(g.url || '')) return;
+  const it = mount(baseItem('embed', {
+    x: w.x - 120, y: w.y - 20, w: 240, rot: +rand(-5, 5).toFixed(2),
+    data: { kind:'gif', url: g.url, title: clip(g.title || 'GIF', 140), pc: pick(PIN_COLORS) }
+  }));
+  if (await insertItem(it)) recordAdd([it], 'GIF');
 }
 
 /* ================= Links & YouTube ================= */
@@ -3240,6 +3529,7 @@ $('#addBtn').onclick = () => {
   pendingDrop = null; $('#fileInput').click();
 };
 $('#linkBtn').onclick = () => promptLink(null);
+$('#gifBtn').onclick = () => openGifs(null);
 $('#fileInput').onchange = e => {
   uploadFiles([...e.target.files], pendingDrop || toWorld(innerWidth / 2, innerHeight / 2));
   pendingDrop = null;
@@ -3271,7 +3561,12 @@ addEventListener('keydown', e => {
   if (mod) return;
   if (e.key === 'Delete' || e.key === 'Backspace'){ if (selection.size){ e.preventDefault(); deleteItems(sel()); } return; }
   if (e.key === 'Escape'){ setSelection([]); if (tool !== 'move') setTool('move'); return; }
-  if (e.key === 'Enter' && selection.size === 1 && sel()[0].type === 'note'){ e.preventDefault(); startEditing(sel()[0]); return; }
+  if (e.key === 'Enter' && selection.size === 1){
+    const it = sel()[0];
+    if (it.type === 'note' || it.type === 'label'){ e.preventDefault(); startEditing(it); }
+    else if (it.cap){ e.preventDefault(); startEditing(it, 'caption'); }
+    return;
+  }
   if (e.key.startsWith('Arrow') && selection.size){
     e.preventDefault();
     const step = (e.shiftKey ? 20 : 3) / view.z;
@@ -3292,8 +3587,11 @@ addEventListener('keydown', e => {
   }
   if (k === 'v') setTool('move');
   else if (k === 'p') setTool('pen');
+  else if (k === 'a') setTool('arrow');
+  else if (k === 't') setTool('text');
   else if (k === 'e') setTool('eraser');
   else if (k === 'n') setTool('note');
+  else if (k === 'g') openGifs(null);
   else if (k === 'f') fitPins();
   else if (k === 'b') fitBoard();
   else if (k === 'u' && selection.size) bumpItems(sel());
