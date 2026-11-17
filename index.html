@@ -158,12 +158,11 @@ i[data-ic]{display:inline-flex; font-style:normal}
 .wm-dark{display:none !important}
 html[data-style="whiteboard"] .wm-light{display:none !important}
 html[data-style="whiteboard"] .wm-dark{display:block !important}
-.hero h1 em{color:#ff2d6b !important}
 @media (max-width:420px){ .logo .wm{display:none !important} }
 .wrap{max-width:1180px; margin:0 auto; padding:0 24px calc(40px + env(safe-area-inset-bottom,0px))}
 .hero{padding:54px 0 26px}
 .hero h1{margin:0 0 12px; font-size:clamp(40px, 6vw, 66px); font-weight:900; letter-spacing:-1.5px; line-height:1.02}
-.hero h1 em{font-style:normal; color:var(--accent); font-family:var(--hand); font-size:1.15em; letter-spacing:0}
+.hero h1 em{font-style:normal; color:#ff2d6b; font-family:var(--hand); font-size:1.15em; letter-spacing:0}
 .hero p{margin:0 0 20px; max-width:560px; font-size:17px; line-height:1.5; font-weight:600; color:var(--muted)}
 .stat-chips{display:flex; flex-wrap:wrap; gap:8px}
 .stat-chip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; background:var(--surface); border:1px solid var(--line); font-weight:800; font-size:13px; color:var(--muted)}
@@ -196,6 +195,7 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 .mini.media{background:#fdfcf8; padding:3%; box-shadow:0 3px 8px rgba(0,0,0,.3)}
 .mini.media img,.mini.media video{display:block; width:100%; aspect-ratio:4/3; object-fit:cover; background:#ccc}
 .mini.note{background:var(--nc); color:#2a2420; font-family:var(--hand); font-size:14px; line-height:1.05; padding:6px 8px; border-radius:10px; max-height:60%; overflow:hidden; box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.mini.link{background:#fff; color:#1c2030; font:800 11px var(--font); line-height:1.2; padding:7px 8px; border-radius:8px; max-height:60%; overflow:hidden; box-shadow:0 3px 8px rgba(0,0,0,.25)}
 .rc-body{padding:13px 15px 15px; display:flex; flex-direction:column; gap:6px}
 .rc-name{font-weight:900; font-size:16px}
 .rc-desc{font-size:13px; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
@@ -239,6 +239,8 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 .mod-thumb .hit{display:none}
 .mod-thumb .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
 .mod-note{max-width:85%; max-height:170px; overflow:hidden; padding:12px 16px; border-radius:16px; background:var(--nc); color:#2a2420; font-family:var(--hand); font-size:22px; white-space:pre-wrap}
+.mod-link{max-width:88%; padding:12px 14px; border-radius:10px; background:#fff; color:#1c2030; font:800 14px var(--font); word-break:break-word}
+.mod-link small{display:block; margin-top:6px; font-weight:700; font-size:12px; color:#3b6cf6}
 .mod-body{display:flex; flex-direction:column; gap:6px; padding:12px 14px 14px}
 .mod-title{display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-weight:800; font-size:14px}
 .mod-title a{color:var(--accent)}
@@ -285,7 +287,7 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 
 /* ================= Context menu ================= */
 #ctx{
-  position:fixed; z-index:80; min-width:220px; max-width:290px; padding:6px; border-radius:13px;
+  position:fixed; z-index:80; min-width:220px; max-width:300px; padding:6px; border-radius:13px;
   background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow); font-size:13.5px; font-weight:700;
 }
 .ctx-title{padding:7px 10px 5px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
@@ -296,6 +298,11 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 .ctx-item .kbd{margin-left:auto; font-size:11px; font-weight:800; color:var(--muted)}
 .ctx-sep{height:1px; background:var(--line); margin:5px 4px}
 .ctx-swatches{display:flex; flex-wrap:wrap; gap:7px; padding:6px 10px 8px}
+.ctx-emojis{display:flex; flex-wrap:wrap; gap:4px; padding:4px 8px 8px}
+.emo{width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--surface-2); font-size:17px; line-height:1; cursor:pointer; display:grid; place-items:center; padding:0; transition:transform .1s}
+.emo.on{border-color:var(--accent); background:var(--accent-soft)}
+.emo:hover:not(:disabled){transform:scale(1.12)}
+.emo:disabled{opacity:.4; cursor:default}
 
 /* ================= Room ================= */
 #viewport{
@@ -331,8 +338,14 @@ html[data-style="cozy"] .item.media .card,
 html[data-style="cork"] .item.media .card,
 html[data-style="blackboard"] .item.media .card{background:#fdfcf8; padding:8px 8px 10px; border-radius:2px; box-shadow:0 2px 3px rgba(0,0,0,.25), 0 8px 18px rgba(0,0,0,.25)}
 html[data-style="whiteboard"] .item.media .card{background:#fff; padding:6px; border-radius:6px; box-shadow:0 2px 4px rgba(20,30,60,.12), 0 10px 24px rgba(20,30,60,.14)}
-.item.reported .card img,.item.reported .card video,.item.reported .note-body{filter:blur(8px) grayscale(.6)}
-.item.reported .card::after{content:"⚑ Reported"; position:absolute; left:14px; top:14px; background:var(--danger); color:#fff; font:800 12px var(--font); padding:3px 8px; border-radius:5px}
+
+/* aging: pins yellow and fade as they near the end of the rotation */
+.item.media .card,.item.note .note-body{filter:sepia(calc(var(--age, 0) * .5)) saturate(calc(1 - var(--age, 0) * .35)) brightness(calc(1 - var(--age, 0) * .05))}
+@keyframes bumpPop{0%{transform:scale(1)} 35%{transform:scale(1.08)} 100%{transform:scale(1)}}
+.item.bumped > .card,.item.bumped > .note-body{animation:bumpPop .6s ease}
+
+.item.reported .card img,.item.reported .card video,.item.reported .note-body,.item.reported .yt-frame,.item.reported .lk-body{filter:blur(8px) grayscale(.6)}
+.item.reported .card::after{content:"⚑ Reported"; position:absolute; left:14px; top:14px; background:var(--danger); color:#fff; font:800 12px var(--font); padding:3px 8px; border-radius:5px; z-index:2}
 
 .pin{display:none; position:absolute; z-index:2; pointer-events:none}
 html[data-style="cozy"] .pin,html[data-style="cork"] .pin{
@@ -369,16 +382,45 @@ html[data-style="whiteboard"] .pin{
 .item.stroke .hit{fill:none; stroke:transparent; stroke-linecap:round; stroke-linejoin:round; pointer-events:stroke}
 .item.stroke.selected{outline-style:dashed}
 
-.badge-lock,.more-btn,.resize{position:absolute; z-index:5; transform:scale(calc(1 / var(--z)))}
+/* link + YouTube cards */
+.item.embed .card{background:#fff}
+.emb-head{display:flex; align-items:center; gap:6px; padding:8px 10px; background:#fff; color:#1c2030; font:800 13px var(--font); white-space:nowrap; overflow:hidden; cursor:move}
+.emb-head span{overflow:hidden; text-overflow:ellipsis}
+.emb-head .ic{color:#ff0033}
+.yt-frame{position:relative; aspect-ratio:16/9; background:#000 center / cover no-repeat}
+.yt-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.yt-play{position:absolute; left:50%; top:50%; width:64px; height:44px; margin:-22px 0 0 -32px; border:0; border-radius:12px; background:#ff0033; color:#fff; display:grid; place-items:center; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.yt-play:hover{filter:brightness(1.1)}
+.lk-img{display:block; width:100%; height:auto; max-height:240px; object-fit:cover}
+.lk-body{padding:10px 12px 12px; background:#fff; color:#1c2030}
+.lk-title{font:900 15px var(--font); line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.lk-desc{margin-top:4px; font:600 12.5px var(--font); color:#5b6274; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+.lk-site{margin-top:6px; display:flex; align-items:center; gap:4px; font:800 11.5px var(--font); color:#3b6cf6}
+#viewport.panning iframe,#viewport:not(.tool-move) iframe,.item.lifting iframe{pointer-events:none}
+
+/* reaction stickers */
+.reacts{position:absolute; right:10px; bottom:-15px; z-index:4; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:4px; max-width:92%}
+.rchip{display:inline-flex; align-items:center; gap:4px; padding:3px 9px 3px 7px; border-radius:999px; border:1.5px solid rgba(0,0,0,.12); background:#fff; color:#1c2030; font:800 13px var(--font); cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,.25); transform:rotate(-2deg); transition:transform .1s}
+.rchip:nth-child(even){transform:rotate(2deg)}
+.rchip:hover{transform:scale(1.08)}
+.rchip .e{font-size:16px; line-height:1}
+.rchip.mine{border-color:#5b45f7; background:#eeebff}
+
+/* per-item controls (constant on-screen size) */
+.badge-lock,.more-btn,.resize,.countdown{position:absolute; z-index:5; transform:scale(calc(1 / var(--z)))}
 .badge-lock{top:-11px; left:-11px; width:24px; height:24px; border-radius:50%; display:none; place-items:center; background:var(--surface); color:var(--text); border:1px solid var(--line); box-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none}
 .item.locked .badge-lock{display:grid}
 .more-btn{top:-13px; right:-13px; width:28px; height:28px; border-radius:50%; border:0; display:none; place-items:center; background:var(--accent); color:var(--accent-ink); cursor:pointer; pointer-events:auto; box-shadow:0 3px 8px rgba(0,0,0,.35)}
 .item.selected.solo .more-btn{display:grid}
 .resize{right:-8px; bottom:-8px; width:18px; height:18px; border-radius:50%; display:none; background:var(--accent); border:3px solid #fff; cursor:nwse-resize; pointer-events:auto; box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .item.selected.solo:not(.locked) .resize{display:block}
+.countdown{left:-10px; bottom:-10px; transform-origin:0 100%; display:flex; align-items:center; gap:3px; padding:2px 7px 2px 5px; border-radius:999px; background:var(--surface); color:var(--muted); border:1px solid var(--line); font:800 11px var(--font); box-shadow:0 2px 6px rgba(0,0,0,.3); pointer-events:none; opacity:.85}
+.countdown.low{background:var(--danger); color:#fff; border-color:transparent; opacity:1}
+.countdown:has(span:empty){display:none}
+#viewport.far .countdown{display:none}
 #viewport:not(.tool-move) .resize,#viewport:not(.tool-move) .more-btn{display:none !important}
 
-.rcursor{position:absolute; left:0; top:0; z-index:2147483500; pointer-events:none; transform:scale(calc(1 / var(--z))); transform-origin:0 0; transition:left .1s linear, top .1s linear}
+.rcursor{position:absolute; left:0; top:0; z-index:2147483500; pointer-events:none; transform:scale(calc(1 / var(--z))); transform-origin:0 0; transition:left .45s ease-out, top .45s ease-out}
 .rcursor svg{display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 .rcursor span{position:absolute; left:16px; top:18px; white-space:nowrap; padding:2px 8px; border-radius:7px; background:var(--cc); color:#fff; font:800 11px var(--font); text-shadow:0 1px 1px rgba(0,0,0,.35); box-shadow:0 2px 6px rgba(0,0,0,.3)}
 
@@ -394,13 +436,14 @@ html[data-style="whiteboard"] .pin{
 #viewBar{top:calc(12px + env(safe-area-inset-top,0px)); right:12px; display:flex; align-items:center; gap:4px; padding:5px; border-radius:14px}
 #zoomBtn{min-width:58px}
 .me-dot{width:12px; height:12px; border-radius:50%; background:var(--mc); box-shadow:0 0 0 2px var(--surface)}
-#toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px}
-#toolbar.disabled .tool:not([data-tool="move"]){opacity:.3; pointer-events:none}
-.tool{position:relative; width:44px; height:44px; border:0; border-radius:11px; display:grid; place-items:center; background:transparent; color:var(--text); cursor:pointer; transition:background .15s}
-.tool:hover{background:var(--surface-2)}
+#toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px; max-width:calc(100vw - 16px)}
+#toolbar.disabled .tool:not([data-tool="move"]):not(.hist){opacity:.3; pointer-events:none}
+.tool{position:relative; width:44px; height:44px; border:0; border-radius:11px; display:grid; place-items:center; background:transparent; color:var(--text); cursor:pointer; transition:background .15s, opacity .15s; flex:none}
+.tool:hover:not(:disabled){background:var(--surface-2)}
+.tool:disabled{opacity:.3; cursor:default}
 .tool.active{background:var(--accent); color:var(--accent-ink)}
 .tool .k{position:absolute; right:5px; bottom:3px; font-size:9px; font-weight:900; opacity:.55}
-.tsep{width:1px; align-self:stretch; margin:6px 3px; background:var(--line)}
+.tsep{width:1px; align-self:stretch; margin:6px 3px; background:var(--line); flex:none}
 #toolOpts{left:50%; transform:translateX(-50%); bottom:calc(14px + 66px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center; padding:10px 14px; border-radius:14px; max-width:calc(100vw - 24px); font-size:13px; font-weight:700; color:var(--muted)}
 #toolOpts .swatches{display:flex; flex-wrap:wrap; gap:7px}
 #toolOpts input[type=range]{width:110px; accent-color:var(--accent)}
@@ -435,7 +478,8 @@ html[data-style="whiteboard"] .pin{
   #pinMeter{display:none}
   #viewBar .hide-sm{display:none}
   #roomBar{max-width:calc(100vw - 190px)}
-  .tool{width:40px; height:40px}
+  .tool{width:38px; height:38px}
+  .tool .k{display:none}
 }
 </style>
 </head>
@@ -503,9 +547,13 @@ html[data-style="whiteboard"] .pin{
         <li><b>No spam or scams.</b></li>
         <li><b>Only post what you have the right to share.</b></li>
       </ol>
+      <p>Moderators have the final say on anything not spelled out here.</p>
+
+      <h2>How the board works</h2>
+      <p>Every room has a pin limit. When it's full, each new pin pushes the oldest one off the board. The little badge on each pin shows how many more pins can go up before it's gone, and pins slowly fade as they near the end. If you like something, bump it to send it back to the top.</p>
 
       <h2>How moderation works</h2>
-      <p>Anyone can report a pin, note, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
+      <p>Anyone can report a pin, note, link, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
 
       <h2>Privacy</h2>
       <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor and the name you choose. If you save an account, your email is only used to send you sign-in links.</p>
@@ -584,7 +632,11 @@ html[data-style="whiteboard"] .pin{
     <button class="tool" data-tool="eraser" title="Erase your drawings (E)"><i data-ic="eraser" data-s="20"></i><span class="k">E</span></button>
     <button class="tool" data-tool="note" title="Note bubble (N)"><i data-ic="note" data-s="20"></i><span class="k">N</span></button>
     <div class="tsep"></div>
+    <button class="tool" id="linkBtn" title="Pin a link or YouTube video"><i data-ic="link" data-s="20"></i></button>
     <button class="tool" id="addBtn" title="Add images or videos"><i data-ic="upload" data-s="20"></i></button>
+    <div class="tsep"></div>
+    <button class="tool hist" id="undoBtn" title="Undo (Ctrl+Z)" disabled><i data-ic="undo" data-s="20"></i></button>
+    <button class="tool hist" id="redoBtn" title="Redo (Ctrl+Y)" disabled><i data-ic="redo" data-s="20"></i></button>
   </div>
   <div id="toolOpts" class="float" hidden></div>
 
@@ -593,7 +645,7 @@ html[data-style="whiteboard"] .pin{
   <div id="roomEmpty">
     <div class="empty-card">
       <h2>This board is empty</h2>
-      <p>Drop in images or videos, draw with the pen, or stick a note bubble anywhere. Everyone in the room sees it live.</p>
+      <p>Drop in images or videos, paste a link, draw with the pen, or stick a note bubble anywhere. Everyone in the room sees it live.</p>
     </div>
   </div>
   <div id="marquee" hidden></div>
@@ -658,7 +710,7 @@ html[data-style="whiteboard"] .pin{
         <span class="flabel">Pin cap</span>
         <div class="row">
           <input class="inp num" type="number" name="cap" value="60" min="5" max="500">
-          <span class="hint">Oldest pins and notes rotate off once the board is full.</span>
+          <span class="hint">Oldest pins rotate off once the board is full. Bumping sends a pin back to the top.</span>
         </div>
       </div>
       <p class="error full" id="createError"></p>
@@ -733,6 +785,7 @@ const CAPTCHA_ON = !!TURNSTILE_SITE_KEY && !TURNSTILE_SITE_KEY.startsWith('PASTE
 const BUCKET = 'media';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth:{ flowType:'pkce' } });
 const publicUrl = path => MEDIA_BASE ? `${MEDIA_BASE}/${path}` : sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+const proxiedImage = url => MEDIA_BASE ? `${MEDIA_BASE}/img?url=${encodeURIComponent(url)}` : url;
 
 /* ================= Config ================= */
 const STYLES = {
@@ -750,6 +803,8 @@ const PIN_COLORS = ['#e5483b','#f2b632','#3a8ee6','#41b06e','#9b5de5','#ff7aa8']
 const PEN_COLORS = ['#ffffff','#1d1f27','#ff5d5d','#ffa94d','#ffd84d','#4cd18a','#4ea6ff','#a78bfa','#ff7ac6'];
 const NOTE_COLORS = ['#ffe58a','#ffb8c9','#a8d8ff','#bdf0b4','#d9c6ff','#ffffff'];
 const CURSOR_COLORS = ['#ff5d5d','#ff9f43','#f7c948','#2ecc71','#1abc9c','#3b9cff','#7c6cff','#e056fd','#ff6fa8'];
+const REACTIONS = [['heart','❤️'],['fire','🔥'],['laugh','😂'],['skull','💀'],['eyes','👀'],['star','⭐'],['thumbs','👍'],['wow','🤯']];
+const REACT_CHAR = Object.fromEntries(REACTIONS);
 const REPORT_REASONS = [
   ['child_safety', 'Child safety or exploitation', 'Child safety'],
   ['sexual', 'Nudity or sexual content', 'Sexual'],
@@ -763,6 +818,8 @@ const REASON_SHORT = Object.fromEntries(REPORT_REASONS.map(([k, , s]) => [k, s])
 const MAX_UPLOAD_MB = 10;
 const MAX_IMAGE_SIDE = 2048;
 const REPORT_HIDE = 3;
+const HISTORY_MAX = 60;
+const MEDIA_RESTORE_MS = 9 * 60 * 1000;
 const IMAGE_TYPES = ['image/jpeg','image/png','image/webp','image/gif','image/avif','image/bmp'];
 const VIDEO_TYPES = ['video/mp4','video/webm','video/quicktime'];
 const PREFS_KEY = 'picboard.prefs.v1', STYLE_KEY = 'picboard.style.v1',
@@ -786,6 +843,7 @@ const ICONS = {
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   ban:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  hourglass:'<path d="M7 3h10M7 21h10"/><path d="M8 3v3a4 4 0 0 0 8 0V3M8 21v-3a4 4 0 0 1 8 0v3"/>',
   maximize:'<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/>',
   trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   back:'<path d="M15 18l-6-6 6-6"/>',
@@ -798,6 +856,11 @@ const ICONS = {
   eraser:'<path d="M7 21h12"/><path d="M5.6 15.6 14.2 7a2 2 0 0 1 2.8 0l2.8 2.8a2 2 0 0 1 0 2.8L12.4 20H9.6z"/><path d="m9.5 11.5 5 5"/>',
   note:'<path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/>',
   upload:'<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
+  arrowUp:'<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>',
+  play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',
   front:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',
   backL:'<rect x="8" y="8" width="12" height="12" rx="2" stroke-dasharray="2 3"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',
   straighten:'<path d="M3 12h18"/><path d="M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
@@ -825,6 +888,7 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 const byZ = (a, b) => (a.z || 0) - (b.z || 0);
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const clip = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
 function newId(){
   if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -855,6 +919,19 @@ function toast(msg, ms = 3000){
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+function youtubeId(raw){
+  try {
+    const u = new URL(raw);
+    const h = u.hostname.replace(/^(www|m)\./, '');
+    let id = null;
+    if (h === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (h === 'youtube.com' || h === 'music.youtube.com'){
+      if (u.pathname === '/watch') id = u.searchParams.get('v');
+      else { const m = u.pathname.match(/^\/(shorts|embed|live)\/([\w-]+)/); if (m) id = m[2]; }
+    }
+    return id && /^[\w-]{6,20}$/.test(id) ? id : null;
+  } catch { return null; }
 }
 
 /* ================= Local prefs ================= */
@@ -1092,11 +1169,26 @@ const ctx = $('#ctx');
 function openMenu(x, y, entries){
   ctx.innerHTML = '';
   for (const e of entries){
+    if (!e) continue;
     if (e === '-'){ ctx.insertAdjacentHTML('beforeend', '<div class="ctx-sep"></div>'); continue; }
     if (e.title){
       const d = document.createElement('div');
       d.className = 'ctx-title'; d.textContent = e.title;
       ctx.appendChild(d); continue;
+    }
+    if (e.emojis){
+      const row = document.createElement('div');
+      row.className = 'ctx-emojis';
+      REACTIONS.forEach(([key, ch]) => {
+        const b = document.createElement('button');
+        b.className = 'emo' + (e.mine && e.mine.has(key) ? ' on' : '');
+        b.textContent = ch;
+        b.title = key;
+        b.disabled = !!e.disabled;
+        b.onclick = () => { closeMenu(); e.pick(key); };
+        row.appendChild(b);
+      });
+      ctx.appendChild(row); continue;
     }
     if (e.colors){
       const row = document.createElement('div');
@@ -1239,8 +1331,15 @@ function minisHTML(r){
   return (previews.get(r.id) || []).slice(0, 3).map((p, i) => {
     const P = PREVIEW_POS[i];
     const style = `left:${P.l}%;top:${P.t}%;--r:${P.r}deg`;
+    const d = p.data || {};
     if (p.type === 'note'){
-      return `<div class="mini note" style="${style};--nc:${esc((p.data && p.data.color) || NOTE_COLORS[0])}">${esc((p.data && p.data.text) || '')}</div>`;
+      return `<div class="mini note" style="${style};--nc:${esc(d.color || NOTE_COLORS[0])}">${esc(d.text || '')}</div>`;
+    }
+    if (p.type === 'embed'){
+      if (d.kind === 'youtube' && /^[\w-]{6,20}$/.test(d.vid || '')){
+        return `<div class="mini media" style="${style}"><img alt="" loading="lazy" src="https://i.ytimg.com/vi/${d.vid}/mqdefault.jpg"></div>`;
+      }
+      return `<div class="mini link" style="${style}">${esc(clip(d.title || d.site || 'Link', 60))}</div>`;
     }
     const url = esc(publicUrl(p.path));
     return `<div class="mini media" style="${style}">${
@@ -1357,6 +1456,7 @@ function modThumb(row){
   const d = row.data || {};
   if (row.type === 'note') return `<div class="mod-note" style="--nc:${esc(d.color || NOTE_COLORS[0])}">${esc(d.text || '')}</div>`;
   if (row.type === 'stroke') return strokeSVG(d);
+  if (row.type === 'embed') return `<div class="mod-link">${esc(d.title || 'Link')}<small>${esc(d.url || '')}</small></div>`;
   const url = esc(publicUrl(row.path));
   return row.type === 'video'
     ? `<video src="${url}" muted controls preload="metadata"></video>`
@@ -1364,7 +1464,7 @@ function modThumb(row){
 }
 function modItemHTML(row){
   const room = row.rooms || {};
-  const kind = { image:'Image', video:'Video', note:'Note', stroke:'Drawing' }[row.type] || 'Item';
+  const kind = { image:'Image', video:'Video', note:'Note', stroke:'Drawing', embed:'Link' }[row.type] || 'Item';
   const reports = row.report_count > 0
     ? `<span class="badge warn">${ic('flag', 11)} ${row.report_count} report point${row.report_count > 1 ? 's' : ''}${row.report_count >= REPORT_HIDE ? ' · hidden' : ''}</span>` : '';
   const reasons = row._reasons && Object.keys(row._reasons).length
@@ -1623,7 +1723,9 @@ const MAX_Z = 4, VIDEO_MIN_Z = 0.15;
 let minZ = 0.05;
 let items = [], roomToken = 0, openToken = 0, canPost = true, channel = null;
 const selection = new Set();
-let tool = 'move', editing = null, spaceDown = false, pendingDrop = null;
+const reacts = new Map();
+const hist = { undo:[], redo:[] };
+let tool = 'move', editing = null, spaceDown = false, pendingDrop = null, histBusy = false;
 
 const drawLayer = document.createElementNS(SVGNS, 'svg');
 drawLayer.id = 'drawLayer';
@@ -1678,6 +1780,7 @@ async function enterRoom(r){
   computeMinZ();
   fitBoard();
   updateCount();
+  updateUndoButtons();
   if (!canPost) toast(viewOnlyMsg(), 5000);
 
   const token = ++roomToken;
@@ -1688,6 +1791,7 @@ async function enterRoom(r){
   (data || []).forEach(row => { if (!findItem(row.id)) mount(fromItemRow(row)); });
   items.forEach(i => { zCounter = Math.max(zCounter, i.z); });
   updateCount();
+  loadReactions(r.id, token);
 }
 
 function leaveRoom(){
@@ -1699,6 +1803,8 @@ function leaveRoom(){
   [...items].forEach(removeLocal);
   items = [];
   selection.clear();
+  reacts.clear();
+  hist.undo = []; hist.redo = [];
   currentRoom = null;
   mode = null; st = {}; pointers.clear();
   drawPath.setAttribute('d', '');
@@ -1723,6 +1829,8 @@ function subscribeRoom(r){
     .on('postgres_changes', { event:'INSERT', schema:'public', table:'items', filter:`room_id=eq.${r.id}` }, p => onRemoteInsert(p.new))
     .on('postgres_changes', { event:'UPDATE', schema:'public', table:'items', filter:`room_id=eq.${r.id}` }, p => onRemoteUpdate(p.new))
     .on('postgres_changes', { event:'DELETE', schema:'public', table:'items' }, p => { const it = findItem(p.old && p.old.id); if (it) removeLocal(it); })
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'reactions', filter:`room_id=eq.${r.id}` }, p => applyRemoteReaction(p.new, 1))
+    .on('postgres_changes', { event:'DELETE', schema:'public', table:'reactions' }, p => applyRemoteReaction(p.old, -1))
     .on('broadcast', { event:'move' }, ({ payload }) => onRemoteMove(payload))
     .on('broadcast', { event:'cursor' }, ({ payload }) => onRemoteCursor(payload))
     .on('presence', { event:'sync' }, updatePresence)
@@ -1755,39 +1863,65 @@ function onRemoteUpdate(row){
     it.el.style.setProperty('--r', it.rot + 'deg');
     placeClamped(it);
   }
+  const newBump = Date.parse(row.bumped_at || row.created_at);
+  if (newBump > (it.bumped || 0) + 1000){
+    it.el.classList.add('bumped');
+    setTimeout(() => it.el && it.el.classList.remove('bumped'), 700);
+  }
+  it.bumped = newBump;
+  it.bumpCount = row.bump_count || 0;
   it.z = Number(row.z); setZ(it); zCounter = Math.max(zCounter, it.z);
   if (editing !== it) applyData(it, row.data || {});
   updateReportedClass(it);
   refreshSelectionUI();
+  updateCount();
 }
 function onRemoteMove(payload){
   for (const [id, x, y] of (payload.p || [])){
     const it = findItem(id);
     if (!it || isBusy(it)) continue;
     it.x = x; it.y = y;
+    it.el.classList.add('animating');
+    clearTimeout(it._moveTimer);
+    it._moveTimer = setTimeout(() => it.el && it.el.classList.remove('animating'), 400);
     it.el.style.left = x + 'px';
     it.el.style.top = y + 'px';
   }
 }
-let lastMoveSend = 0;
+
+// Realtime budget: Supabase counts each broadcast once when sent plus once per receiver,
+// so cursor traffic grows with the square of the room size. This keeps a room's total
+// cursor traffic near CURSOR_BUDGET messages/second and turns cursors off in very busy rooms.
+const CURSOR_BUDGET = 30;
+const CURSOR_MAX_PEOPLE = 8;
+let lastCursorSend = 0, lastCursorPos = null, lastMoveSend = 0;
+function roomSize(){ return Math.max(1, +$('#presenceCount').textContent || 1); }
+function cursorInterval(){
+  const n = roomSize();
+  return Math.max(120, 1000 * n * n / CURSOR_BUDGET);
+}
 function broadcastMoves(list, force = false){
-  if (!channel) return;
+  if (!channel || roomSize() < 2) return;
   const now = performance.now();
-  if (!force && now - lastMoveSend < 50) return;
+  if (!force && now - lastMoveSend < Math.max(100, cursorInterval() / 2)) return;
   lastMoveSend = now;
   channel.send({ type:'broadcast', event:'move', payload:{ p: list.map(i => [i.id, Math.round(i.x), Math.round(i.y)]) } });
 }
 
 const cursors = new Map();
 function myName(){ return me.name || ('anon-' + (me.id || '0000').slice(0, 4)); }
-let lastCursorSend = 0;
 function sendCursor(cx, cy){
-  if (!channel || !currentRoom) return;
+  if (!channel || !currentRoom || document.hidden) return;
+  const n = roomSize();
+  if (n < 2 || n > CURSOR_MAX_PEOPLE) return;
   const now = performance.now();
-  if (now - lastCursorSend < 70) return;
-  lastCursorSend = now;
+  if (now - lastCursorSend < cursorInterval()) return;
   const w = toWorld(cx, cy);
-  channel.send({ type:'broadcast', event:'cursor', payload:{ u: me.id, x: Math.round(w.x), y: Math.round(w.y), n: myName(), c: me.color } });
+  const x = Math.round(w.x), y = Math.round(w.y);
+  if (lastCursorPos && Math.abs(x - lastCursorPos[0]) < 6 / view.z && Math.abs(y - lastCursorPos[1]) < 6 / view.z) return;
+  lastCursorSend = now;
+  lastCursorPos = [x, y];
+  channel.send({ type:'broadcast', event:'cursor', payload:{ u: me.id, x, y, n: myName(), c: me.color } });
 }
 function onRemoteCursor(p){
   if (!p || p.u === me.id) return;
@@ -1834,12 +1968,177 @@ $('#meBtn').onclick = () => {
   ]);
 };
 
+/* ================= Reactions ================= */
+function reactEntry(itemId, key){
+  let m = reacts.get(itemId);
+  if (!m){ m = new Map(); reacts.set(itemId, m); }
+  let r = m.get(key);
+  if (!r){ r = { n:0, mine:false }; m.set(key, r); }
+  return r;
+}
+function myReactions(itemId){
+  const s = new Set();
+  const m = reacts.get(itemId);
+  if (m) for (const [k, r] of m) if (r.mine) s.add(k);
+  return s;
+}
+function renderReacts(it){
+  const box = it.el && it.el.querySelector(':scope > .reacts');
+  if (!box) return;
+  const m = reacts.get(it.id);
+  const list = m ? [...m.entries()].filter(([, r]) => r.n > 0).sort((a, b) => b[1].n - a[1].n) : [];
+  box.innerHTML = list.map(([k, r]) =>
+    `<button class="rchip${r.mine ? ' mine' : ''}" data-react="${k}" title="${r.mine ? 'Remove your reaction' : 'React'}"><span class="e">${REACT_CHAR[k]}</span>${r.n}</button>`
+  ).join('');
+}
+async function loadReactions(roomId, token){
+  const { data } = await sb.from('reactions').select('item_id, emoji, user_id').eq('room_id', roomId).limit(20000);
+  if (token !== roomToken) return;
+  reacts.clear();
+  (data || []).forEach(r => {
+    const e = reactEntry(r.item_id, r.emoji);
+    e.n++;
+    if (r.user_id === me.id) e.mine = true;
+  });
+  items.forEach(renderReacts);
+}
+function applyRemoteReaction(row, delta){
+  if (!row || row.user_id === me.id) return;
+  const it = findItem(row.item_id);
+  if (!it) return;
+  const e = reactEntry(row.item_id, row.emoji);
+  e.n = Math.max(0, e.n + delta);
+  renderReacts(it);
+}
+async function toggleReaction(it, key){
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
+  if (!it || it.pending || it.type === 'stroke') return;
+  const e = reactEntry(it.id, key);
+  const adding = !e.mine;
+  e.mine = adding;
+  e.n = Math.max(0, e.n + (adding ? 1 : -1));
+  renderReacts(it);
+  const res = adding
+    ? await sb.from('reactions').insert({ item_id: it.id, room_id: currentRoom.id, emoji: key })
+    : await sb.from('reactions').delete().match({ item_id: it.id, user_id: me.id, emoji: key });
+  if (res.error && res.error.code !== '23505'){
+    e.mine = !adding;
+    e.n = Math.max(0, e.n + (adding ? -1 : 1));
+    renderReacts(it);
+    toast(niceError(res.error));
+  }
+}
+
+/* ================= Undo / redo ================= */
+function snap(it){
+  return {
+    id: it.id, type: it.type, x: it.x, y: it.y, w: it.w, rot: it.rot, z: it.z, locked: it.locked,
+    path: it.path, mime: it.mime, data: JSON.parse(JSON.stringify(it.data || {}))
+  };
+}
+function grab(it, fields){
+  const o = {};
+  fields.forEach(f => { o[f] = f === 'data' ? JSON.parse(JSON.stringify(it.data || {})) : it[f]; });
+  return o;
+}
+function pushHistory(entry){
+  entry.t = Date.now();
+  hist.undo.push(entry);
+  if (hist.undo.length > HISTORY_MAX) hist.undo.shift();
+  hist.redo = [];
+  updateUndoButtons();
+}
+function recordAdd(list, label){
+  const real = list.filter(i => items.includes(i));
+  if (real.length) pushHistory({ kind:'add', label, snaps: real.map(snap) });
+}
+function recordUpdate(changes, label){
+  const real = changes.filter(c => JSON.stringify(c.before) !== JSON.stringify(c.after));
+  if (real.length) pushHistory({ kind:'update', label, changes: real });
+}
+function updateUndoButtons(){
+  $('#undoBtn').disabled = !hist.undo.length;
+  $('#redoBtn').disabled = !hist.redo.length;
+}
+function applyFields(it, obj){
+  for (const [k, v] of Object.entries(obj)){
+    if (k === 'data') applyData(it, JSON.parse(JSON.stringify(v)));
+    else it[k] = v;
+  }
+  if ('rot' in obj) it.el.style.setProperty('--r', it.rot + 'deg');
+  if ('locked' in obj) it.el.classList.toggle('locked', it.locked);
+  if ('z' in obj) setZ(it);
+  it.el.classList.add('animating');
+  setTimeout(() => it.el && it.el.classList.remove('animating'), 400);
+  placeClamped(it);
+}
+async function runHistory(entry, dir){
+  if (entry.kind === 'update'){
+    let n = 0;
+    for (const c of entry.changes){
+      const it = findItem(c.id);
+      if (!it || (it.locked && !canEdit(it) && !('locked' in c.before))) continue;
+      const vals = dir === 'undo' ? c.before : c.after;
+      applyFields(it, vals);
+      saveItems([it], Object.keys(vals));
+      n++;
+    }
+    refreshSelectionUI();
+    return n > 0;
+  }
+  const restoring = (entry.kind === 'add' && dir === 'redo') || (entry.kind === 'remove' && dir === 'undo');
+  if (restoring){
+    if (!canPost) return false;
+    if (entry.snaps.some(s => s.path) && Date.now() - entry.t > MEDIA_RESTORE_MS){
+      toast("That's too old to bring back, its file has been cleaned up");
+      return false;
+    }
+    let n = 0;
+    for (const s of entry.snaps){
+      if (findItem(s.id)) continue;
+      const it = mount(baseItem(s.type, { ...s, data: JSON.parse(JSON.stringify(s.data)), author: me.id }));
+      if (await insertItem(it)) n++;
+    }
+    return n > 0;
+  }
+  const list = entry.snaps.map(s => findItem(s.id)).filter(Boolean);
+  if (!list.length) return false;
+  await deleteItems(list, { record:false, quiet:true });
+  entry.t = Date.now();
+  return true;
+}
+async function undo(){
+  if (histBusy) return;
+  const e = hist.undo.pop();
+  if (!e){ toast('Nothing to undo'); return; }
+  histBusy = true;
+  const ok = await runHistory(e, 'undo');
+  histBusy = false;
+  if (ok){ hist.redo.push(e); toast('Undid ' + e.label); }
+  else toast("Couldn't undo that, it changed since");
+  updateUndoButtons();
+}
+async function redo(){
+  if (histBusy) return;
+  const e = hist.redo.pop();
+  if (!e){ toast('Nothing to redo'); return; }
+  histBusy = true;
+  const ok = await runHistory(e, 'redo');
+  histBusy = false;
+  if (ok){ hist.undo.push(e); toast('Redid ' + e.label); }
+  else toast("Couldn't redo that, it changed since");
+  updateUndoButtons();
+}
+$('#undoBtn').onclick = undo;
+$('#redoBtn').onclick = redo;
+
 /* ================= Database writes ================= */
 function fromItemRow(row){
   return {
     id: row.id, type: row.type, x: row.x, y: row.y, w: row.w, rot: row.rot || 0, z: Number(row.z) || 0,
     locked: !!row.locked, path: row.path, mime: row.mime, data: row.data || {},
-    author: row.author, reportCount: row.report_count || 0, created: Date.parse(row.created_at)
+    author: row.author, reportCount: row.report_count || 0, created: Date.parse(row.created_at),
+    bumped: Date.parse(row.bumped_at || row.created_at), bumpCount: row.bump_count || 0
   };
 }
 function toRow(it){
@@ -1865,11 +2164,13 @@ async function saveItems(list, fields){
   const bad = results.find(r => r.error);
   if (bad) toast(niceError(bad.error));
 }
-async function deleteItems(list){
+async function deleteItems(list, opts = {}){
   const mine = list.filter(canEdit);
   const skipped = list.length - mine.length;
-  if (!mine.length){ toast('You can only delete things you added'); return; }
-  const ids = mine.filter(i => !i.pending).map(i => i.id);
+  if (!mine.length){ if (!opts.quiet) toast('You can only delete things you added'); return; }
+  const persisted = mine.filter(i => !i.pending);
+  if (opts.record !== false && persisted.length) pushHistory({ kind:'remove', label:'delete', snaps: persisted.map(snap) });
+  const ids = persisted.map(i => i.id);
   mine.forEach(removeLocal);
   setSelection([]);
   if (ids.length){
@@ -1877,7 +2178,7 @@ async function deleteItems(list){
     if (error) toast(niceError(error));
     cleanupOrphans();
   }
-  if (skipped) toast(`${skipped} item${skipped > 1 ? 's weren\'t' : ' wasn\'t'} yours, so ${skipped > 1 ? 'they' : 'it'} stayed`);
+  if (skipped && !opts.quiet) toast(`${skipped} item${skipped > 1 ? 's weren\'t' : ' wasn\'t'} yours, so ${skipped > 1 ? 'they' : 'it'} stayed`);
 }
 let orphanTimer;
 function cleanupOrphans(){
@@ -1903,6 +2204,7 @@ function applyView(){
   clampView();
   world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.z})`;
   vp.style.setProperty('--z', view.z);
+  vp.classList.toggle('far', view.z < 0.22);
   const pct = view.z * 100;
   $('#zoomBtn').textContent = (pct < 10 ? pct.toFixed(1) : Math.round(pct)) + '%';
   const tiny = view.z < VIDEO_MIN_Z;
@@ -1994,9 +2296,21 @@ function applyData(it, d){
     if (vis) vis.setAttribute('stroke', d.color);
   }
 }
+function embedHTML(d){
+  if (d.kind === 'youtube'){
+    const vid = /^[\w-]{6,20}$/.test(d.vid || '') ? d.vid : '';
+    return `<div class="emb-head">${ic('play', 13)}<span>${esc(d.title || 'YouTube video')}</span></div>` +
+      `<div class="yt-frame" style="background-image:url('https://i.ytimg.com/vi/${vid}/hqdefault.jpg')"><button class="yt-play" title="Play">${ic('play', 22)}</button></div>`;
+  }
+  return (d.image ? `<img class="lk-img" alt="" src="${esc(proxiedImage(d.image))}">` : '') +
+    `<div class="lk-body"><div class="lk-title">${esc(d.title || d.site || 'Link')}</div>` +
+    (d.desc ? `<div class="lk-desc">${esc(d.desc)}</div>` : '') +
+    `<div class="lk-site">${ic('external', 12)} ${esc(d.site || '')}</div></div>`;
+}
 
 function mount(it){
   it.visible = false;
+  if (!it.bumped) it.bumped = it.created || Date.now();
   const el = document.createElement('div');
   el.dataset.id = it.id;
   el.style.setProperty('--r', (it.rot || 0) + 'deg');
@@ -2021,6 +2335,18 @@ function mount(it){
     card.appendChild(media);
     el.appendChild(card);
     it.media = media;
+  } else if (it.type === 'embed'){
+    el.className = 'item media embed';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = embedHTML(it.data || {});
+    const img = card.querySelector('.lk-img');
+    if (img){
+      img.draggable = false;
+      img.addEventListener('load', () => placeClamped(it), { once:true });
+      img.addEventListener('error', () => { img.remove(); placeClamped(it); }, { once:true });
+    }
+    el.appendChild(card);
   } else if (it.type === 'note'){
     el.className = 'item note';
     el.style.setProperty('--nc', it.data.color || NOTE_COLORS[0]);
@@ -2044,6 +2370,8 @@ function mount(it){
     pin.className = 'pin';
     pin.style.setProperty('--pc', it.data.pc || PIN_COLORS[0]);
     el.appendChild(pin);
+    el.insertAdjacentHTML('beforeend',
+      `<div class="countdown">${ic('hourglass', 11)}<span></span></div><div class="reacts"></div>`);
   }
   el.insertAdjacentHTML('beforeend',
     `<div class="badge-lock">${ic('lock', 12)}</div>` +
@@ -2058,6 +2386,7 @@ function mount(it){
   updateReportedClass(it);
   if (it.type === 'video') io.observe(it.media);
   items.push(it);
+  renderReacts(it);
   updateCount();
   return it;
 }
@@ -2067,11 +2396,29 @@ function removeLocal(it){
   if (editing === it) editing = null;
   items.splice(idx, 1);
   selection.delete(it);
+  reacts.delete(it.id);
   if (it.type === 'video'){ io.unobserve(it.media); it.media.pause(); }
   it.el.remove();
   if (it.localSrc) URL.revokeObjectURL(it.localSrc);
   refreshSelectionUI();
   updateCount();
+}
+function recomputeRanks(){
+  const pins = items.filter(i => i.type !== 'stroke' && !i.pending)
+    .sort((a, b) => (b.bumped - a.bumped) || a.id.localeCompare(b.id));
+  pins.forEach((it, idx) => {
+    const left = Math.max(0, cap - (idx + 1));
+    it.left = left;
+    it.el.style.setProperty('--age', (cap > 1 ? Math.min(1, idx / (cap - 1)) : 0).toFixed(3));
+    const cd = it.el.querySelector(':scope > .countdown');
+    if (!cd) return;
+    cd.querySelector('span').textContent = left;
+    cd.classList.toggle('low', left <= 3);
+  });
+}
+function leftLabel(it){
+  if (it.left === undefined) return '';
+  return it.left === 0 ? 'next to rotate off' : `${it.left} left`;
 }
 function updateCount(){
   const pins = items.filter(i => i.type !== 'stroke').length;
@@ -2079,12 +2426,14 @@ function updateCount(){
   $('#meterFill').style.width = Math.min(100, pins / cap * 100) + '%';
   $('#meterText').textContent = `${pins} / ${cap} pins`;
   $('#roomEmpty').style.display = items.length ? 'none' : 'flex';
+  recomputeRanks();
 }
 
 function baseItem(type, extra){
   return {
     id: newId(), type, x:0, y:0, w:240, rot:0, z: zNow(), locked:false,
-    path:null, mime:null, data:{}, author: me.id, reportCount:0, created: Date.now(), ...extra
+    path:null, mime:null, data:{}, author: me.id, reportCount:0,
+    created: Date.now(), bumped: Date.now(), bumpCount: 0, ...extra
   };
 }
 function newNote(wx, wy){
@@ -2112,35 +2461,47 @@ const sel = () => [...selection];
 function toggleLock(list){
   const mine = list.filter(canEdit);
   if (!mine.length){ toast('Only the person who added it (or the room owner) can lock it'); return; }
+  const before = mine.map(i => ({ id:i.id, before: grab(i, ['locked']) }));
   const lockIt = mine.some(i => !i.locked);
   mine.forEach(i => { i.locked = lockIt; i.el.classList.toggle('locked', lockIt); });
   refreshSelectionUI();
   saveItems(mine, ['locked']);
+  recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['locked']) })), lockIt ? 'lock' : 'unlock');
   toast(lockIt ? (mine.length > 1 ? `Locked ${mine.length} items` : 'Locked in place') : 'Unlocked');
 }
 function bringToFront(list, save = true){
   const movable = list.filter(i => !i.locked || canEdit(i));
+  const before = save ? movable.map(i => ({ id:i.id, before: grab(i, ['z']) })) : null;
   movable.slice().sort(byZ).forEach(i => { i.z = zNow(); setZ(i); });
-  if (save) saveItems(movable, ['z']);
+  if (save){
+    saveItems(movable, ['z']);
+    recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['z']) })), 'layer change');
+  }
 }
 function sendToBack(list){
   const movable = list.filter(i => !i.locked || canEdit(i));
+  const before = movable.map(i => ({ id:i.id, before: grab(i, ['z']) }));
   let low = Math.min(...items.map(i => i.z)) - 1;
   movable.slice().sort(byZ).reverse().forEach(i => { i.z = low--; setZ(i); });
   saveItems(movable, ['z']);
+  recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['z']) })), 'layer change');
 }
 function straighten(list){
   const movable = list.filter(i => !i.locked);
+  const before = movable.map(i => ({ id:i.id, before: grab(i, ['rot']) }));
   movable.forEach(i => { i.rot = 0; i.el.style.setProperty('--r', '0deg'); });
   saveItems(movable, ['rot']);
+  recordUpdate(before.map(b => ({ ...b, after: { rot:0 } })), 'straighten');
 }
 function setColor(list, c){
   const mine = list.filter(canEdit);
+  const before = mine.map(i => ({ id:i.id, before: grab(i, ['data']) }));
   mine.forEach(i => {
     i.data = { ...i.data, color: c };
     applyData(i, i.data);
   });
   saveItems(mine, ['data']);
+  recordUpdate(before.map(b => ({ ...b, after: grab(findItem(b.id), ['data']) })), 'color change');
 }
 async function duplicate(list){
   if (!canPost) return;
@@ -2156,15 +2517,47 @@ async function duplicate(list){
   }
   setSelection(made);
   for (const it of made) await insertItem(it);
+  recordAdd(made, 'duplicate');
+}
+async function bumpItems(list){
+  const pins = list.filter(i => i.type !== 'stroke' && !i.pending);
+  if (!pins.length) return;
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
+  let ok = 0, lastErr = null;
+  for (const it of pins.slice(0, 10)){
+    const prev = it.bumped;
+    it.bumped = Date.now();
+    const { data, error } = await sb.rpc('bump_item', { p_item: it.id });
+    if (error){ it.bumped = prev; lastErr = error; continue; }
+    ok++;
+    if (data != null){ it.z = Number(data); setZ(it); zCounter = Math.max(zCounter, it.z); }
+    it.el.classList.add('bumped');
+    setTimeout(() => it.el && it.el.classList.remove('bumped'), 700);
+  }
+  updateCount();
+  if (ok) toast(ok === 1 ? 'Bumped! It\'s back at the top.' : `Bumped ${ok} pins`);
+  else if (lastErr) toast(niceError(lastErr));
 }
 function toggleMute(it){
   it.media.muted = !it.media.muted;
   if (!it.media.muted) it.media.play().catch(() => {});
 }
+function playEmbed(it){
+  const frame = it.el && it.el.querySelector('.yt-frame');
+  const vid = it.data && it.data.vid;
+  if (!frame || frame.querySelector('iframe') || !/^[\w-]{6,20}$/.test(vid || '')) return;
+  frame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="YouTube video"></iframe>`;
+}
+function openLink(it){
+  const u = it.data && it.data.url;
+  if (!u || !/^https?:\/\//.test(u)) return;
+  if (confirm(`Open this link in a new tab?\n\n${u}`)) window.open(u, '_blank', 'noopener');
+}
 
 function arrange(kind){
   const list = sel().filter(i => !i.locked);
   if (list.length < 2){ toast('Select at least two unlocked items to arrange'); return; }
+  const before = new Map(list.map(i => [i.id, grab(i, ['x', 'y', 'rot', 'z'])]));
   const hs = new Map(list.map(i => [i, i.el.offsetHeight]));
   const minX = Math.min(...list.map(i => i.x)), minY = Math.min(...list.map(i => i.y));
   const maxX = Math.max(...list.map(i => i.x + i.w)), maxY = Math.max(...list.map(i => i.y + hs.get(i)));
@@ -2195,6 +2588,7 @@ function arrange(kind){
   }
   list.forEach(it => { it.el.style.setProperty('--r', it.rot + 'deg'); placeClamped(it); });
   saveItems(list, ['x', 'y', 'rot', 'z']);
+  recordUpdate(list.map(i => ({ id:i.id, before: before.get(i.id), after: grab(i, ['x', 'y', 'rot', 'z']) })), 'arrange');
   setTimeout(() => list.forEach(i => i.el && i.el.classList.remove('animating')), 400);
 }
 
@@ -2249,12 +2643,14 @@ function openItemMenu(x, y){
 
   if (list.length > 1){
     const media = list.filter(i => i.type === 'image' || i.type === 'video');
+    const bumpable = list.filter(i => i.type !== 'stroke');
     openMenu(x, y, [
       { title:`${list.length} selected` },
       { icon:'grid', label:'Tidy into a grid', run:() => arrange('grid') },
       { icon:'row', label:'Line up in a row', run:() => arrange('row') },
       { icon:'pile', label:'Stack into a pile', run:() => arrange('pile') },
       { icon:'straighten', label:'Straighten all', run:() => straighten(list) },
+      bumpable.length ? { icon:'arrowUp', label:`Bump ${Math.min(10, bumpable.length)} to the top`, kbd:'U', disabled: !canPost, run:() => bumpItems(bumpable) } : null,
       '-', ...layer, lockEntry, dup,
       ...(media.length ? [{ icon:'download', label:`Download ${media.length} file${media.length > 1 ? 's' : ''}`, run:() => downloadMany(media) }] : []),
       '-', del
@@ -2263,10 +2659,15 @@ function openItemMenu(x, y){
   }
   const it = list[0];
   const mine = canEdit(it);
-  const reportEntry = !mine ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
+  const reportEntry = it.author !== me.id ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
+  const reactRow = { emojis:true, mine: myReactions(it.id), disabled: !canPost, pick: k => toggleReaction(it, k) };
+  const bumpEntry = { icon:'arrowUp', label:'Bump to the top', kbd:'U', disabled: !canPost, run:() => bumpItems([it]) };
+  const left = leftLabel(it);
+
   if (it.type === 'note'){
     openMenu(x, y, [
-      { title: it.author === me.id ? 'Your note' : 'Note' },
+      { title: (it.author === me.id ? 'Your note' : 'Note') + (left ? ` · ${left}` : '') },
+      reactRow, bumpEntry,
       { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
       { colors:NOTE_COLORS, current:it.data.color, disabled: !mine, pick:c => { setColor(list, c); noteColor = c; } },
       '-', ...layer, lockEntry,
@@ -2285,14 +2686,32 @@ function openItemMenu(x, y){
     ]);
     return;
   }
-  const entries = [{ title: it.type === 'video' ? 'Video' : 'Image' }, ...layer, lockEntry];
-  if (it.rot) entries.push({ icon:'straighten', label:'Straighten', run:() => straighten(list) });
-  if (it.type === 'video') entries.push({ icon: it.media.muted ? 'vol' : 'volOff', label: it.media.muted ? 'Unmute' : 'Mute', run:() => toggleMute(it) });
-  entries.push('-',
+  if (it.type === 'embed'){
+    const d = it.data || {};
+    openMenu(x, y, [
+      { title: (d.kind === 'youtube' ? 'YouTube' : 'Link') + (left ? ` · ${left}` : '') },
+      reactRow, bumpEntry,
+      '-',
+      d.kind === 'youtube' ? { icon:'play', label:'Play here', run:() => playEmbed(it) } : null,
+      { icon:'external', label: d.kind === 'youtube' ? 'Open on YouTube' : 'Open link', run:() => openLink(it) },
+      { icon:'copy', label:'Copy link', run:() => { if (navigator.clipboard) navigator.clipboard.writeText(d.url || '').then(() => toast('Link copied')); } },
+      '-', ...layer, lockEntry,
+      it.rot ? { icon:'straighten', label:'Straighten', run:() => straighten(list) } : null,
+      dup, '-', ...reportEntry, del
+    ]);
+    return;
+  }
+  openMenu(x, y, [
+    { title: (it.type === 'video' ? 'Video' : 'Image') + (left ? ` · ${left}` : '') },
+    reactRow, bumpEntry,
+    '-', ...layer, lockEntry,
+    it.rot ? { icon:'straighten', label:'Straighten', run:() => straighten(list) } : null,
+    it.type === 'video' ? { icon: it.media.muted ? 'vol' : 'volOff', label: it.media.muted ? 'Unmute' : 'Mute', run:() => toggleMute(it) } : null,
+    '-',
     { icon:'download', label:'Download', run:() => downloadItem(it) },
     { icon:'external', label:'Open full size', run:() => window.open(it.src, '_blank') },
-    dup, '-', ...reportEntry, del);
-  openMenu(x, y, entries);
+    dup, '-', ...reportEntry, del
+  ]);
 }
 function openBoardMenu(x, y, wp){
   openMenu(x, y, [
@@ -2302,6 +2721,10 @@ function openBoardMenu(x, y, wp){
         setSelection([it]); startEditing(it);
       } },
     { icon:'upload', label:'Add media here', disabled: !canPost, run:() => { pendingDrop = wp; $('#fileInput').click(); } },
+    { icon:'link', label:'Add a link here', disabled: !canPost, run:() => promptLink(wp) },
+    '-',
+    { icon:'undo', label:'Undo', kbd:'Ctrl+Z', disabled: !hist.undo.length, run:undo },
+    { icon:'redo', label:'Redo', kbd:'Ctrl+Y', disabled: !hist.redo.length, run:redo },
     '-',
     { icon:'selectAll', label:'Select all', kbd:'Ctrl+A', run:selectAll },
     { icon:'image', label:'Fit pins', kbd:'F', run:fitPins },
@@ -2314,6 +2737,7 @@ function startEditing(it){
   if (!it || it.type !== 'note' || it.locked || !items.includes(it) || !canEdit(it)) return;
   if (editing && editing !== it) stopEditing();
   editing = it;
+  it._textBefore = it.data.text || '';
   const b = it.body;
   try { b.contentEditable = 'plaintext-only'; } catch {}
   if (b.contentEditable !== 'plaintext-only') b.contentEditable = 'true';
@@ -2337,19 +2761,33 @@ function stopEditing(){
     else deleteItems([it]);
     return;
   }
+  const beforeData = { ...it.data, text: it._textBefore || '' };
   const changed = text !== (it.data.text || '');
   it.data = { ...it.data, text };
   b.textContent = text;
   placeClamped(it);
-  if (it.pending){ it.pending = false; insertItem(it); }
-  else if (changed) saveItems([it], ['data']);
+  if (it.pending){
+    it.pending = false;
+    updateCount();
+    insertItem(it).then(ok => { if (ok) recordAdd([it], 'note'); });
+  } else if (changed){
+    saveItems([it], ['data']);
+    recordUpdate([{ id: it.id, before:{ data: beforeData }, after:{ data: JSON.parse(JSON.stringify(it.data)) } }], 'note edit');
+  }
 }
 world.addEventListener('dblclick', e => {
   if (tool !== 'move') return;
-  const el = e.target.closest('.item.note');
-  if (!el) return;
-  const it = findItem(el.dataset.id);
-  if (canEdit(it)) startEditing(it);
+  const note = e.target.closest('.item.note');
+  if (note){
+    const it = findItem(note.dataset.id);
+    if (canEdit(it)) startEditing(it);
+    return;
+  }
+  const emb = e.target.closest('.item.embed');
+  if (emb){
+    const it = findItem(emb.dataset.id);
+    if (it && it.data.kind !== 'youtube') openLink(it);
+  }
 });
 
 /* ================= Tools ================= */
@@ -2418,8 +2856,8 @@ function addDrawPoint(e){
   drawPath.setAttribute('d', pathD(st.pts));
 }
 function cancelDraw(){ drawPath.setAttribute('d', ''); mode = null; st = {}; }
-function finishDraw(){
-  const { pts, size, color } = st;
+function finishDraw(done){
+  const { pts, size, color } = done;
   drawPath.setAttribute('d', '');
   if (!pts || !pts.length) return;
   const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
@@ -2431,13 +2869,14 @@ function finishDraw(){
     x: x0, y: y0, w: vw,
     data: { points: pts.map(([x, y]) => [+(x - x0).toFixed(1), +(y - y0).toFixed(1)]), color, size: +size.toFixed(2), vw, vh }
   }));
-  insertItem(it);
+  insertItem(it).then(ok => { if (ok) recordAdd([it], 'drawing'); });
 }
 function eraseAt(cx, cy){
   const target = document.elementFromPoint(cx, cy);
   const el = target && target.closest && target.closest('.item.stroke');
   const it = el && findItem(el.dataset.id);
   if (!it || it.locked || !canEdit(it)) return;
+  if (st.erased) st.erased.push(snap(it));
   removeLocal(it);
   sb.from('items').delete().eq('id', it.id).then(({ error }) => { if (error) toast(niceError(error)); });
 }
@@ -2471,6 +2910,20 @@ function updateMarquee(e){
 
 vp.addEventListener('pointerdown', e => {
   if (!currentRoom || e.button === 2) return;
+  const chip = e.target.closest('.rchip');
+  if (chip){
+    e.preventDefault(); e.stopPropagation();
+    const it = findItem(chip.closest('.item').dataset.id);
+    if (it) toggleReaction(it, chip.dataset.react);
+    return;
+  }
+  const play = e.target.closest('.yt-play');
+  if (play){
+    e.preventDefault(); e.stopPropagation();
+    const it = findItem(play.closest('.item').dataset.id);
+    if (it) playEmbed(it);
+    return;
+  }
   const moreBtn = e.target.closest('.more-btn');
   if (moreBtn){
     e.preventDefault(); e.stopPropagation();
@@ -2501,7 +2954,7 @@ vp.addEventListener('pointerdown', e => {
   const itemEl = e.target.closest('.item');
 
   if (tool === 'pen'){ startDraw(e, wp); e.preventDefault(); return; }
-  if (tool === 'eraser'){ mode = 'erase'; st = { pid:e.pointerId }; eraseAt(e.clientX, e.clientY); e.preventDefault(); return; }
+  if (tool === 'eraser'){ mode = 'erase'; st = { pid:e.pointerId, erased:[] }; eraseAt(e.clientX, e.clientY); e.preventDefault(); return; }
   if (tool === 'note'){
     pointers.delete(e.pointerId);
     e.preventDefault();
@@ -2520,14 +2973,14 @@ vp.addEventListener('pointerdown', e => {
     if (e.target.classList.contains('resize') && !it.locked){
       setSelection([it]);
       mode = 'resize';
-      st = { pid:e.pointerId, it, sx:e.clientX, w:it.w };
+      st = { pid:e.pointerId, it, sx:e.clientX, w:it.w, before: grab(it, ['x', 'y', 'w']) };
       return;
     }
     const collapse = selection.has(it) && selection.size > 1 ? it : null;
     if (!selection.has(it)) setSelection([it]);
     const movers = sel().filter(i => !i.locked);
     mode = 'drag';
-    st = { pid:e.pointerId, sx:e.clientX, sy:e.clientY, movers: movers.map(i => ({ it:i, x:i.x, y:i.y })), moved:false, collapse };
+    st = { pid:e.pointerId, sx:e.clientX, sy:e.clientY, movers: movers.map(i => ({ it:i, x:i.x, y:i.y, z:i.z })), moved:false, collapse };
     return;
   }
   if (e.ctrlKey || e.metaKey || e.shiftKey){
@@ -2600,11 +3053,15 @@ function endPointer(e){
       const list = done.movers.map(x => x.it);
       broadcastMoves(list, true);
       saveItems(list, ['x', 'y', 'z']);
+      recordUpdate(done.movers.map(x => ({ id:x.it.id, before:{ x:x.x, y:x.y, z:x.z }, after: grab(x.it, ['x', 'y', 'z']) })), 'move');
     } else if (done.collapse) setSelection([done.collapse]);
   } else if (m === 'resize'){
     saveItems([done.it], ['x', 'y', 'w']);
+    recordUpdate([{ id:done.it.id, before:done.before, after: grab(done.it, ['x', 'y', 'w']) }], 'resize');
   } else if (m === 'draw'){
-    st = done; finishDraw(); st = {};
+    finishDraw(done);
+  } else if (m === 'erase'){
+    if (done.erased && done.erased.length) pushHistory({ kind:'remove', label:'erase', snaps: done.erased });
   } else if (m === 'marquee'){
     marquee.hidden = true;
   } else if (m === 'pan'){
@@ -2684,8 +3141,63 @@ async function uploadFiles(files, w){
     it.el.classList.add('uploading');
     const { error } = await sb.storage.from(BUCKET).upload(it.path, prep.blob, { contentType: prep.mime, cacheControl: '31536000' });
     if (error){ toast(niceError(error)); removeLocal(it); continue; }
-    if (await insertItem(it)) it.el.classList.remove('uploading');
+    if (await insertItem(it)){
+      it.el.classList.remove('uploading');
+      recordAdd([it], 'upload');
+    }
   }
+}
+
+/* ================= Links & YouTube ================= */
+function promptLink(wp){
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
+  const u = prompt('Paste a link (YouTube, a website, or an image):');
+  if (u && u.trim()) addFromUrl(u, wp || toWorld(innerWidth / 2, innerHeight / 2));
+}
+async function addFromUrl(raw, w){
+  if (!currentRoom) return;
+  if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
+  let url;
+  try { url = new URL(raw.trim()); if (!/^https?:$/.test(url.protocol)) throw 0; }
+  catch { toast("That doesn't look like a link"); return; }
+  const href = url.href;
+  const room = currentRoom;
+  toast('Fetching link…', 2500);
+  let info = null;
+  if (MEDIA_BASE){
+    try {
+      const r = await fetch(`${MEDIA_BASE}/unfurl?url=${encodeURIComponent(href)}`);
+      if (r.ok) info = await r.json();
+    } catch {}
+  }
+  if (currentRoom !== room) return;
+  if (info && info.kind === 'image'){
+    try {
+      const r = await fetch(proxiedImage(info.url || href));
+      if (!r.ok) throw 0;
+      const blob = await r.blob();
+      uploadFiles([new File([blob], 'linked', { type: blob.type })], w);
+    } catch {
+      toast("Couldn't grab that image. Save it, then drop the file in.");
+    }
+    return;
+  }
+  const yt = youtubeId(href);
+  const host = url.hostname.replace(/^www\./, '');
+  const data = yt
+    ? { kind:'youtube', url: href, vid: yt, title: clip((info && info.title) || 'YouTube video', 140), pc: pick(PIN_COLORS) }
+    : {
+        kind:'link', url: (info && info.url) || href,
+        title: clip((info && info.title) || host, 140),
+        desc: clip((info && info.description) || '', 240),
+        image: (info && info.image) || '',
+        site: clip((info && info.site) || host, 60),
+        pc: pick(PIN_COLORS)
+      };
+  const it = mount(baseItem('embed', {
+    x: w.x - 160, y: w.y - 20, w: 320, rot: +rand(-4, 4).toFixed(2), data
+  }));
+  if (await insertItem(it)) recordAdd([it], 'link');
 }
 
 async function handleTransfer(dt, w){
@@ -2695,16 +3207,7 @@ async function handleTransfer(dt, w){
   if (files.length){ uploadFiles(files, w); return; }
   const url = ((dt.getData && (dt.getData('text/uri-list') || dt.getData('text/plain'))) || '')
     .split('\n').map(s => s.trim()).find(s => /^https?:\/\//i.test(s));
-  if (!url) return;
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw 0;
-    const blob = await r.blob();
-    const file = new File([blob], 'dropped', { type: blob.type });
-    uploadFiles([file], w);
-  } catch {
-    toast("That site won't let us grab the image. Save it, then drop the file in.");
-  }
+  if (url) addFromUrl(url, w);
 }
 
 let dragDepth = 0;
@@ -2736,6 +3239,7 @@ $('#addBtn').onclick = () => {
   if (!canPost){ toast(viewOnlyMsg(), 5000); return; }
   pendingDrop = null; $('#fileInput').click();
 };
+$('#linkBtn').onclick = () => promptLink(null);
 $('#fileInput').onchange = e => {
   uploadFiles([...e.target.files], pendingDrop || toWorld(innerWidth / 2, innerHeight / 2));
   pendingDrop = null;
@@ -2748,7 +3252,7 @@ $('#zoomBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 1 / view
 $('#zoomInBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 1.25); applyView(); };
 $('#zoomOutBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 0.8); applyView(); };
 
-let nudgeTimer, nudged = new Set();
+let nudgeTimer, nudged = new Map();
 addEventListener('keydown', e => {
   const open = document.querySelector('.modal:not([hidden])');
   if (open){ if (e.key === 'Escape') closeModal(open.id, false); return; }
@@ -2760,6 +3264,8 @@ addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey;
   const k = e.key.toLowerCase();
   if (e.key === ' '){ if (!spaceDown){ spaceDown = true; vp.classList.add('space'); } e.preventDefault(); return; }
+  if (mod && k === 'z'){ e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+  if (mod && k === 'y'){ e.preventDefault(); redo(); return; }
   if (mod && k === 'a'){ e.preventDefault(); selectAll(); return; }
   if (mod && k === 'd'){ e.preventDefault(); if (selection.size) duplicate(sel()); return; }
   if (mod) return;
@@ -2771,9 +3277,17 @@ addEventListener('keydown', e => {
     const step = (e.shiftKey ? 20 : 3) / view.z;
     const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
     const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
-    sel().filter(i => !i.locked).forEach(i => { i.x += dx; i.y += dy; placeClamped(i); nudged.add(i); });
+    sel().filter(i => !i.locked).forEach(i => {
+      if (!nudged.has(i)) nudged.set(i, grab(i, ['x', 'y']));
+      i.x += dx; i.y += dy; placeClamped(i);
+    });
     clearTimeout(nudgeTimer);
-    nudgeTimer = setTimeout(() => { saveItems([...nudged], ['x', 'y']); nudged = new Set(); }, 400);
+    nudgeTimer = setTimeout(() => {
+      const list = [...nudged.keys()].filter(i => items.includes(i));
+      saveItems(list, ['x', 'y']);
+      recordUpdate(list.map(i => ({ id:i.id, before: nudged.get(i), after: grab(i, ['x', 'y']) })), 'nudge');
+      nudged = new Map();
+    }, 400);
     return;
   }
   if (k === 'v') setTool('move');
@@ -2782,6 +3296,7 @@ addEventListener('keydown', e => {
   else if (k === 'n') setTool('note');
   else if (k === 'f') fitPins();
   else if (k === 'b') fitBoard();
+  else if (k === 'u' && selection.size) bumpItems(sel());
   else if (k === 'l' && selection.size) toggleLock(sel());
   else if (e.key === ']' && selection.size) bringToFront(sel());
   else if (e.key === '[' && selection.size) sendToBack(sel());
