@@ -298,6 +298,26 @@ html[data-style="whiteboard"] .wm-dark{display:block !important}
 .mod-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:10px; background:var(--surface-2); border:1px solid var(--line); font-weight:800; font-size:14px}
 .mod-row span{display:inline-flex; align-items:center; gap:6px; min-width:0}
 .mods-box{display:flex; flex-direction:column; gap:6px}
+.set-tabs{display:flex; flex-wrap:wrap; gap:6px; margin:-6px 0 16px}
+.set-list{display:flex; flex-direction:column; gap:8px; min-height:120px; margin-bottom:14px}
+.set-empty{padding:34px 10px; text-align:center; color:var(--muted); font-weight:700; font-size:14px}
+.set-item{display:flex; gap:12px; align-items:flex-start; padding:10px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line)}
+.set-thumb{width:84px; height:84px; flex:none; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px; background:#c9ccd3}
+.set-thumb img,.set-thumb video{display:block; max-width:100%; max-height:100%}
+.set-thumb > svg{width:90%; height:90%}
+.set-thumb .hit{display:none}
+.set-thumb .vis{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.set-thumb .mod-note{max-width:92%; max-height:76px; padding:5px 7px; border-radius:8px; font-size:14px}
+.set-thumb .mod-link{max-width:92%; padding:6px; font-size:11px}
+.set-body{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px}
+.set-title{display:flex; align-items:center; gap:6px; font-weight:800; font-size:14px}
+.set-meta{font-size:12.5px; font-weight:700; color:var(--muted); word-break:break-word}
+.set-acts{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+.log-row{display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border-radius:10px; background:var(--surface-2); border:1px solid var(--line); font-size:13.5px; font-weight:700; line-height:1.35}
+.log-row > .ic{flex:none; margin-top:2px; color:var(--muted)}
+.info-table{width:100%; border-collapse:collapse; font-size:13px; font-weight:700}
+.info-table th,.info-table td{text-align:left; padding:7px 8px; border-bottom:1px solid var(--line)}
+.info-table th{color:var(--muted); font-size:12px}
 
 /* ================= Context menu ================= */
 #ctx{
@@ -487,6 +507,7 @@ html[data-style="whiteboard"] .pin{
 #zoomBtn{min-width:58px}
 .me-dot{width:12px; height:12px; border-radius:50%; background:var(--mc); box-shadow:0 0 0 2px var(--surface)}
 #chatBtn{position:relative}
+#settingsBtn{position:relative}
 #chatBtn.on{background:var(--accent-soft); color:var(--accent)}
 .chat-badge{position:absolute; top:2px; right:2px; min-width:16px; height:16px; padding:0 4px; border-radius:999px; background:var(--danger); color:#fff; font:900 10px/16px var(--font); text-align:center}
 #toolbar{left:50%; transform:translateX(-50%); bottom:calc(14px + env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:4px; padding:6px; border-radius:16px; max-width:calc(100vw - 16px); overflow-x:auto; scrollbar-width:none}
@@ -526,10 +547,11 @@ html[data-style="whiteboard"] .pin{
 .msg .role{font-size:10px; font-weight:900; padding:1px 6px; border-radius:999px; background:var(--accent-soft); color:var(--accent); text-transform:uppercase; letter-spacing:.04em}
 .msg .t{color:var(--muted); font-weight:700; font-size:11px}
 .msg .body{font-size:14px; font-weight:600; line-height:1.4; white-space:pre-wrap; word-break:break-word}
-.mdel{position:absolute; top:4px; right:8px; width:22px; height:22px; border:0; border-radius:6px; display:none; place-items:center; background:var(--surface-3); color:var(--text); cursor:pointer}
-.msg:hover .mdel{display:grid}
-.mdel:hover{background:var(--danger); color:#fff}
-@media (hover:none){ .mdel{display:grid} }
+.macts{position:absolute; top:4px; right:8px; display:none; gap:4px}
+.msg:hover .macts{display:flex}
+@media (hover:none){ .macts{display:flex} }
+.macts button{width:22px; height:22px; border:0; border-radius:6px; display:grid; place-items:center; background:var(--surface-3); color:var(--text); cursor:pointer}
+.macts button:hover{background:var(--danger); color:#fff}
 #chatForm{display:flex; gap:6px; padding:8px; border-top:1px solid var(--line)}
 #chatForm .inp{padding:9px 11px}
 
@@ -623,7 +645,7 @@ html[data-style="whiteboard"] .pin{
         <li><b>No spam or scams.</b></li>
         <li><b>Only post what you have the right to share.</b></li>
       </ol>
-      <p>Moderators have the final say on anything not spelled out here. Room owners and the moderators they choose can also remove things in their own rooms.</p>
+      <p>Moderators have the final say on anything not spelled out here. Room owners and the moderators they choose can also remove things in their own rooms and ban people from them.</p>
 
       <h2>How the board works</h2>
       <p>Every room has a pin limit. When it's full, each new pin pushes the oldest one off the board. The little badge on each pin shows how many more pins can go up before it's gone, and pins slowly fade as they near the end. If you like something, bump it to send it back to the top. Drawings, arrows, labels, and zones don't count toward the pin limit.</p>
@@ -632,7 +654,7 @@ html[data-style="whiteboard"] .pin{
       <p>Anyone can report a pin, note, link, label, or drawing by right-clicking it (or tapping the ⋯ button). Anything reported by three people is hidden for everyone until a moderator reviews it, and child-safety reports hide an item immediately. Images are also automatically checked against known illegal material. Moderators can remove content and ban people who break the rules.</p>
 
       <h2>Privacy</h2>
-      <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor, the name you choose, and your chat messages. If you save an account, your email is only used to send you sign-in links. GIF search is powered by KLIPY.</p>
+      <p>You don't need an account. Your browser gets an anonymous ID so the site knows which things you posted. Photos are resized and have location data stripped before they're uploaded. Videos are uploaded as-is, so check them yourself. Other people in a room can see your cursor, the name you choose, and your chat messages. To fight abuse, the site logs the IP address you connect from and keeps it for up to 90 days. Only the site's own moderators can see it, not room owners or room moderators, and it's only shared with authorities when the law requires it, such as in reports of child exploitation. If you save an account, your email is only used to send you sign-in links. GIF search is powered by KLIPY.</p>
 
       <h2>Contact &amp; takedowns</h2>
       <p>Email <a class="contact-link"></a> for anything else, including copyright takedown requests. For copyright, include a link to the room, which item it is, and how you own it.</p>
@@ -687,7 +709,7 @@ html[data-style="whiteboard"] .pin{
       <strong id="roomName"></strong>
       <div class="sub" id="roomSub"></div>
     </div>
-    <button class="btn sm icon ghost" id="settingsBtn" title="Room settings" hidden><i data-ic="settings"></i></button>
+    <button class="btn sm icon ghost" id="settingsBtn" title="Room settings" hidden><i data-ic="settings"></i><span class="chat-badge" id="setBadge" hidden></span></button>
   </div>
 
   <div id="viewBar" class="float">
@@ -816,8 +838,9 @@ html[data-style="whiteboard"] .pin{
 <!-- ================= ROOM SETTINGS ================= -->
 <div class="modal" id="settingsModal" hidden>
   <form class="sheet" id="settingsForm" novalidate>
-    <h2><i data-ic="settings" data-s="22"></i> Room settings</h2>
-    <div class="form-grid">
+    <h2><i data-ic="settings" data-s="22"></i> <span id="settingsTitle">Room settings</span></h2>
+    <div class="set-tabs" id="setTabs"></div>
+    <div class="form-grid set-pane" data-pane="general">
       <div class="field">
         <span class="flabel">Room name</span>
         <input class="inp" name="name" maxlength="40" autocomplete="off">
@@ -860,7 +883,44 @@ html[data-style="whiteboard"] .pin{
         <button type="submit" class="btn primary" id="settingsSave">Save</button>
       </div>
     </div>
+    <div class="set-pane" data-pane="reports" hidden><div class="set-list" id="setReports"></div></div>
+    <div class="set-pane" data-pane="bans" hidden><div class="set-list" id="setBans"></div></div>
+    <div class="set-pane" data-pane="log" hidden><div class="set-list" id="setLog"></div></div>
+    <div class="actions" id="setFoot" hidden><button type="button" class="btn" data-close>Close</button></div>
   </form>
+</div>
+
+<!-- ================= ROOM BAN ================= -->
+<div class="modal" id="banModal" hidden>
+  <form class="sheet small" id="banForm" novalidate>
+    <h2><i data-ic="ban" data-s="22"></i> <span id="banTitle">Ban from this room</span></h2>
+    <div class="field">
+      <span class="flabel">How long</span>
+      <div class="seg-opts" id="banDur"></div>
+    </div>
+    <div class="field">
+      <span class="flabel">Reason (optional, they'll see it)</span>
+      <input class="inp" name="reason" maxlength="200" autocomplete="off">
+    </div>
+    <div class="field">
+      <label class="switch"><input type="checkbox" name="purge"><span class="track"></span>Also remove everything they posted here</label>
+    </div>
+    <p class="hint" style="margin:0 0 12px">They won't be able to open this room at all, including from a new anonymous account on the same internet connection.</p>
+    <p class="error" id="banError"></p>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary" id="banSubmit">Ban</button>
+    </div>
+  </form>
+</div>
+
+<!-- ================= INFO (mod board) ================= -->
+<div class="modal" id="infoModal" hidden>
+  <div class="sheet">
+    <h2 id="infoTitle"></h2>
+    <div id="infoBody"></div>
+    <div class="actions" style="margin-top:16px"><button type="button" class="btn" data-close>Close</button></div>
+  </div>
 </div>
 
 <!-- ================= PASSWORD ================= -->
@@ -1673,7 +1733,9 @@ function modItemHTML(row){
           ${row.report_count > 0 ? `<button class="btn sm" data-act="restore" data-id="${row.id}">${ic('check', 14)} Restore</button>` : ''}
           <button class="btn sm danger" data-act="delete-item" data-id="${row.id}">${ic('trash', 14)} Delete</button>
           ${row.author ? `<button class="btn sm danger" data-act="ban" data-user="${row.author}">${ic('ban', 14)} Ban poster</button>
-          <button class="btn sm danger" data-act="ban-purge" data-user="${row.author}">${ic('ban', 14)} Ban + remove all</button>` : ''}
+          <button class="btn sm danger" data-act="ban-purge" data-user="${row.author}">${ic('ban', 14)} Ban + remove all</button>
+          <button class="btn sm" data-act="ips" data-user="${row.author}">${ic('search', 14)} IPs</button>
+          <button class="btn sm danger" data-act="ipban" data-user="${row.author}">${ic('ban', 14)} IP ban</button>` : ''}
         </div>
       </div>
     </div>`;
@@ -1699,10 +1761,45 @@ function modBanHTML(b){
     <div class="mod-card">
       <div class="mod-body">
         <div class="mod-title">${ic('ban', 14)} User ${esc(shortId(b.user_id))}</div>
-        <div class="mod-meta">Banned ${ago(Date.parse(b.created_at))}${b.reason ? ` · ${esc(b.reason)}` : ''}</div>
-        <div class="mod-actions"><button class="btn sm" data-act="unban" data-user="${b.user_id}">${ic('check', 14)} Unban</button></div>
+        <div class="mod-meta">Account ban · ${ago(Date.parse(b.created_at))}${b.reason ? ` · ${esc(b.reason)}` : ''}</div>
+        <div class="mod-actions">
+          <button class="btn sm" data-act="unban" data-user="${b.user_id}">${ic('check', 14)} Unban</button>
+          <button class="btn sm" data-act="ips" data-user="${b.user_id}">${ic('search', 14)} IPs</button>
+          <button class="btn sm danger" data-act="ipban" data-user="${b.user_id}">${ic('ban', 14)} IP ban</button>
+        </div>
       </div>
     </div>`;
+}
+function ipBanHTML(b){
+  return `
+    <div class="mod-card">
+      <div class="mod-body">
+        <div class="mod-title">${ic('ban', 14)} IP ${esc(b.ip)}</div>
+        <div class="mod-meta">${b.until ? 'Until ' + fmtDate(b.until) : 'Permanent'} · ${b.accounts} account${b.accounts === 1 ? '' : 's'} seen on it · ${ago(Date.parse(b.created_at))}${b.reason ? ` · ${esc(b.reason)}` : ''}</div>
+        ${b.source_user ? `<div class="mod-meta">From user ${esc(shortId(b.source_user))}</div>` : ''}
+        <div class="mod-actions">
+          <button class="btn sm" data-act="ip-unban" data-id="${b.id}">${ic('check', 14)} Lift IP ban</button>
+          ${b.source_user ? `<button class="btn sm" data-act="ips" data-user="${b.source_user}">${ic('search', 14)} IPs</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+function rawIpCardHTML(){
+  return `
+    <div class="mod-card">
+      <div class="mod-body">
+        <div class="mod-title">${ic('ban', 14)} Ban an IP address</div>
+        <div class="row"><input class="inp" id="rawIp" placeholder="1.2.3.4 or 1.2.3.0/24" style="flex:1; min-width:0">
+          <input class="inp num" id="rawDays" type="number" min="0" value="30" title="Days" style="width:84px"></div>
+        <div class="mod-meta">Number of days, or 0 for permanent. Shared connections (schools, phone carriers) can catch innocent people, so keep IP bans short unless it's serious.</div>
+        <div class="mod-actions"><button class="btn sm danger" data-act="ip-ban-raw">${ic('ban', 14)} Ban IP</button></div>
+      </div>
+    </div>`;
+}
+function showInfo(title, html){
+  $('#infoTitle').textContent = title;
+  $('#infoBody').innerHTML = html;
+  $('#infoModal').hidden = false;
 }
 async function loadAdminTab(){
   const list = $('#adminList');
@@ -1734,10 +1831,10 @@ async function loadAdminTab(){
     html = data.map(modRoomHTML).join('');
     empty = 'No rooms yet.';
   } else {
-    const { data, error } = await sb.rpc('admin_bans');
-    if (error){ list.innerHTML = `<div class="loading">${esc(error.message)}</div>`; return; }
-    html = (data || []).map(modBanHTML).join('');
-    empty = 'Nobody is banned.';
+    const [acc, ipb] = await Promise.all([sb.rpc('admin_bans'), sb.rpc('admin_ip_bans')]);
+    const err = acc.error || ipb.error;
+    if (err){ list.innerHTML = `<div class="loading">${esc(err.message)}</div>`; return; }
+    html = rawIpCardHTML() + (ipb.data || []).map(ipBanHTML).join('') + (acc.data || []).map(modBanHTML).join('');
   }
   list.innerHTML = html || `<div class="loading">${empty}</div>`;
 }
@@ -1769,6 +1866,32 @@ $('#adminList').addEventListener('click', async e => {
   } else if (act === 'unban'){
     res = await sb.rpc('admin_unban', { p_user: user });
     if (!res.error) toast('Unbanned');
+  } else if (act === 'ips'){
+    b.disabled = false;
+    const { data, error } = await sb.rpc('admin_user_ips', { p_user: user });
+    if (error){ toast(niceError(error)); return; }
+    showInfo(`IPs for user ${shortId(user)}`, (data || []).length
+      ? `<table class="info-table"><tr><th>IP</th><th>First seen</th><th>Last seen</th><th>Visits</th><th>Other accounts</th></tr>` +
+        data.map(r => `<tr><td>${esc(r.ip)}</td><td>${fmtDate(r.first_seen)}</td><td>${fmtDate(r.last_seen)}</td><td>${r.hits}</td><td>${r.other_accounts}</td></tr>`).join('') + '</table>'
+      : '<p class="hint">No IPs logged for this account. Logging started with this update, and entries are kept for 90 days.</p>');
+    return;
+  } else if (act === 'ipban'){
+    const days = prompt('IP-ban this person for how many days? (0 = permanent)\nThis also bans the account.', '30');
+    if (days === null){ b.disabled = false; return; }
+    const reason = prompt('Reason (optional, only moderators see it):', '');
+    if (reason === null){ b.disabled = false; return; }
+    res = await sb.rpc('admin_ip_ban_user', { p_user: user, p_days: Math.max(0, parseInt(days, 10) || 0), p_reason: reason });
+    if (!res.error) toast(res.data ? `Banned the account and ${res.data} IP address${res.data === 1 ? '' : 'es'}` : 'Banned the account. No recent IPs were on file to ban.', 5000);
+  } else if (act === 'ip-unban'){
+    res = await sb.rpc('admin_ip_unban', { p_id: id });
+    if (!res.error) toast('IP ban lifted');
+  } else if (act === 'ip-ban-raw'){
+    const ip = $('#rawIp').value.trim();
+    if (!ip){ toast('Type an IP address first'); b.disabled = false; return; }
+    const reason = prompt('Reason (optional, only moderators see it):', '');
+    if (reason === null){ b.disabled = false; return; }
+    res = await sb.rpc('admin_ip_ban_raw', { p_ip: ip, p_days: Math.max(0, parseInt($('#rawDays').value, 10) || 0), p_reason: reason });
+    if (!res.error) toast('IP banned');
   }
   if (res.error){ toast(niceError(res.error)); b.disabled = false; return; }
   loadAdminTab();
@@ -1965,6 +2088,9 @@ async function openRoom(id){
   if (tok !== openToken) return;
   if (error || !row){ toast("That room doesn't exist anymore"); location.replace('#/'); return; }
   const r = fromRoomRow(row);
+  const ban = await checkRoomBan(id);
+  if (tok !== openToken) return;
+  if (ban){ toast(banMessage(ban), 7000); location.replace('#/'); return; }
   if (r.visibility === 'private'){
     const { data: ok } = await sb.rpc('can_view', { rid: id });
     if (tok !== openToken) return;
@@ -1987,7 +2113,8 @@ function applyRoomState(){
   cap = r.cap;
   canPost = (r.posting === 'anyone' || !me.isAnon) && (!r.locked || canModerate());
   $('#toolbar').classList.toggle('disabled', !canPost);
-  $('#settingsBtn').hidden = !isRoomOwner();
+  $('#settingsBtn').hidden = !canModerate();
+  $('#settingsBtn').title = isRoomOwner() ? 'Room settings' : 'Moderation';
   $('#toolbar .tool[data-tool="zone"]').hidden = !canModerate();
   vp.classList.toggle('can-zone', canModerate());
   if ((tool === 'zone' && !canModerate()) || (tool !== 'move' && !canPost)) setTool('move');
@@ -2007,12 +2134,14 @@ function applyRoomRow(row){
 async function refreshRoom(){
   if (!currentRoom) return;
   const id = currentRoom.id, tok = roomToken;
-  const [{ data:row }, mods] = await Promise.all([sb.from('rooms').select('*').eq('id', id).maybeSingle(), fetchMods(id)]);
+  const [{ data:row }, mods, ban] = await Promise.all([sb.from('rooms').select('*').eq('id', id).maybeSingle(), fetchMods(id), checkRoomBan(id)]);
   if (tok !== roomToken || !currentRoom) return;
   if (!row){ toast('This room was deleted'); location.hash = '#/'; return; }
+  if (ban){ toast(banMessage(ban), 7000); location.hash = '#/'; return; }
   roomMods = mods;
   applyRoomRow(row);
-  if ($('#settingsModal').hidden === false) renderModList();
+  if ($('#settingsModal').hidden === false){ renderModList(); renderSetTabs(); }
+  refreshReportBadge();
 }
 function broadcastRoom(payload = {}){
   if (channel) channel.send({ type:'broadcast', event:'room', payload });
@@ -2044,6 +2173,7 @@ async function enterRoom(r){
   if (token !== roomToken) return;
   roomMods = mods;
   applyRoomState();
+  refreshReportBadge();
   if (!canPost) toast(viewOnlyMsg(), 5000);
   if (error) toast("Couldn't load this board: " + error.message);
   (data || []).forEach(row => { if (!findItem(row.id)) mount(fromItemRow(row)); });
@@ -2122,6 +2252,7 @@ function onRemoteUpdate(row){
   const it = findItem(row.id);
   if (!it){ if (visible){ mount(fromItemRow(row)); updateCount(); } return; }
   if (!visible){ removeLocal(it); return; }
+  if (canModerate() && row.report_count !== it.reportCount) refreshReportBadgeSoon();
   it.reportCount = row.report_count;
   it.locked = row.locked;
   it.el.classList.toggle('locked', it.locked);
@@ -2221,6 +2352,15 @@ function updatePresence(){
   $('#presenceCount').textContent = Math.max(1, n);
 }
 function updateMeDot(){ $('#meDot').style.setProperty('--mc', me.color); }
+function personActions(p, role){
+  const out = [];
+  if (!currentRoom || p.id === me.id) return out;
+  if (isRoomOwner() && role !== 'owner'){
+    out.push({ icon:'shield', label: role === 'mod' ? 'Remove as moderator' : 'Make moderator', run: () => setMod(p.id, p.n, role !== 'mod') });
+  }
+  if (canBan(p.id)) out.push({ icon:'ban', label:'Ban from this room', danger:true, run: () => openBanDialog(p.id, p.n) });
+  return out;
+}
 function presencePeople(){
   const out = [];
   if (channel){
@@ -2238,14 +2378,13 @@ function presencePeople(){
 $('#meBtn').onclick = () => {
   const r = $('#meBtn').getBoundingClientRect();
   const people = presencePeople();
-  const owner = isRoomOwner();
   const rows = people.slice(0, 40).map(p => {
     const role = roleOf(p.id);
     const label = p.n + (p.id === me.id ? ' (you)' : '');
-    if (owner && p.id !== me.id && role !== 'owner'){
-      return { dot:p.c, label, kbd: role === 'mod' ? 'Remove mod' : 'Make mod', run: () => setMod(p.id, p.n, role !== 'mod') };
-    }
-    return { dot:p.c, label, info:true, kbd: role === 'owner' ? 'owner' : role === 'mod' ? 'mod' : '' };
+    const tag = role === 'owner' ? 'owner' : role === 'mod' ? 'mod' : '';
+    const acts = personActions(p, role);
+    if (!acts.length) return { dot:p.c, label, info:true, kbd: tag };
+    return { dot:p.c, label, kbd: (tag ? tag + ' ' : '') + '›', run: () => openMenu(r.left, r.bottom + 6, [{ title: p.n }, ...acts]) };
   });
   openMenu(r.left, r.bottom + 6, [
     { title:`${people.length} here` },
@@ -3059,6 +3198,7 @@ function openItemMenu(x, y){
     ]);
     return;
   }
+  const banEntry = it.author && canBan(it.author) ? [{ icon:'ban', label:'Ban poster from room', danger:true, run:() => openBanDialog(it.author) }] : [];
   const reportEntry = it.author !== me.id ? [{ icon:'flag', label: reportedByMe.has(it.id) ? 'Reported' : 'Report', disabled: reportedByMe.has(it.id), run:() => report(it) }] : [];
   const reactRow = { emojis:true, mine: myReactions(it.id), disabled: !canPost, pick: k => toggleReaction(it, k) };
   const bumpEntry = { icon:'arrowUp', label:'Bump to the top', kbd:'U', disabled: !canPost, run:() => bumpItems([it]) };
@@ -3074,7 +3214,7 @@ function openItemMenu(x, y){
       { colors:NOTE_COLORS, current:it.data.color, disabled: !mine, pick:c => { setColor(list, c); noteColor = c; } },
       '-', ...layer, lockEntry,
       { icon:'straighten', label:'Straighten', run:() => straighten(list) },
-      dup, '-', ...reportEntry, del
+      dup, '-', ...reportEntry, ...banEntry, del
     ]);
     return;
   }
@@ -3083,7 +3223,7 @@ function openItemMenu(x, y){
       { title: it.author === me.id ? 'Your label' : 'Label' },
       { icon:'pen', label:'Edit text', disabled: !mine || it.locked, run:() => startEditing(it) },
       { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
-      '-', ...layer, lockEntry, dup, '-', ...reportEntry, del
+      '-', ...layer, lockEntry, dup, '-', ...reportEntry, ...banEntry, del
     ]);
     return;
   }
@@ -3093,7 +3233,7 @@ function openItemMenu(x, y){
       { colors:PEN_COLORS, current:it.data.color, disabled: !mine, pick:c => setColor(list, c) },
       '-', ...layer, lockEntry, dup,
       { icon:'download', label:'Download as SVG', run:() => downloadItem(it) },
-      '-', ...reportEntry, del
+      '-', ...reportEntry, ...banEntry, del
     ]);
     return;
   }
@@ -3108,7 +3248,7 @@ function openItemMenu(x, y){
       { icon:'copy', label:'Copy link', run:() => { if (navigator.clipboard) navigator.clipboard.writeText(d.url || '').then(() => toast('Link copied')); } },
       '-', ...layer, lockEntry,
       it.rot ? { icon:'straighten', label:'Straighten', run:() => straighten(list) } : null,
-      dup, '-', ...reportEntry, del
+      dup, '-', ...reportEntry, ...banEntry, del
     ]);
     return;
   }
@@ -3122,7 +3262,7 @@ function openItemMenu(x, y){
     '-',
     { icon:'download', label:'Download', run:() => downloadItem(it) },
     { icon:'external', label:'Open full size', run:() => window.open(it.src, '_blank') },
-    dup, '-', ...reportEntry, del
+    dup, '-', ...reportEntry, ...banEntry, del
   ]);
 }
 function renameZone(it){
@@ -3868,13 +4008,16 @@ function msgEl(m){
   const d = document.createElement('div');
   d.className = 'msg';
   d.dataset.id = m.id;
+  d.dataset.user = m.user;
   d.style.setProperty('--mcol', /^#[0-9a-f]{6}$/i.test(m.color || '') ? m.color : '#888888');
   const role = roleOf(m.user);
   const canDel = m.user === me.id || canModerate();
   d.innerHTML =
     `<div class="mh"><span class="who"></span>${role ? `<span class="role">${role}</span>` : ''}<span class="t">${fmtTime(m.created)}</span></div>` +
     `<div class="body"></div>` +
-    (canDel ? `<button class="mdel" title="Delete message">${ic('trash', 13)}</button>` : '');
+    ((canDel || canBan(m.user)) ? `<div class="macts">` +
+      (canBan(m.user) ? `<button class="mban" title="Ban from this room">${ic('ban', 13)}</button>` : '') +
+      (canDel ? `<button class="mdel" title="Delete message">${ic('trash', 13)}</button>` : '') + `</div>` : '');
   d.querySelector('.who').textContent = m.user === me.id ? myName() + ' (you)' : m.name;
   d.querySelector('.body').textContent = m.body;
   return d;
@@ -3955,6 +4098,12 @@ $('#chatInput').addEventListener('keydown', e => {
   if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); setChat(false); }
 });
 chatList.addEventListener('click', async e => {
+  const bb = e.target.closest('.mban');
+  if (bb){
+    const m = chatMsgs.find(x => x.id === bb.closest('.msg').dataset.id);
+    if (m) openBanDialog(m.user, m.name);
+    return;
+  }
   const b = e.target.closest('.mdel');
   if (!b) return;
   const id = b.closest('.msg').dataset.id;
@@ -3990,9 +4139,16 @@ function renderModList(){
     box.appendChild(row);
   });
 }
-function openSettings(){
-  if (!currentRoom || !isRoomOwner()) return;
+function openSettings(tab){
+  if (!currentRoom || !canModerate()) return;
   closeMenu();
+  setTab = tab || (isRoomOwner() ? 'general' : 'reports');
+  renderSetTabs();
+  $('#settingsModal').hidden = false;
+  if (isRoomOwner()) fillGeneral();
+  loadSetPane();
+}
+function fillGeneral(){
   const r = currentRoom, f = setForm.elements;
   f.name.value = r.name || '';
   f.category.value = CATEGORIES.includes(r.category) ? r.category : CATEGORIES[0];
@@ -4007,13 +4163,11 @@ function openSettings(){
   $('#settingsError').textContent = '';
   $('#settingsDelete').hidden = !(r.owner === me.id || me.isAdmin);
   renderModList();
-  $('#settingsModal').hidden = false;
-  setTimeout(() => f.name.focus(), 30);
 }
-$('#settingsBtn').onclick = openSettings;
+$('#settingsBtn').onclick = () => openSettings();
 setForm.addEventListener('submit', async e => {
   e.preventDefault();
-  if (!currentRoom) return;
+  if (!currentRoom || setTab !== 'general' || !isRoomOwner()) return;
   const fd = new FormData(setForm);
   const name = (fd.get('name') || '').trim();
   if (!name){ $('#settingsError').textContent = 'Give your room a name.'; setForm.elements.name.focus(); return; }
@@ -4061,6 +4215,217 @@ async function setMod(uid, name, on){
   toast(on ? `${name} is now a moderator here` : `${name} is no longer a moderator`);
 }
 
+/* ================= Room bans ================= */
+const BAN_DURS = [[60,'1 hour'],[1440,'1 day'],[10080,'1 week'],[43200,'30 days'],[0,'Forever']];
+let banTarget = null;
+$('#banDur').innerHTML = BAN_DURS.map(([v, l]) => `<label class="opt"><input type="radio" name="dur" value="${v}"><span>${l}</span></label>`).join('');
+const fmtDate = ts => new Date(ts).toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
+function nameFor(uid){
+  if (!uid) return 'anon';
+  if (uid === me.id) return myName();
+  if (channel){ const m = (channel.presenceState()[uid] || [])[0]; if (m && m.n) return String(m.n).slice(0, 24); }
+  for (let i = chatMsgs.length - 1; i >= 0; i--) if (chatMsgs[i].user === uid) return chatMsgs[i].name;
+  const mod = roomMods.find(m => m.user_id === uid);
+  if (mod) return mod.name;
+  return 'anon-' + uid.slice(0, 4);
+}
+function canBan(uid){
+  if (!currentRoom || !uid || uid === me.id || !canModerate()) return false;
+  const role = roleOf(uid);
+  if (role === 'owner') return false;
+  if (role === 'mod' && !isRoomOwner()) return false;
+  return true;
+}
+async function checkRoomBan(rid){
+  const { data, error } = await sb.rpc('my_room_ban', { p_room: rid });
+  if (error) return null;
+  return (Array.isArray(data) ? data[0] : data) || null;
+}
+function banMessage(b){
+  return `You're banned from this room ${b.until ? 'until ' + fmtDate(b.until) : 'permanently'}${b.reason ? ': ' + b.reason : ''}`;
+}
+function openBanDialog(uid, name){
+  if (!canBan(uid)) return;
+  closeMenu();
+  banTarget = { uid, name: name || nameFor(uid) };
+  const f = $('#banForm');
+  f.reset();
+  f.querySelector('input[name="dur"][value="1440"]').checked = true;
+  $('#banTitle').textContent = `Ban ${banTarget.name} from this room`;
+  $('#banError').textContent = '';
+  $('#banModal').hidden = false;
+}
+$('#banForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!banTarget || !currentRoom) return;
+  const fd = new FormData(e.target);
+  const room = currentRoom, t = banTarget, purge = fd.get('purge') === 'on';
+  const btn = $('#banSubmit');
+  btn.disabled = true;
+  const { data, error } = await sb.rpc('room_ban', {
+    p_room: room.id, p_user: t.uid, p_name: t.name, p_minutes: +fd.get('dur') || 0,
+    p_reason: (fd.get('reason') || '').trim(), p_purge: purge
+  });
+  btn.disabled = false;
+  if (error){ $('#banError').textContent = niceError(error); return; }
+  closeModal('banModal');
+  if (currentRoom !== room) return;
+  if (purge){
+    items.filter(i => i.author === t.uid).forEach(removeLocal);
+    chatMsgs = chatMsgs.filter(m => m.user !== t.uid);
+    cleanupOrphans();
+  }
+  roomMods = await fetchMods(room.id);
+  applyRoomState();
+  broadcastRoom();
+  toast(purge ? `${t.name} is banned, and ${data || 0} post${data === 1 ? ' was' : 's were'} removed` : `${t.name} is banned from this room`);
+  if (!$('#settingsModal').hidden) loadSetPane();
+});
+
+/* ================= Moderation tabs (settings window) ================= */
+const SET_TABS = { general:'General', reports:'Reports', bans:'Bans', log:'Mod log' };
+const LOG_ICONS = { delete_item:'trash', delete_message:'chat', ban:'ban', unban:'check', mod_add:'shield', mod_remove:'shield', dismiss_report:'flag' };
+let setTab = 'general', setToken = 0, reportBadgeTimer = null;
+const itemKind = r => r.type === 'embed'
+  ? ((r.data && r.data.kind) === 'gif' ? 'GIF' : (r.data && r.data.kind) === 'youtube' ? 'YouTube video' : 'Link')
+  : ({ image:'Image', video:'Video', note:'Note', stroke:'Drawing', label:'Label', zone:'Zone' }[r.type] || 'Item');
+function renderSetTabs(){
+  const tabs = Object.keys(SET_TABS).filter(k => k !== 'general' || isRoomOwner());
+  if (!tabs.includes(setTab)) setTab = tabs[0];
+  $('#setTabs').innerHTML = tabs.map(k => `<button type="button" class="chip${k === setTab ? ' active' : ''}" data-tab="${k}">${SET_TABS[k]}</button>`).join('');
+  document.querySelectorAll('#settingsForm .set-pane').forEach(p => { p.hidden = p.dataset.pane !== setTab; });
+  $('#setFoot').hidden = setTab === 'general';
+  $('#settingsTitle').textContent = isRoomOwner() ? 'Room settings' : 'Moderation';
+}
+$('#setTabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]');
+  if (!b) return;
+  setTab = b.dataset.tab;
+  renderSetTabs();
+  loadSetPane();
+});
+function reportRowHTML(r){
+  const reasons = r.reasons || {};
+  const csam = !!reasons.child_safety;
+  const other = Object.keys(reasons).some(k => k !== 'child_safety');
+  const list = Object.entries(reasons)
+    .map(([k, n]) => `<span class="${k === 'child_safety' ? 'reason-csam' : ''}">${esc(REASON_SHORT[k] || k)} ×${n}</span>`).join(' · ');
+  return `
+    <div class="set-item" data-item="${r.item_id}" data-user="${r.author || ''}">
+      <div class="set-thumb">${modThumb(r)}</div>
+      <div class="set-body">
+        <div class="set-title">${itemKind(r)} by ${esc(nameFor(r.author))}${r.report_count >= REPORT_HIDE ? ' <span class="badge warn">hidden</span>' : ''}</div>
+        <div class="set-meta">${list}</div>
+        ${csam ? '<div class="set-meta">Child-safety reports also go to the site moderators, and only they can clear them.</div>' : ''}
+        ${r.data && r.data.caption ? `<div class="set-meta">Caption: ${esc(r.data.caption)}</div>` : ''}
+        <div class="set-meta">Last reported ${ago(Date.parse(r.latest))}</div>
+        <div class="set-acts">
+          ${findItem(r.item_id) ? `<button type="button" class="btn sm" data-sact="show">${ic('image', 14)} Show</button>` : ''}
+          ${other ? `<button type="button" class="btn sm" data-sact="dismiss">${ic('check', 14)} Dismiss</button>` : ''}
+          <button type="button" class="btn sm danger" data-sact="delete">${ic('trash', 14)} Delete</button>
+          ${canBan(r.author) ? `<button type="button" class="btn sm danger" data-sact="ban">${ic('ban', 14)} Ban poster</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+function banRowHTML(b){
+  return `
+    <div class="set-item" data-user="${b.user_id}">
+      <div class="set-body">
+        <div class="set-title">${ic('ban', 14)} ${esc(b.name)}</div>
+        <div class="set-meta">${b.until ? 'Until ' + fmtDate(b.until) : 'Permanent'} · banned ${ago(Date.parse(b.created_at))}${b.reason ? ' · ' + esc(b.reason) : ''}</div>
+        <div class="set-acts"><button type="button" class="btn sm" data-sact="unban">${ic('check', 14)} Unban</button></div>
+      </div>
+    </div>`;
+}
+function logRowHTML(l){
+  const who = esc(l.actor === me.id ? 'You' : l.actor_name);
+  const target = esc(l.target_name || (l.target_user ? 'anon-' + l.target_user.slice(0, 4) : 'someone'));
+  const d = l.detail || {};
+  let text, extra = '';
+  switch (l.action){
+    case 'delete_item': text = `${who} removed a ${itemKind({ type:d.type, data:{ kind:d.kind } }).toLowerCase()} by ${target}`; extra = d.text || d.url || ''; break;
+    case 'delete_message': text = `${who} removed a chat message from ${target}`; extra = d.text || ''; break;
+    case 'ban': text = `${who} banned ${target} ${d.until ? 'until ' + fmtDate(d.until) : 'permanently'}`;
+      extra = [d.reason, d.removed ? `${d.removed} post${d.removed === 1 ? '' : 's'} removed` : ''].filter(Boolean).join(' · '); break;
+    case 'unban': text = `${who} unbanned ${target}`; break;
+    case 'mod_add': text = `${who} made ${target} a moderator`; break;
+    case 'mod_remove': text = `${who} removed ${target} as a moderator`; break;
+    case 'dismiss_report': text = `${who} dismissed reports on a post by ${target}`; break;
+    default: text = `${who}: ${esc(l.action)}`;
+  }
+  return `<div class="log-row">${ic(LOG_ICONS[l.action] || 'dot', 15)}<div><div>${text}</div>` +
+    `<div class="set-meta">${extra ? esc(clip(extra, 140)) + ' · ' : ''}${ago(Date.parse(l.created_at))}</div></div></div>`;
+}
+async function loadSetPane(){
+  if (!currentRoom || setTab === 'general') return;
+  const tok = ++setToken, rid = currentRoom.id;
+  const box = $({ reports:'#setReports', bans:'#setBans', log:'#setLog' }[setTab]);
+  box.innerHTML = '<div class="set-empty">Loading…</div>';
+  let html = '', empty = '', res;
+  if (setTab === 'reports'){
+    res = await sb.rpc('room_reports', { p_room: rid });
+    if (!res.error){ html = (res.data || []).map(reportRowHTML).join(''); setReportBadge((res.data || []).length); }
+    empty = 'No reports in this room. Nice.';
+  } else if (setTab === 'bans'){
+    res = await sb.from('room_bans').select('user_id,name,reason,until,created_at').eq('room_id', rid).order('created_at', { ascending:false });
+    if (!res.error) html = (res.data || []).filter(b => !b.until || Date.parse(b.until) > Date.now()).map(banRowHTML).join('');
+    empty = 'Nobody is banned from this room.';
+  } else {
+    res = await sb.from('mod_log').select('*').eq('room_id', rid).order('created_at', { ascending:false }).limit(150);
+    if (!res.error) html = (res.data || []).map(logRowHTML).join('');
+    empty = 'Nothing in the log yet.';
+    if (!isRoomOwner()) html += '<div class="set-meta" style="padding:4px 2px">You see your own actions here. The owner sees everyone\'s.</div>';
+  }
+  if (tok !== setToken) return;
+  box.innerHTML = res.error ? `<div class="set-empty">${esc(niceError(res.error))}</div>` : (html || `<div class="set-empty">${empty}</div>`);
+}
+function focusItem(it){
+  const h = it.el.offsetHeight || it.w;
+  view.z = clamp(Math.min(innerWidth * 0.5 / it.w, innerHeight * 0.5 / h, 1.5), minZ, MAX_Z);
+  view.x = innerWidth / 2 - (it.x + it.w / 2) * view.z;
+  view.y = innerHeight / 2 - (it.y + h / 2) * view.z;
+  applyView();
+  setSelection([it]);
+}
+$('#settingsForm').addEventListener('click', async e => {
+  const b = e.target.closest('[data-sact]');
+  if (!b || !currentRoom) return;
+  const row = b.closest('.set-item');
+  const act = b.dataset.sact, itemId = row.dataset.item, uid = row.dataset.user;
+  if (act === 'show'){ const it = findItem(itemId); if (it){ closeModal('settingsModal'); focusItem(it); } return; }
+  if (act === 'ban'){ openBanDialog(uid); return; }
+  if (act === 'delete' && !confirm('Delete this post?')) return;
+  b.disabled = true;
+  let res;
+  if (act === 'dismiss') res = await sb.rpc('room_dismiss_reports', { p_item: itemId });
+  else if (act === 'delete'){
+    res = await sb.from('items').delete().eq('id', itemId);
+    if (!res.error){ const it = findItem(itemId); if (it) removeLocal(it); cleanupOrphans(); }
+  } else if (act === 'unban'){
+    res = await sb.rpc('room_unban', { p_room: currentRoom.id, p_user: uid });
+  }
+  if (!res || res.error){ toast(niceError(res && res.error)); b.disabled = false; return; }
+  toast(act === 'dismiss' ? 'Reports dismissed' : act === 'delete' ? 'Deleted' : 'Unbanned');
+  loadSetPane();
+  refreshReportBadge();
+});
+function setReportBadge(n){
+  const b = $('#setBadge');
+  b.hidden = !n || !canModerate();
+  b.textContent = n > 99 ? '99+' : n;
+}
+async function refreshReportBadge(){
+  if (!currentRoom || !canModerate()){ setReportBadge(0); return; }
+  const rid = currentRoom.id;
+  const { data, error } = await sb.rpc('room_reports', { p_room: rid });
+  if (!error && currentRoom && currentRoom.id === rid) setReportBadge((data || []).length);
+}
+function refreshReportBadgeSoon(){
+  clearTimeout(reportBadgeTimer);
+  reportBadgeTimer = setTimeout(refreshReportBadge, 1500);
+}
+
 /* ================= Room controls & keyboard ================= */
 $('#boardBtn').onclick = fitBoard;
 $('#zoomBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 1 / view.z); applyView(); };
@@ -4069,7 +4434,8 @@ $('#zoomOutBtn').onclick = () => { zoomAt(innerWidth / 2, innerHeight / 2, 0.8);
 
 let nudgeTimer, nudged = new Map();
 addEventListener('keydown', e => {
-  const open = document.querySelector('.modal:not([hidden])');
+  const opens = document.querySelectorAll('.modal:not([hidden])');
+  const open = opens[opens.length - 1];
   if (open){ if (e.key === 'Escape') closeModal(open.id, false); return; }
   if (!ctx.hidden && e.key === 'Escape'){ closeMenu(); return; }
   if (!currentRoom) return;
@@ -4137,6 +4503,19 @@ function showFatal(err){
     `${niceError(err)}. If you run this site, check that anonymous sign-ins and the captcha keys are set up in Supabase.`;
   $('#fatal').hidden = false;
 }
+// Logs this visit's IP for moderation. An IP-banned visitor gets the banned screen.
+async function touchSession(){
+  const { error } = await sb.rpc('touch_session');
+  if (error && /banned from picboard/i.test(error.message || '')){ showBanned(); return false; }
+  return true;
+}
+function showBanned(){
+  if (currentRoom) leaveRoom();
+  $('#gate').hidden = true;
+  $('#fatal').querySelector('h2').textContent = "You're banned";
+  $('#fatalText').textContent = `You've been banned from Picboard. If you think this is a mistake, email ${CONTACT_EMAIL}.`;
+  $('#fatal').hidden = false;
+}
 function handleAuthRedirect(){
   const qs = new URLSearchParams(location.search);
   const err = qs.get('error_description') || qs.get('error');
@@ -4154,6 +4533,8 @@ async function start(){
   try { await ensureSession(); }
   catch (err){ showFatal(err); return; }
   handleAuthRedirect();
+  if (!(await touchSession())) return;
+  setInterval(touchSession, 20 * 60 * 1000);
   if (cameFromLink && !me.isAnon) toast(`You're signed in as ${me.email}.`, 4000);
   route();
 }
